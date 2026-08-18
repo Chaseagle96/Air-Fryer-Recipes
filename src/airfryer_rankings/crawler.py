@@ -14,10 +14,10 @@ from .models import UA, RecipeRow, SourceConfig, parse_dt
 
 
 def _entry_age_hours(entry: dict, key: str, now: datetime) -> float:
-    dt = parse_dt(entry.get(key))
-    if not dt:
+    timestamp = parse_dt(entry.get(key))
+    if not timestamp:
         return 1e9
-    return max(0.0, (now - dt).total_seconds() / 3600)
+    return max(0.0, (now - timestamp).total_seconds() / 3600)
 
 
 def select_refresh_targets(
@@ -27,9 +27,9 @@ def select_refresh_targets(
     global_max_urls: int | None = None,
     hourly_limit: int = 100,
 ) -> list[dict]:
-    source_map = {x.domain: x for x in sources}
+    source_map = {source.domain: source for source in sources}
     now = datetime.now(timezone.utc)
-    catalog = [x for x in state.get("url_catalog", {}).values() if x.get("source") in source_map]
+    catalog = [entry for entry in state.get("url_catalog", {}).values() if entry.get("source") in source_map]
     recipes = state.get("recipes", {})
 
     def score(entry: dict) -> tuple[float, float]:
@@ -44,7 +44,7 @@ def select_refresh_targets(
             value += 15000
         if _entry_age_hours(entry, "first_discovered", now) <= 48:
             value += 8000
-        if entry.get("priority") in {"modified", "changed", "legacy_evidence_backfill"}:
+        if entry.get("priority") in {"modified", "changed", "legacy_evidence_backfill", "contract_changed"}:
             value += 7000
         if recipe.get("previous_rating_count") is not None:
             growth = int(recipe.get("rating_count", 0)) - int(recipe.get("previous_rating_count") or 0)
@@ -60,28 +60,28 @@ def select_refresh_targets(
             recipe = recipes.get(entry.get("recipe_id", ""), {})
             if recipe.get("needs_evidence_backfill") or recipe.get("evidence_status") == "legacy_unverified":
                 legacy.append(entry)
-        return [dict(x) for x in sorted(legacy, key=score, reverse=True)]
+        return [dict(entry) for entry in sorted(legacy, key=score, reverse=True)]
 
     if mode == "hourly":
         ranked = sorted(catalog, key=score, reverse=True)
-        return [dict(x) for x in ranked[:hourly_limit]]
+        return [dict(entry) for entry in ranked[:hourly_limit]]
 
     targets: list[dict] = []
     by_source: dict[str, list[dict]] = defaultdict(list)
     for entry in catalog:
         by_source[entry.get("source", "")].append(entry)
-    for domain, entries in by_source.items():
+    for entries in by_source.values():
         cap = global_max_urls if global_max_urls is not None else len(entries)
-        entries = sorted(entries, key=lambda x: (_entry_age_hours(x, "last_checked", now), score(x)[0]), reverse=True)
-        targets.extend(dict(x) for x in entries[:cap])
+        entries = sorted(entries, key=lambda entry: (_entry_age_hours(entry, "last_checked", now), score(entry)[0]), reverse=True)
+        targets.extend(dict(entry) for entry in entries[:cap])
     return targets
 
 
 def _row_from_existing(recipe: dict, retrieved_at: str, fetch_status: str = "not_modified") -> RecipeRow | None:
     if not recipe:
         return None
-    names = {f.name for f in fields(RecipeRow)}
-    payload = {k: v for k, v in recipe.items() if k in names}
+    names = {field.name for field in fields(RecipeRow)}
+    payload = {key: value for key, value in recipe.items() if key in names}
     for key in ("ingredients", "instructions", "categories"):
         if key in payload and isinstance(payload[key], list):
             payload[key] = tuple(payload[key])
@@ -98,7 +98,7 @@ def crawl_targets(
     state: dict,
     run_at: str,
 ) -> tuple[list[RecipeRow], list[dict], list[dict]]:
-    source_map = {x.domain: x for x in sources}
+    source_map = {source.domain: source for source in sources}
     grouped: dict[str, list[dict]] = defaultdict(list)
     for target in targets:
         grouped[target.get("source", "")].append(target)
@@ -125,6 +125,10 @@ def crawl_targets(
             "conflicts": 0,
             "missing": 0,
             "errors": 0,
+            "http_403": 0,
+            "http_429": 0,
+            "dom_structure_changes": 0,
+            "schema_structure_changes": 0,
             "legacy_backfill_targets": 0,
             "legacy_backfill_resolved": 0,
             "robots_status": robots_status,
@@ -135,8 +139,7 @@ def crawl_targets(
             entry = catalog.setdefault(url, dict(target))
             cached_recipe = recipes.get(entry.get("recipe_id", ""), {})
             force_evidence_refresh = bool(
-                cached_recipe.get("needs_evidence_backfill")
-                or cached_recipe.get("evidence_status") == "legacy_unverified"
+                cached_recipe.get("needs_evidence_backfill") or cached_recipe.get("evidence_status") == "legacy_unverified"
             )
             if force_evidence_refresh:
                 metrics["legacy_backfill_targets"] += 1
@@ -167,7 +170,20 @@ def crawl_targets(
                 metrics["fetched"] += 1
                 row, parse_meta = extract_recipe_from_html(response.text, url, domain, cfg, dict(response.headers))
                 page_hash = parse_meta.get("page_hash", "")
-                changed = bool(entry.get("page_hash") and page_hash and entry.get("page_hash") != page_hash)
+                dom_fingerprint = parse_meta.get("dom_fingerprint", "")
+                schema_signature = parse_meta.get("schema_signature", "")
+                content_changed = bool(entry.get("page_hash") and page_hash and entry.get("page_hash") != page_hash)
+                dom_changed = bool(
+                    entry.get("dom_fingerprint")
+                    and dom_fingerprint
+                    and entry.get("dom_fingerprint") != dom_fingerprint
+                )
+                schema_changed = bool(
+                    entry.get("schema_signature")
+                    and schema_signature
+                    and entry.get("schema_signature") != schema_signature
+                )
+                priority = "contract_changed" if dom_changed or schema_changed else "changed" if content_changed else "stable"
                 entry.update(
                     {
                         "last_checked": run_at,
@@ -175,12 +191,20 @@ def crawl_targets(
                         "etag": str(response.headers.get("ETag") or ""),
                         "last_modified": str(response.headers.get("Last-Modified") or ""),
                         "page_hash": page_hash,
-                        "priority": "changed" if changed else "stable",
+                        "dom_fingerprint": dom_fingerprint,
+                        "schema_signature": schema_signature,
+                        "priority": priority,
                         "missing_count": 0,
                     }
                 )
-                if changed:
+                if content_changed:
                     entry["last_changed"] = run_at
+                if dom_changed:
+                    metrics["dom_structure_changes"] += 1
+                    events.append({"type": "dom_structure_changed", "source": domain, "url": url, "timestamp": run_at})
+                if schema_changed:
+                    metrics["schema_structure_changes"] += 1
+                    events.append({"type": "schema_structure_changed", "source": domain, "url": url, "timestamp": run_at})
                 for issue in parse_meta.get("issues", []):
                     events.append({"type": issue, "source": domain, "url": url, "timestamp": run_at})
                 if row:
@@ -197,6 +221,10 @@ def crawl_targets(
                 status = getattr(exc.response, "status_code", None)
                 entry["last_checked"] = run_at
                 entry["last_status"] = f"http_{status}" if status else "http_error"
+                if status == 403:
+                    metrics["http_403"] += 1
+                if status == 429:
+                    metrics["http_429"] += 1
                 if status in (404, 410):
                     metrics["missing"] += 1
                     entry["missing_count"] = int(entry.get("missing_count", 0)) + 1
