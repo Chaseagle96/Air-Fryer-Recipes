@@ -1,6 +1,6 @@
 defaults:
-  max_urls: 200
-  delay: 0.20
+  max_urls: 250
+  delay: 0.15
 sources:
   - domain: allrecipes.com
   - domain: foodnetwork.com
@@ -8,10 +8,15 @@ sources:
   - domain: eatingwell.com
   - domain: tasteofhome.com
   - domain: skinnytaste.com
+    discovery_urls:
+      - https://www.skinnytaste.com/recipes/air-fryer/
+      - https://www.skinnytaste.com/recipe-index/?_cooking_method=air-fryer
   - domain: therecipecritic.com
   - domain: spendwithpennies.com
   - domain: pinchofyum.com
   - domain: budgetbytes.com
+    discovery_urls:
+      - https://www.budgetbytes.com/category/recipes/air-fryer/
   - domain: simplyrecipes.com
   - domain: wellplated.com
   - domain: natashaskitchen.com
@@ -28,3 +33,21 @@ sources:
   - domain: jocooks.com
   - domain: recipetineats.com
   - domain: bbcgoodfood.com
+  - domain: seriouseats.com
+  - domain: thekitchn.com
+  - domain: foodandwine.com
+  - domain: ambitiouskitchen.com
+  - domain: eatingbirdfood.com
+  - domain: wholesomeyum.com
+  - domain: dinneratthezoo.com
+  - domain: diethood.com
+  - domain: twopeasandtheirpod.com
+  - domain: everydayfamilycooking.com
+    discovery_urls:
+      - https://www.everydayfamilycooking.com/
+  - domain: airfryingfoodie.com
+    discovery_urls:
+      - https://airfryingfoodie.com/
+  - domain: platedcravings.com
+  - domain: rachelcooks.com
+  - domain: melskitchencafe.com

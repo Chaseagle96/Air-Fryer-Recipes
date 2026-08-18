@@ -1,60 +1,190 @@
 # Air Fryer Recipe Rankings
 
-An hourly, auditable leaderboard of the best-reviewed air-fryer recipes found across a broad set of public recipe publishers.
+An auditable, continuously refreshed leaderboard of highly rated air-fryer recipes from major public recipe publishers.
 
-## What “best reviewed” means
+The project is designed to answer a harder question than “which recipe has the highest displayed star average?” It combines rating quality, rating volume, publisher-level rating tendencies, uncertainty, evidence verification, duplicate detection, freshness, and source reliability.
 
-The project does **not** rank recipes by raw star average alone. A 5.0-star recipe with 12 ratings should not automatically outrank a 4.9-star recipe with 8,000 ratings.
+## What V3 does
 
-The ranking uses the Bayesian weighted-rating formula:
+### Incremental crawling instead of brute force
 
-`WR = (v / (v + m)) * R + (m / (v + m)) * C`
+The crawler maintains a persistent URL catalog with discovery source, sitemap `lastmod`, first/last discovery time, last checked time, page hash, ETag, Last-Modified, last change time, HTTP state, and priority.
 
-Where:
+Refresh cadence:
 
-- `R` = the recipe's normalized rating on a 5-star scale
-- `v` = verified rating/review count
-- `C` = a global prior, calculated as the square-root(review-count)-weighted mean rating across the current candidate pool
-- `m` = volume prior, set to the larger of 50 reviews or the 60th-percentile review count
+- **Hourly:** re-check up to 100 high-priority URLs globally, favoring Top-100 recipes, new discoveries, recently modified pages, and recipes whose rating counts are moving.
+- **Daily:** re-run discovery and revalidate the complete known catalog.
+- **Weekly deep:** traverse a larger sitemap surface, refresh discovery pages, expand the known URL catalog, and revalidate the catalog.
+- **Pull requests:** run a bounded three-publisher live smoke crawl.
 
-This shrinks low-volume ratings toward the global prior while allowing highly reviewed recipes to stand on their own evidence.
+Conditional requests use ETag and Last-Modified when publishers provide them.
 
-## Pipeline
+### Immutable rating-observation history
 
-1. Read a configurable set of recipe publishers from `config/sources.yaml`.
-2. Discover sitemaps through each site's `robots.txt`, with `/sitemap.xml` fallback.
-3. Identify likely air-fryer recipe URLs.
-4. Respect robots rules and rate-limit page requests.
-5. Extract Schema.org `Recipe` and `AggregateRating` JSON-LD.
-6. Normalize ratings to 5 stars.
-7. Preserve current observations and the latest seven days of hourly rank snapshots in `data/state.json`.
-8. Deduplicate exact cross-site recipe matches using normalized title + ingredient signature.
-9. Combine verified ratings for exact duplicate listings using review-count weighting.
-10. Recompute the Bayesian leaderboard and rank movement.
-11. Publish CSV/JSON results to the repository and an Excel workbook as a GitHub Actions artifact.
+Every successful rating check is written as a new NDJSON record under:
+
+`data/observations/YYYY/MM/DD/HHMMSSZ.ndjson`
+
+Records include recipe ID, timestamp, publisher, URL, rating, rating count, evidence confidence, extraction method, page hash, and fetch status. New files are appended rather than rewriting old observation logs, so historical evidence remains reconstructable without quadratic Git history growth.
+
+Anomalies are recorded separately under `data/anomalies/`.
+
+### Evidence verification
+
+Primary extraction uses Schema.org `Recipe` and `AggregateRating` JSON-LD. When visible/microdata rating evidence is also available, the two representations are cross-checked.
+
+Evidence states include:
+
+- `verified`: structured and visible evidence agree
+- `schema_only`: valid AggregateRating was available but no independent visible value was found
+- `visible_only`: only visible/microdata evidence was available
+- `conflict`: structured and visible evidence materially disagree
+
+Conflicted or low-confidence recipes are retained for QA but quarantined from ranking.
+
+The crawler records page hashes, canonical URLs, extraction method, and evidence confidence so a ranking can be traced back to its evidence state.
+
+### Hierarchical Bayesian ranking
+
+Raw star averages are not ranked directly.
+
+1. Ratings are normalized to a five-star scale.
+2. A global prior is estimated with square-root rating-count weighting.
+3. Each publisher receives a partially pooled mean rating estimate.
+4. Publisher rating bias is estimated relative to the global prior.
+5. Each recipe's rating is adjusted for that estimated publisher tendency.
+6. The adjusted rating is shrunk toward the global prior according to rating volume.
+7. A conservative uncertainty penalty is subtracted.
+
+Conceptually:
+
+`hierarchical_score = BayesianPosterior(source-adjusted rating) - uncertainty penalty`
+
+When a publisher exposes a usable rating histogram in structured data, observed star-distribution variance is used for the uncertainty calculation. Otherwise the system uses a conservative bounded-rating variance assumption.
+
+This reduces the advantage enjoyed by publishers where nearly every recipe receives a very high average and penalizes statistically fragile recipes with very few ratings.
+
+### Fuzzy cross-site duplicate detection
+
+Duplicate detection is intentionally conservative and uses several signals:
+
+- canonical URL
+- normalized title similarity
+- normalized ingredient-token overlap
+- instruction similarity
+- author agreement
+- image-URL fingerprint as a weak corroborating signal
+
+A high-confidence fuzzy cluster creates a duplicate group with provenance for every source listing.
+
+**Review counts from cross-site duplicates are not summed.** Syndicated pages can share a review population, so adding those counts would create false evidence. The highest-volume credible listing is used as the representative while all source evidence remains visible in the duplicate audit output.
+
+### Anomaly and QA detection
+
+The pipeline flags conditions such as:
+
+- rating counts decreasing
+- unusually large review-count jumps
+- large rating changes
+- structured/visible rating conflicts
+- malformed rating scales
+- duplicate canonical URLs
+- recipes disappearing with 404/410 responses
+- fetch/source degradation
+
+These appear in CSV, workbook, history, and dashboard data.
+
+### Discovery beyond URL-name matching
+
+Sitemaps remain the largest discovery surface, but V3 also supports curated category/search/discovery pages. Links found on those pages can enter the URL catalog even when the recipe slug itself does not contain “air fryer.”
+
+The registry currently includes **40 publishers**, including the original broad publisher set plus Serious Eats, The Kitchn, Food & Wine, Ambitious Kitchen, Eating Bird Food, Wholesome Yum, Dinner at the Zoo, Diethood, Two Peas & Their Pod, Everyday Family Cooking, Air Frying Foodie, Plated Cravings, Rachel Cooks, and Mel's Kitchen Cafe.
+
+External discovery is intentionally seed-driven rather than scraping general-purpose search engines without an approved search API. New search-engine findings can be added as publisher discovery URLs without changing the crawler.
 
 ## Outputs
 
-- `output/top50.csv` — current Top 50
-- `output/leaderboard.csv` — all ranked recipes
-- `output/summary.json` — methodology, Top 10, source coverage, run metrics
-- `output/air_fryer_rankings.xlsx` — formatted workbook with Top 50, all rankings, source coverage, movers, and methodology sheets (uploaded as a workflow artifact rather than committed every hour)
-- `data/state.json` — current recipe observations plus bounded history used to calculate movement
+### Repository data
 
-## Run locally
+- `output/top50.csv`
+- `output/leaderboard.csv`
+- `output/source_coverage.csv`
+- `output/source_reliability.csv`
+- `output/anomalies.csv`
+- `output/summary.json`
+- `data/state.json`
+- `data/observations/...`
+- `data/anomalies/...`
+
+### Excel workbook
+
+`output/air_fryer_rankings.xlsx` is uploaded as a GitHub Actions artifact and includes:
+
+- Top 50
+- All Rankings
+- Source Coverage
+- Source Reliability
+- Rating History
+- New Entrants
+- Biggest Movers
+- QA Anomalies
+- Duplicate Groups
+- Methodology
+- Chicken
+- Potatoes
+- Vegetables
+- Desserts
+- Beef
+- Pork
+- Seafood
+- Breakfast
+- Snacks
+
+### Searchable web dashboard
+
+Every production run builds a static site in `docs/` with:
+
+- searchable recipe/publisher table
+- category filtering
+- evidence-confidence filtering
+- hierarchical score
+- raw stars and rating count
+- ranking movement
+- direct recipe links
+- methodology metadata
+
+The workflow also attempts deployment through GitHub Pages using `actions/deploy-pages`. Page deployment is non-blocking so a Pages configuration problem cannot break the ranking pipeline itself.
+
+## GitHub Actions
+
+Workflow: `.github/workflows/hourly.yml`
+
+Schedules:
+
+- `17 * * * *` — hourly incremental refresh
+- `43 8 * * *` — daily discovery and complete known-catalog refresh
+- `13 9 * * 0` — weekly deep discovery and refresh
+
+Manual runs support `hourly`, `daily`, or `deep` mode.
+
+Pull requests automatically run tests plus a bounded live crawl against Pinch of Yum, Budget Bytes, and Skinnytaste without writing production state.
+
+## Running locally
 
 ```bash
-python -m venv .venv
-. .venv/bin/activate
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 PYTHONPATH=src pytest -q
-PYTHONPATH=src python -m airfryer_rankings.run
+PYTHONPATH=src python -m airfryer_rankings.run --mode hourly
 ```
 
-## Automation
+For a complete discovery refresh:
 
-GitHub Actions runs at minute 17 of every hour. The workflow can also be launched manually with **Run workflow**.
+```bash
+PYTHONPATH=src python -m airfryer_rankings.run --mode deep
+```
 
-## Scope and data quality
+## Ranking caveat
 
-This is designed to become an increasingly broad, evidence-based leaderboard, but no crawler can literally guarantee complete coverage of every recipe on the public internet. The system therefore reports source coverage and failures on every run and only ranks recipes for which a verifiable aggregate rating and rating/review count can be extracted.
+No crawler can literally prove complete coverage of every recipe on the public internet. Sites can block crawlers, omit ratings from machine-readable markup, change page structures, remove recipes, or expose only partial review evidence.
+
+Accordingly, this project reports source coverage, extraction confidence, anomalies, and freshness alongside rankings. The goal is not to pretend uncertainty does not exist; it is to make that uncertainty measurable and auditable.
