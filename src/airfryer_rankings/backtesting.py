@@ -17,11 +17,13 @@ def _normalized_observations(observations: list[dict]) -> list[dict]:
     for row in observations:
         timestamp = parse_dt(row.get("timestamp"))
         recipe_id = str(row.get("recipe_id") or "")
-        if not timestamp or not recipe_id:
+        rating_value = row.get("rating")
+        count_value = row.get("rating_count")
+        if not timestamp or not recipe_id or rating_value is None or count_value is None:
             continue
         try:
-            rating = float(row.get("rating"))
-            rating_count = int(row.get("rating_count"))
+            rating = float(rating_value)
+            rating_count = int(count_value)
         except (TypeError, ValueError):
             continue
         if rating_count <= 0 or not 0.0 <= rating <= 5.05:
@@ -104,7 +106,6 @@ def _configuration_grid(model_payload: dict[str, Any], active: ModelParameters, 
             combinations.append(candidate)
     if len(combinations) <= max_configs:
         return combinations
-    # Deterministic coverage of a large grid. The active model is always retained.
     ranked = sorted(
         combinations[1:],
         key=lambda item: hashlib.sha256(repr(sorted(item.to_dict().items())).encode()).hexdigest(),
@@ -119,11 +120,7 @@ def _config_id(params: ModelParameters) -> str:
     return hashlib.sha256(payload).hexdigest()[:12]
 
 
-def _evaluate_window(
-    current: list[dict],
-    future: dict[str, dict],
-    params: ModelParameters,
-) -> dict | None:
+def _evaluate_window(current: list[dict], future: dict[str, dict], params: ModelParameters) -> dict | None:
     if not current or not future:
         return None
     ranked, _ = score_current(current, calibration=None, params=params)
@@ -131,12 +128,20 @@ def _evaluate_window(
     ids = list(predicted)
     if len(ids) < 5:
         return None
-    future_order = sorted(ids, key=lambda recipe_id: (future[recipe_id]["rating"], future[recipe_id]["rating_count"]), reverse=True)
+    future_order = sorted(
+        ids,
+        key=lambda recipe_id: (future[recipe_id]["rating"], future[recipe_id]["rating_count"]),
+        reverse=True,
+    )
     future_positions = {recipe_id: index for index, recipe_id in enumerate(future_order, 1)}
     predicted_positions = {recipe_id: int(predicted[recipe_id]["rank"]) for recipe_id in ids}
     rank_corr = spearman(future_positions, predicted_positions, ids)
-    posterior_mae = mean(abs(float(predicted[recipe_id]["posterior_mean"]) - float(future[recipe_id]["rating"])) for recipe_id in ids)
-    score_mae = mean(abs(float(predicted[recipe_id]["hierarchical_score"]) - float(future[recipe_id]["rating"])) for recipe_id in ids)
+    posterior_mae = mean(
+        abs(float(predicted[recipe_id]["posterior_mean"]) - float(future[recipe_id]["rating"])) for recipe_id in ids
+    )
+    score_mae = mean(
+        abs(float(predicted[recipe_id]["hierarchical_score"]) - float(future[recipe_id]["rating"])) for recipe_id in ids
+    )
     top10_future = set(future_order[:10])
     top10_predicted = {recipe_id for recipe_id in ids if predicted_positions[recipe_id] <= 10}
     return {
