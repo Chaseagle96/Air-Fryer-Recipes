@@ -1,14 +1,14 @@
 pair_id,expected_duplicate,predicted_duplicate,similarity,outcome,left_title,right_title,note
 dup-chicken-breast,True,True,0.9098366477272727,TP,Air Fryer Chicken Breast,Crispy Air Fryer Chicken Breasts,
-dup-salmon,True,False,0.8131950352455031,FN,Air Fryer Salmon,Easy Air Fryer Salmon Recipe,
+dup-salmon,True,True,0.8131950352455031,TP,Air Fryer Salmon,Easy Air Fryer Salmon Recipe,
 dup-potato,True,True,0.9193536931818181,TP,Air Fryer Baked Potato,Best Air Fryer Baked Potatoes,
-dup-wings,True,False,0.8724786931818181,FN,Air Fryer Chicken Wings,Crispy Air Fryer Chicken Wings,
+dup-wings,True,True,0.8724786931818181,TP,Air Fryer Chicken Wings,Crispy Air Fryer Chicken Wings,
 dup-green-beans,True,True,0.9150530801435407,TP,Air Fryer Green Beans,Easy Air Fryer Green Beans,
 dup-pork-chops,True,True,0.9129410885167464,TP,Air Fryer Pork Chops,Easy Air Fryer Pork Chop Recipe,
 dup-fries,True,True,0.945564817583732,TP,Air Fryer French Fries,Homemade Air Fryer French Fries,
 dup-broccoli,True,True,0.9195864898989898,TP,Air Fryer Broccoli,Crispy Air Fryer Broccoli,
 dup-shrimp,True,True,0.9183435921717172,TP,Air Fryer Shrimp,Quick Air Fryer Shrimp Recipe,
-dup-asparagus,True,False,0.8080297459893048,FN,Air Fryer Asparagus,Easy Air Fryer Asparagus,
+dup-asparagus,True,True,0.8080297459893048,TP,Air Fryer Asparagus,Easy Air Fryer Asparagus,
 dup-meatballs,True,False,0.7103487589712919,FN,Air Fryer Meatballs,Easy Air Fryer Meatball Recipe,
 dup-cauliflower,True,True,0.9220722853535352,TP,Air Fryer Cauliflower,Crispy Air Fryer Cauliflower,
 nondup-fries-zucchini,False,False,0.5369318181818182,TN,Air Fryer Fries,Air Fryer Fries,Same generic fries concept but different principal ingredient.
