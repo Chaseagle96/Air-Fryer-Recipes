@@ -1,0 +1,398 @@
+{
+  "generated_at": "2026-08-18T20:31:41.469311+00:00",
+  "observations_this_run": 594,
+  "ranked_recipes": 594,
+  "global_prior": 4.766832896476025,
+  "volume_prior_m": 50.0,
+  "candidate_count": 594,
+  "deduplicated_count": 0,
+  "stale_days": 14,
+  "history_snapshots": 1,
+  "formula": "WR=(v/(v+m))*R + (m/(v+m))*C",
+  "prior_definition": "C=sqrt(review_count)-weighted mean rating; m=max(50, 60th percentile review count)",
+  "dedupe_definition": "Exact normalized title + exact ingredient signature; duplicate listings combine ratings by review-count weighting",
+  "source_count": 26,
+  "sources_ok": 26,
+  "top10": [
+    {
+      "recipe_id": "da2155fe966f099ace102548",
+      "title": "Air Fryer Salmon",
+      "source": "feelgoodfoodie.net",
+      "combined_sources": "feelgoodfoodie.net",
+      "url": "https://feelgoodfoodie.net/recipe/air-fryer-salmon/",
+      "rating": 5.0,
+      "rating_count": 37443,
+      "bayesian_score": 4.999689052485099,
+      "author": "",
+      "last_seen_at": "2026-08-18T20:31:41.469311+00:00",
+      "rating_change": null,
+      "review_count_change": null,
+      "rank": 1,
+      "previous_rank": null,
+      "movement": null
+    },
+    {
+      "recipe_id": "0cf3705b4b78fabba1fed35a",
+      "title": "Air Fryer Green Beans",
+      "source": "feelgoodfoodie.net",
+      "combined_sources": "feelgoodfoodie.net",
+      "url": "https://feelgoodfoodie.net/recipe/air-fryer-green-beans/",
+      "rating": 5.0,
+      "rating_count": 2723,
+      "bayesian_score": 4.995795760845222,
+      "author": "",
+      "last_seen_at": "2026-08-18T20:31:41.469311+00:00",
+      "rating_change": null,
+      "review_count_change": null,
+      "rank": 2,
+      "previous_rank": null,
+      "movement": null
+    },
+    {
+      "recipe_id": "2b28fee1a6b105ddc0d7ab53",
+      "title": "Air Fryer Chicken Wings",
+      "source": "natashaskitchen.com",
+      "combined_sources": "natashaskitchen.com",
+      "url": "https://natashaskitchen.com/air-fryer-chicken-wings/",
+      "rating": 4.99,
+      "rating_count": 1028,
+      "bayesian_score": 4.979649021172357,
+      "author": "",
+      "last_seen_at": "2026-08-18T20:31:41.469311+00:00",
+      "rating_change": null,
+      "review_count_change": null,
+      "rank": 3,
+      "previous_rank": null,
+      "movement": null
+    },
+    {
+      "recipe_id": "7dbca4c8d97c28e19871bbb5",
+      "title": "Air Fryer Baked Potato Recipe",
+      "source": "natashaskitchen.com",
+      "combined_sources": "natashaskitchen.com",
+      "url": "https://natashaskitchen.com/air-fryer-baked-potatoes/",
+      "rating": 5.0,
+      "rating_count": 509,
+      "bayesian_score": 4.979144266232202,
+      "author": "",
+      "last_seen_at": "2026-08-18T20:31:41.469311+00:00",
+      "rating_change": null,
+      "review_count_change": null,
+      "rank": 4,
+      "previous_rank": null,
+      "movement": null
+    },
+    {
+      "recipe_id": "a66107cdbfdeec0c776d00fd",
+      "title": "Air Fryer Hard Boiled Eggs",
+      "source": "feelgoodfoodie.net",
+      "combined_sources": "feelgoodfoodie.net",
+      "url": "https://feelgoodfoodie.net/recipe/air-fryer-hard-boiled-eggs/",
+      "rating": 4.97,
+      "rating_count": 4331,
+      "bayesian_score": 4.967681270217714,
+      "author": "",
+      "last_seen_at": "2026-08-18T20:31:41.469311+00:00",
+      "rating_change": null,
+      "review_count_change": null,
+      "rank": 5,
+      "previous_rank": null,
+      "movement": null
+    },
+    {
+      "recipe_id": "b5ef0d7e47d6aca0959e989c",
+      "title": "Air Fryer Breaded Chicken",
+      "source": "feelgoodfoodie.net",
+      "combined_sources": "feelgoodfoodie.net",
+      "url": "https://feelgoodfoodie.net/recipe/air-fryer-chicken/",
+      "rating": 5.0,
+      "rating_count": 213,
+      "bayesian_score": 4.9556716533224385,
+      "author": "",
+      "last_seen_at": "2026-08-18T20:31:41.469311+00:00",
+      "rating_change": null,
+      "review_count_change": null,
+      "rank": 6,
+      "previous_rank": null,
+      "movement": null
+    },
+    {
+      "recipe_id": "e7761b00879fa03907361efe",
+      "title": "Air Fryer Popcorn Recipe",
+      "source": "feelgoodfoodie.net",
+      "combined_sources": "feelgoodfoodie.net",
+      "url": "https://feelgoodfoodie.net/recipe/air-fryer-popcorn/",
+      "rating": 5.0,
+      "rating_count": 203,
+      "bayesian_score": 4.953919544758108,
+      "author": "",
+      "last_seen_at": "2026-08-18T20:31:41.469311+00:00",
+      "rating_change": null,
+      "review_count_change": null,
+      "rank": 7,
+      "previous_rank": null,
+      "movement": null
+    },
+    {
+      "recipe_id": "c7c4bdc8afaacef6ac35ca54",
+      "title": "Air Fryer Cauliflower Recipe",
+      "source": "feelgoodfoodie.net",
+      "combined_sources": "feelgoodfoodie.net",
+      "url": "https://feelgoodfoodie.net/recipe/air-fryer-cauliflower/",
+      "rating": 5.0,
+      "rating_count": 187,
+      "bayesian_score": 4.950808627948528,
+      "author": "",
+      "last_seen_at": "2026-08-18T20:31:41.469311+00:00",
+      "rating_change": null,
+      "review_count_change": null,
+      "rank": 8,
+      "previous_rank": null,
+      "movement": null
+    },
+    {
+      "recipe_id": "30638a4c855ec61fd6fb1353",
+      "title": "Air Fryer Chickpea Recipe",
+      "source": "feelgoodfoodie.net",
+      "combined_sources": "feelgoodfoodie.net",
+      "url": "https://feelgoodfoodie.net/recipe/air-fryer-chickpeas/",
+      "rating": 5.0,
+      "rating_count": 176,
+      "bayesian_score": 4.948414357627439,
+      "author": "",
+      "last_seen_at": "2026-08-18T20:31:41.469311+00:00",
+      "rating_change": null,
+      "review_count_change": null,
+      "rank": 9,
+      "previous_rank": null,
+      "movement": null
+    },
+    {
+      "recipe_id": "267290180608cac2d366d538",
+      "title": "Air Fryer French Fries",
+      "source": "loveandlemons.com",
+      "combined_sources": "loveandlemons.com",
+      "url": "https://www.loveandlemons.com/air-fryer-french-fries/",
+      "rating": 4.98,
+      "rating_count": 248,
+      "bayesian_score": 4.944233707462421,
+      "author": "Jeanine Donofrio, Phoebe Moore",
+      "last_seen_at": "2026-08-18T20:31:41.469311+00:00",
+      "rating_change": null,
+      "review_count_change": null,
+      "rank": 10,
+      "previous_rank": null,
+      "movement": null
+    }
+  ],
+  "coverage": [
+    {
+      "source": "allrecipes.com",
+      "candidate_urls": 200,
+      "verified_recipes": 181,
+      "sitemap_docs": 3,
+      "elapsed_seconds": 113.08,
+      "status": "ok"
+    },
+    {
+      "source": "foodnetwork.com",
+      "candidate_urls": 0,
+      "verified_recipes": 0,
+      "sitemap_docs": 1,
+      "elapsed_seconds": 0.5,
+      "status": "ok"
+    },
+    {
+      "source": "delish.com",
+      "candidate_urls": 150,
+      "verified_recipes": 83,
+      "sitemap_docs": 11,
+      "elapsed_seconds": 286.08,
+      "status": "ok"
+    },
+    {
+      "source": "eatingwell.com",
+      "candidate_urls": 150,
+      "verified_recipes": 69,
+      "sitemap_docs": 4,
+      "elapsed_seconds": 72.85,
+      "status": "ok"
+    },
+    {
+      "source": "tasteofhome.com",
+      "candidate_urls": 197,
+      "verified_recipes": 20,
+      "sitemap_docs": 29,
+      "elapsed_seconds": 116.78,
+      "status": "ok"
+    },
+    {
+      "source": "skinnytaste.com",
+      "candidate_urls": 174,
+      "verified_recipes": 21,
+      "sitemap_docs": 3,
+      "elapsed_seconds": 54.0,
+      "status": "ok"
+    },
+    {
+      "source": "therecipecritic.com",
+      "candidate_urls": 173,
+      "verified_recipes": 18,
+      "sitemap_docs": 2,
+      "elapsed_seconds": 69.15,
+      "status": "ok"
+    },
+    {
+      "source": "spendwithpennies.com",
+      "candidate_urls": 190,
+      "verified_recipes": 19,
+      "sitemap_docs": 2,
+      "elapsed_seconds": 77.06,
+      "status": "ok"
+    },
+    {
+      "source": "pinchofyum.com",
+      "candidate_urls": 50,
+      "verified_recipes": 6,
+      "sitemap_docs": 7,
+      "elapsed_seconds": 30.66,
+      "status": "ok"
+    },
+    {
+      "source": "budgetbytes.com",
+      "candidate_urls": 166,
+      "verified_recipes": 25,
+      "sitemap_docs": 7,
+      "elapsed_seconds": 65.1,
+      "status": "ok"
+    },
+    {
+      "source": "simplyrecipes.com",
+      "candidate_urls": 52,
+      "verified_recipes": 23,
+      "sitemap_docs": 3,
+      "elapsed_seconds": 25.21,
+      "status": "ok"
+    },
+    {
+      "source": "wellplated.com",
+      "candidate_urls": 189,
+      "verified_recipes": 14,
+      "sitemap_docs": 2,
+      "elapsed_seconds": 86.14,
+      "status": "ok"
+    },
+    {
+      "source": "natashaskitchen.com",
+      "candidate_urls": 86,
+      "verified_recipes": 11,
+      "sitemap_docs": 12,
+      "elapsed_seconds": 28.63,
+      "status": "ok"
+    },
+    {
+      "source": "downshiftology.com",
+      "candidate_urls": 161,
+      "verified_recipes": 13,
+      "sitemap_docs": 9,
+      "elapsed_seconds": 74.34,
+      "status": "ok"
+    },
+    {
+      "source": "gimmesomeoven.com",
+      "candidate_urls": 0,
+      "verified_recipes": 0,
+      "sitemap_docs": 1,
+      "elapsed_seconds": 4.06,
+      "status": "ok"
+    },
+    {
+      "source": "lecremedelacrumb.com",
+      "candidate_urls": 84,
+      "verified_recipes": 6,
+      "sitemap_docs": 5,
+      "elapsed_seconds": 34.95,
+      "status": "ok"
+    },
+    {
+      "source": "therealfooddietitians.com",
+      "candidate_urls": 104,
+      "verified_recipes": 9,
+      "sitemap_docs": 5,
+      "elapsed_seconds": 37.75,
+      "status": "ok"
+    },
+    {
+      "source": "loveandlemons.com",
+      "candidate_urls": 19,
+      "verified_recipes": 19,
+      "sitemap_docs": 6,
+      "elapsed_seconds": 17.63,
+      "status": "ok"
+    },
+    {
+      "source": "thepioneerwoman.com",
+      "candidate_urls": 58,
+      "verified_recipes": 24,
+      "sitemap_docs": 8,
+      "elapsed_seconds": 52.49,
+      "status": "ok"
+    },
+    {
+      "source": "cookingclassy.com",
+      "candidate_urls": 0,
+      "verified_recipes": 0,
+      "sitemap_docs": 10,
+      "elapsed_seconds": 9.8,
+      "status": "ok"
+    },
+    {
+      "source": "iheartnaptime.net",
+      "candidate_urls": 27,
+      "verified_recipes": 4,
+      "sitemap_docs": 10,
+      "elapsed_seconds": 17.12,
+      "status": "ok"
+    },
+    {
+      "source": "feelgoodfoodie.net",
+      "candidate_urls": 178,
+      "verified_recipes": 16,
+      "sitemap_docs": 4,
+      "elapsed_seconds": 67.42,
+      "status": "ok"
+    },
+    {
+      "source": "kristineskitchenblog.com",
+      "candidate_urls": 180,
+      "verified_recipes": 13,
+      "sitemap_docs": 2,
+      "elapsed_seconds": 67.52,
+      "status": "ok"
+    },
+    {
+      "source": "jocooks.com",
+      "candidate_urls": 0,
+      "verified_recipes": 0,
+      "sitemap_docs": 1,
+      "elapsed_seconds": 0.81,
+      "status": "ok"
+    },
+    {
+      "source": "recipetineats.com",
+      "candidate_urls": 1,
+      "verified_recipes": 0,
+      "sitemap_docs": 9,
+      "elapsed_seconds": 5.28,
+      "status": "ok"
+    },
+    {
+      "source": "bbcgoodfood.com",
+      "candidate_urls": 200,
+      "verified_recipes": 0,
+      "sitemap_docs": 85,
+      "elapsed_seconds": 207.81,
+      "status": "ok"
+    }
+  ]
+}
