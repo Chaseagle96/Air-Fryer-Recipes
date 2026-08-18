@@ -84,6 +84,7 @@ A high-confidence fuzzy cluster creates a duplicate group with provenance for ev
 The pipeline flags conditions such as:
 
 - rating counts decreasing
+- explicit review velocity (ratings/day)
 - unusually large review-count jumps
 - large rating changes
 - structured/visible rating conflicts
@@ -125,6 +126,7 @@ External discovery is intentionally seed-driven rather than scraping general-pur
 - Source Coverage
 - Source Reliability
 - Rating History
+- Rating Trends (with Top-10 rating-count growth chart)
 - New Entrants
 - Biggest Movers
 - QA Anomalies

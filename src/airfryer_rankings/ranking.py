@@ -106,6 +106,14 @@ def bayesian_rank(state: dict, stale_days: int = 14, history_limit: int = 168) -
         confidence = float(item.get("evidence_confidence", 0.85))
         evidence_penalty = max(0.0, 0.80 - confidence) * 0.20
         hierarchical_score = max(0.0, posterior - uncertainty_penalty - evidence_penalty)
+        previous_count = item.get("previous_rating_count")
+        previous_seen = parse_dt(item.get("previous_seen_at"))
+        current_seen = parse_dt(item.get("last_seen_at") or item.get("retrieved_at"))
+        review_velocity_per_day = None
+        if previous_count is not None and previous_seen and current_seen and current_seen > previous_seen:
+            days = (current_seen - previous_seen).total_seconds() / 86400.0
+            if days > 0:
+                review_velocity_per_day = (v - int(previous_count)) / days
         categories = tuple(item.get("categories") or categorize_recipe(item.get("title", ""), item.get("ingredients", [])))
         ranked.append(
             {
@@ -130,6 +138,7 @@ def bayesian_rank(state: dict, stale_days: int = 14, history_limit: int = 168) -
                 "last_seen_at": item.get("last_seen_at", ""),
                 "rating_change": None if item.get("previous_rating") is None else raw_rating - float(item.get("previous_rating")),
                 "review_count_change": None if item.get("previous_rating_count") is None else v - int(item.get("previous_rating_count")),
+                "review_velocity_per_day": review_velocity_per_day,
             }
         )
 

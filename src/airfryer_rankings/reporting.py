@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 from openpyxl import load_workbook
+from openpyxl.chart import LineChart, Reference
 from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
 
@@ -35,6 +36,20 @@ def _style_workbook(path: str) -> None:
         for row in ws.iter_rows():
             for cell in row:
                 cell.alignment = Alignment(vertical="top", wrap_text=True)
+    if "Rating Trends" in wb.sheetnames:
+        ws = wb["Rating Trends"]
+        if ws.max_row >= 3 and ws.max_column >= 2:
+            chart = LineChart()
+            chart.title = "Rating-count growth for current Top 10"
+            chart.y_axis.title = "Rating count"
+            chart.x_axis.title = "Observation timestamp"
+            data = Reference(ws, min_col=2, max_col=ws.max_column, min_row=1, max_row=ws.max_row)
+            cats = Reference(ws, min_col=1, min_row=2, max_row=ws.max_row)
+            chart.add_data(data, titles_from_data=True)
+            chart.set_categories(cats)
+            chart.height = 12
+            chart.width = 24
+            ws.add_chart(chart, "A18")
     wb.save(path)
 
 
@@ -70,6 +85,18 @@ def write_workbook(
     obs = _df(recent_observations)
     anom = _df(anomalies)
     dup = _df(duplicate_groups)
+    trend_chart = pd.DataFrame()
+    if not obs.empty and not df.empty and {"recipe_id", "timestamp", "rating_count"}.issubset(obs.columns):
+        top_ids = [str(x) for x in df.head(10)["recipe_id"].tolist()] if "recipe_id" in df else []
+        trend_source = obs[obs["recipe_id"].astype(str).isin(top_ids)].copy()
+        if not trend_source.empty:
+            labels = dict(zip(df["recipe_id"].astype(str), df["title"].astype(str))) if {"recipe_id", "title"}.issubset(df.columns) else {}
+            trend_source["label"] = trend_source["recipe_id"].astype(str).map(labels).fillna(trend_source["recipe_id"].astype(str))
+            trend_source["timestamp"] = pd.to_datetime(trend_source["timestamp"], errors="coerce", utc=True)
+            trend_source = trend_source.dropna(subset=["timestamp"])
+            trend_chart = trend_source.pivot_table(index="timestamp", columns="label", values="rating_count", aggfunc="last").sort_index().reset_index()
+            if "timestamp" in trend_chart:
+                trend_chart["timestamp"] = trend_chart["timestamp"].dt.tz_localize(None)
 
     movers = pd.DataFrame()
     entrants = pd.DataFrame()
@@ -89,6 +116,7 @@ def write_workbook(
         cov.to_excel(writer, index=False, sheet_name="Source Coverage")
         rel.to_excel(writer, index=False, sheet_name="Source Reliability")
         obs.to_excel(writer, index=False, sheet_name="Rating History")
+        trend_chart.to_excel(writer, index=False, sheet_name="Rating Trends")
         entrants.to_excel(writer, index=False, sheet_name="New Entrants")
         movers.head(200).to_excel(writer, index=False, sheet_name="Biggest Movers")
         anom.to_excel(writer, index=False, sheet_name="QA Anomalies")
