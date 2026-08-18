@@ -8,8 +8,6 @@ from openpyxl.chart import LineChart, Reference
 from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
 
-from .dashboard import write_dashboard
-
 CATEGORY_SHEETS = ["Chicken", "Potatoes", "Vegetables", "Desserts", "Beef", "Pork", "Seafood", "Breakfast", "Snacks"]
 
 
@@ -148,7 +146,7 @@ def write_workbook(
         top_ids = [str(value) for value in rankings.head(10)["recipe_id"].tolist()] if "recipe_id" in rankings else []
         trend_source = observations[observations["recipe_id"].astype(str).isin(top_ids)].copy()
         if not trend_source.empty:
-            labels = dict(zip(rankings["recipe_id"].astype(str), rankings["title"].astype(str))) if {"recipe_id", "title"}.issubset(rankings.columns) else {}
+            labels = dict(zip(rankings["recipe_id"].astype(str), rankings["title"].astype(str), strict=True)) if {"recipe_id", "title"}.issubset(rankings.columns) else {}
             trend_source["label"] = trend_source["recipe_id"].astype(str).map(labels).fillna(trend_source["recipe_id"].astype(str))
             trend_source["timestamp"] = pd.to_datetime(trend_source["timestamp"], errors="coerce", utc=True)
             trend_source = trend_source.dropna(subset=["timestamp"])
