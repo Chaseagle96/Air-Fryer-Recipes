@@ -26,6 +26,9 @@ from .core import (
 from .media import enrich_ambiguous_perceptual_hashes
 from .reporting import write_csv_outputs, write_dashboard, write_workbook
 
+MAX_ANALYTICAL_RECORDS = 250000
+MAX_EXCEL_OBSERVATIONS = 10000
+
 
 def _merge_coverage(sources, discovery: list[dict], crawl: list[dict]) -> list[dict]:
     d = {x.get("source"): x for x in discovery}
@@ -111,9 +114,9 @@ def main() -> None:
         del state["source_history"][:-720]
 
     anomalies = detect_anomalies(state, rows, coverage, crawl_events, run_at)
-    prior_observations = read_recent_records("data/observations", limit=250000)
-    prior_rankings = read_recent_records("data/rankings", limit=250000)
-    all_observations = (prior_observations + observations)[-250000:]
+    prior_observations = read_recent_records("data/observations", limit=MAX_ANALYTICAL_RECORDS)
+    prior_rankings = read_recent_records("data/rankings", limit=MAX_ANALYTICAL_RECORDS)
+    all_observations = (prior_observations + observations)[-MAX_ANALYTICAL_RECORDS:]
     uncertainty_calibration = build_empirical_uncertainty(all_observations)
     historical_metrics = build_historical_metrics(all_observations, prior_rankings)
     ranked, method = bayesian_rank(
@@ -141,7 +144,7 @@ def main() -> None:
         for row in ranked[:200]
     ]
     ranking_file = write_run_records("data/rankings", ranking_snapshot, run_at)
-    recent_rankings = (prior_rankings + ranking_snapshot)[-250000:]
+    recent_rankings = (prior_rankings + ranking_snapshot)[-MAX_ANALYTICAL_RECORDS:]
 
     calibration_ready = sum(1 for x in uncertainty_calibration.values() if x.get("ready"))
     migration_after = state.get("migration", {})
@@ -174,7 +177,7 @@ def main() -> None:
         "evidence_definition": "Schema.org AggregateRating is cross-checked against visible/microdata evidence when available. Legacy rows are explicitly tagged and forced through backfill instead of inheriting the former 0.85 default.",
         "dedupe_definition": "High-threshold fuzzy clustering uses titles, normalized ingredients, instruction Jaccard + SimHash, author, canonical URL, and bounded perceptual image hashing. Cross-site review counts are not summed.",
         "robustness_definition": "Each production leaderboard is stress-tested across 36 plausible combinations of source-bias cap, evidence penalty, Bayesian prior strength, and uncertainty cap; rank ranges and confidence are reported per recipe.",
-        "history_definition": "Immutable NDJSON remains the audit source of truth; DuckDB is rebuilt as a derived analytical cache.",
+        "history_definition": "Immutable NDJSON remains the audit source of truth; DuckDB is rebuilt as a derived analytical cache. Excel exposes only the most recent 10,000 raw observations for usability.",
     }
 
     duplicate_groups = method.get("duplicate_groups", [])
@@ -194,7 +197,7 @@ def main() -> None:
         ranked,
         coverage,
         reliability,
-        all_observations,
+        all_observations[-MAX_EXCEL_OBSERVATIONS:],
         anomalies,
         duplicate_groups,
         method_row,
