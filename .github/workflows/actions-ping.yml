@@ -1,0 +1,29 @@
+name: Actions Ping
+
+on:
+  issues:
+    types: [opened]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prove Actions execution
+        run: |
+          mkdir -p output
+          {
+            echo "run_id=${{ github.run_id }}"
+            echo "event=${{ github.event_name }}"
+            echo "sha=${{ github.sha }}"
+            echo "completed_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > output/actions_ping.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add output/actions_ping.txt
+          git commit -m 'Record GitHub Actions ping'
+          git push origin HEAD:main
