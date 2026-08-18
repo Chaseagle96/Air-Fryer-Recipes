@@ -8,6 +8,10 @@ from bs4 import BeautifulSoup
 
 from .models import NUMBER_RE, SourceConfig
 
+
+SCHEMA_ONLY_CONFIDENCE = 0.65
+
+
 def jsonld_objects(soup: BeautifulSoup) -> Iterator[dict]:
     for tag in soup.find_all("script", attrs={"type": "application/ld+json"}):
         raw = tag.string or tag.get_text()
@@ -98,8 +102,6 @@ def _parse_number(value) -> float | None:
         return None
 
 
-
-
 def _parse_histogram(agg: dict) -> dict[str, int]:
     raw = agg.get("ratingHistogram") or agg.get("ratingDistribution") or {}
     output: dict[str, int] = {}
@@ -162,9 +164,17 @@ def visible_rating_evidence(soup: BeautifulSoup, cfg: SourceConfig) -> tuple[flo
     return rating, count
 
 
-def _evidence_score(schema_rating: float, schema_count: int, visible_rating: float | None, visible_count: int | None) -> tuple[float, str, str]:
+def _evidence_score(
+    schema_rating: float,
+    schema_count: int,
+    visible_rating: float | None,
+    visible_count: int | None,
+) -> tuple[float, str, str]:
     if visible_rating is None and visible_count is None:
-        return 0.85, "schema_only", "jsonld"
+        # Structured publisher metadata is useful but is only one evidence channel.
+        # Keep it rankable while assigning the same confidence tier as visible-only
+        # evidence; dual-channel agreement remains the strongest signal.
+        return SCHEMA_ONLY_CONFIDENCE, "schema_only", "jsonld"
     rating_ok = visible_rating is None or abs(schema_rating - visible_rating) <= 0.08
     count_ok = visible_count is None or abs(schema_count - visible_count) <= max(5, int(schema_count * 0.08))
     if rating_ok and count_ok:
