@@ -10,7 +10,7 @@ from urllib.parse import urlsplit, urlunsplit
 
 import yaml
 
-UA = "AirFryerRankingsBot/4.0 (+https://github.com/Chaseagle96/Air-Fryer-Recipes; research crawler)"
+UA = "AirFryerRankingsBot/5.0 (+https://github.com/Chaseagle96/Air-Fryer-Recipes; research crawler)"
 HEADERS = {
     "User-Agent": UA,
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -23,7 +23,17 @@ MEASURE_RE = re.compile(
     re.I,
 )
 GENERIC_TITLE_TOKENS = {
-    "air", "fryer", "fried", "frying", "recipe", "recipes", "easy", "best", "crispy", "quick", "homemade",
+    "air",
+    "fryer",
+    "fried",
+    "frying",
+    "recipe",
+    "recipes",
+    "easy",
+    "best",
+    "crispy",
+    "quick",
+    "homemade",
 }
 DEFAULT_STATE = {
     "recipes": {},
@@ -32,14 +42,29 @@ DEFAULT_STATE = {
     "source_history": [],
     "anomaly_history": [],
     "migration": {},
-    "schema_version": 4,
+    "schema_version": 5,
 }
 CATEGORY_RULES = {
     "Chicken": ("chicken", "wing", "wings", "drumstick", "drumsticks", "tender", "tenders"),
     "Potatoes": ("potato", "potatoes", "fries", "tater"),
     "Vegetables": (
-        "broccoli", "cauliflower", "zucchini", "asparagus", "carrot", "carrots", "brussels", "sprout", "sprouts",
-        "eggplant", "mushroom", "mushrooms", "green bean", "green beans", "vegetable", "vegetables", "squash",
+        "broccoli",
+        "cauliflower",
+        "zucchini",
+        "asparagus",
+        "carrot",
+        "carrots",
+        "brussels",
+        "sprout",
+        "sprouts",
+        "eggplant",
+        "mushroom",
+        "mushrooms",
+        "green bean",
+        "green beans",
+        "vegetable",
+        "vegetables",
+        "squash",
     ),
     "Desserts": ("cake", "cookie", "cookies", "dessert", "donut", "doughnut", "apple", "brownie", "cinnamon", "churro"),
     "Beef": ("beef", "steak", "burger", "hamburger", "meatball", "meatballs"),
@@ -75,6 +100,9 @@ class RecipeRow:
     evidence_confidence: float = 0.65
     evidence_status: str = "schema_only"
     page_hash: str = ""
+    dom_fingerprint: str = ""
+    schema_signature: str = ""
+    rating_evidence_signature: dict[str, int | bool] = field(default_factory=dict)
     etag: str = ""
     last_modified: str = ""
     schema_rating: float | None = None
@@ -106,10 +134,10 @@ def parse_dt(value: str | None) -> datetime | None:
     if not value:
         return None
     try:
-        dt = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
-        if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
-        return dt.astimezone(timezone.utc)
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return parsed.astimezone(timezone.utc)
     except Exception:
         return None
 
@@ -126,7 +154,7 @@ def normalize_ingredient(value: str) -> str:
 
 
 def ingredient_signature(ingredients: Iterable[str]) -> str:
-    normalized = [normalize_text(x) for x in ingredients if normalize_text(x)]
+    normalized = [normalize_text(value) for value in ingredients if normalize_text(value)]
     if not normalized:
         return ""
     payload = "\n".join(sorted(dict.fromkeys(normalized)))
@@ -134,7 +162,7 @@ def ingredient_signature(ingredients: Iterable[str]) -> str:
 
 
 def instruction_signature(instructions: Iterable[str]) -> str:
-    normalized = [normalize_text(x) for x in instructions if normalize_text(x)]
+    normalized = [normalize_text(value) for value in instructions if normalize_text(value)]
     if not normalized:
         return ""
     payload = "\n".join(normalized)
@@ -142,7 +170,7 @@ def instruction_signature(instructions: Iterable[str]) -> str:
 
 
 def instruction_simhash(instructions: Iterable[str], bits: int = 64) -> str:
-    tokens = []
+    tokens: list[str] = []
     for instruction in instructions:
         tokens.extend(token for token in normalize_text(instruction).split() if len(token) > 2)
     if not tokens:
@@ -172,7 +200,7 @@ def fingerprint_image_url(value: str) -> str:
 
 
 def categorize_recipe(title: str, ingredients: Iterable[str] = ()) -> tuple[str, ...]:
-    haystack = normalize_text(title + " " + " ".join(str(x) for x in ingredients))
+    haystack = normalize_text(title + " " + " ".join(str(value) for value in ingredients))
     categories = []
     for category, terms in CATEGORY_RULES.items():
         if any(term in haystack for term in terms):
@@ -181,13 +209,13 @@ def categorize_recipe(title: str, ingredients: Iterable[str] = ()) -> tuple[str,
 
 
 def load_sources(path: str | Path) -> list[SourceConfig]:
-    data = yaml.safe_load(Path(path).read_text()) or {}
+    data = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
     defaults = data.get("defaults", {}) or {}
-    out: list[SourceConfig] = []
+    output: list[SourceConfig] = []
     for item in data.get("sources", []):
         if not item.get("enabled", True):
             continue
-        out.append(
+        output.append(
             SourceConfig(
                 domain=item["domain"].lower().strip(),
                 enabled=True,
@@ -199,4 +227,4 @@ def load_sources(path: str | Path) -> list[SourceConfig]:
                 count_selector=str(item.get("count_selector", "") or ""),
             )
         )
-    return out
+    return output
