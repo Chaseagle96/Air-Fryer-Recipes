@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from typing import Any
 
 from bs4 import BeautifulSoup
 
@@ -88,7 +89,7 @@ def capture_candidate_fixtures(
     state_path: str,
     output_dir: str,
     max_sources: int | None = None,
-) -> dict:
+) -> dict[str, list[Any]]:
     sources = load_sources(sources_path)
     if max_sources is not None:
         sources = sources[:max_sources]
@@ -96,7 +97,7 @@ def capture_candidate_fixtures(
     representative_urls = _representative_urls(state, sources)
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
-    manifest = {"captured": [], "failed": [], "missing_representative": []}
+    manifest: dict[str, list[Any]] = {"captured": [], "failed": [], "missing_representative": []}
     for cfg in sources:
         url = representative_urls.get(cfg.domain)
         if not url:
