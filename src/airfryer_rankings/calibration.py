@@ -28,11 +28,13 @@ def build_empirical_uncertainty(observations: list[dict], min_pairs: int = 30) -
     for row in observations:
         recipe_id = str(row.get("recipe_id") or "")
         timestamp = parse_dt(row.get("timestamp"))
-        if not recipe_id or not timestamp:
+        rating_value = row.get("rating")
+        count_value = row.get("rating_count")
+        if not recipe_id or not timestamp or rating_value is None or count_value is None:
             continue
         try:
-            rating = float(row.get("rating"))
-            count = int(row.get("rating_count"))
+            rating = float(rating_value)
+            count = int(count_value)
         except (TypeError, ValueError):
             continue
         grouped[recipe_id].append({"timestamp": timestamp, "rating": rating, "rating_count": count})
@@ -122,14 +124,16 @@ def build_historical_metrics(
     for row in observations:
         recipe_id = str(row.get("recipe_id") or "")
         timestamp = parse_dt(row.get("timestamp"))
-        if not recipe_id or not timestamp:
+        rating_value = row.get("rating")
+        count_value = row.get("rating_count")
+        if not recipe_id or not timestamp or rating_value is None or count_value is None:
             continue
         try:
             observations_by_recipe[recipe_id].append(
                 {
                     "timestamp": timestamp,
-                    "rating": float(row.get("rating")),
-                    "rating_count": int(row.get("rating_count")),
+                    "rating": float(rating_value),
+                    "rating_count": int(count_value),
                     "page_hash": str(row.get("page_hash") or ""),
                 }
             )
@@ -140,8 +144,11 @@ def build_historical_metrics(
     for row in ranking_records:
         recipe_id = str(row.get("recipe_id") or "")
         timestamp = parse_dt(row.get("timestamp") or row.get("run_at"))
+        rank_value = row.get("rank")
+        if rank_value is None:
+            continue
         try:
-            rank = int(row.get("rank"))
+            rank = int(rank_value)
         except (TypeError, ValueError):
             continue
         if recipe_id and timestamp:
