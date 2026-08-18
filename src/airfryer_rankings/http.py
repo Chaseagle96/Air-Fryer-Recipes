@@ -9,7 +9,8 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-from .models import HEADERS, UA, SourceConfig
+from .models import HEADERS, SourceConfig
+
 
 def make_session() -> requests.Session:
     session = requests.Session()
