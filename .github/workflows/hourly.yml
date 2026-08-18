@@ -1,23 +1,39 @@
-name: Hourly Air Fryer Rankings
+name: Air Fryer Rankings
 
 on:
   schedule:
-    - cron: '17 * * * *'
+    - cron: '17 * * * *'      # hourly incremental refresh
+    - cron: '43 8 * * *'      # daily discovery + full known-catalog refresh
+    - cron: '13 9 * * 0'      # weekly deep discovery + full refresh
   workflow_dispatch:
+    inputs:
+      mode:
+        description: Refresh mode
+        required: true
+        default: deep
+        type: choice
+        options:
+          - hourly
+          - daily
+          - deep
   pull_request:
     types: [opened, synchronize, reopened]
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
-  group: air-fryer-rankings-${{ github.event_name }}
-  cancel-in-progress: true
+  group: air-fryer-rankings-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 55
+    timeout-minutes: 330
+    outputs:
+      production: ${{ steps.mode.outputs.production }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -36,44 +52,91 @@ jobs:
       - name: Test ranking engine
         run: PYTHONPATH=src pytest -q
 
-      - name: Create bounded PR smoke source set
-        if: github.event_name == 'pull_request'
+      - name: Resolve refresh mode
+        id: mode
+        shell: bash
         run: |
-          cat > /tmp/smoke-sources.yaml <<'YAML'
+          mode=hourly
+          production=true
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            mode=smoke
+            production=false
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            mode="${{ inputs.mode }}"
+          elif [ "${{ github.event.schedule }}" = "43 8 * * *" ]; then
+            mode=daily
+          elif [ "${{ github.event.schedule }}" = "13 9 * * 0" ]; then
+            mode=deep
+          fi
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          echo "production=$production" >> "$GITHUB_OUTPUT"
+          echo "Resolved mode: $mode"
+
+      - name: Create bounded PR smoke source set
+        if: steps.mode.outputs.mode == 'smoke'
+        run: |
+          cat > /tmp/smoke-sources.yaml <<'EOF'
           defaults:
             max_urls: 2
             delay: 0.05
           sources:
             - domain: pinchofyum.com
             - domain: budgetbytes.com
+              discovery_urls:
+                - https://www.budgetbytes.com/category/recipes/air-fryer/
             - domain: skinnytaste.com
-          YAML
+              discovery_urls:
+                - https://www.skinnytaste.com/recipes/air-fryer/
+          EOF
 
       - name: Refresh rankings
+        shell: bash
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            PYTHONPATH=src python -m airfryer_rankings.run --sources /tmp/smoke-sources.yaml --max-urls 2
+          if [ "${{ steps.mode.outputs.mode }}" = "smoke" ]; then
+            PYTHONPATH=src python -m airfryer_rankings.run --mode smoke --sources /tmp/smoke-sources.yaml --max-urls 2 --hourly-limit 6
           else
-            PYTHONPATH=src python -m airfryer_rankings.run --max-urls 200
+            PYTHONPATH=src python -m airfryer_rankings.run --mode "${{ steps.mode.outputs.mode }}"
           fi
 
       - name: Upload Excel workbook
         uses: actions/upload-artifact@v4
         with:
-          name: air-fryer-rankings-${{ github.run_number }}
+          name: air-fryer-rankings-${{ github.run_number }}-${{ steps.mode.outputs.mode }}
           retention-days: 30
           path: output/air_fryer_rankings.xlsx
 
-      - name: Commit refreshed state and text outputs
-        if: github.event_name != 'pull_request'
+      - name: Upload Pages artifact
+        if: steps.mode.outputs.production == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Commit refreshed state, evidence, reports, and dashboard
+        if: steps.mode.outputs.production == 'true'
+        shell: bash
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data/state.json output/leaderboard.csv output/top50.csv output/summary.json
+          git add data/state.json data/observations data/anomalies data/rankings data/coverage
+          git add output/leaderboard.csv output/top50.csv output/source_coverage.csv output/source_reliability.csv output/anomalies.csv output/summary.json
+          git add docs
           if git diff --cached --quiet; then
             echo 'No ranking changes to commit.'
             exit 0
           fi
-          git commit -m 'Refresh air fryer rankings'
+          git commit -m "Refresh air fryer rankings (${{ steps.mode.outputs.mode }})"
           git pull --rebase origin main
           git push origin HEAD:main
+
+  deploy-pages:
+    if: needs.refresh.outputs.production == 'true'
+    needs: refresh
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
