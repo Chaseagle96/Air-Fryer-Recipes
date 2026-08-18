@@ -12,6 +12,7 @@ from .extract import extract_recipe_from_html
 from .http import get, make_session, robots_and_sitemaps
 from .models import UA, RecipeRow, SourceConfig, parse_dt
 
+
 def _entry_age_hours(entry: dict, key: str, now: datetime) -> float:
     dt = parse_dt(entry.get(key))
     if not dt:
@@ -35,13 +36,15 @@ def select_refresh_targets(
         value = 0.0
         recipe = recipes.get(entry.get("recipe_id", ""), {})
         rank = int(recipe.get("last_rank") or 999999)
+        if recipe.get("needs_evidence_backfill") or recipe.get("evidence_status") == "legacy_unverified":
+            value += 100000
         if rank <= 100:
             value += 20000 - rank * 50
         if not entry.get("last_checked"):
             value += 15000
         if _entry_age_hours(entry, "first_discovered", now) <= 48:
             value += 8000
-        if entry.get("priority") == "modified":
+        if entry.get("priority") in {"modified", "changed", "legacy_evidence_backfill"}:
             value += 7000
         if recipe.get("previous_rating_count") is not None:
             growth = int(recipe.get("rating_count", 0)) - int(recipe.get("previous_rating_count") or 0)
@@ -50,6 +53,14 @@ def select_refresh_targets(
         age = _entry_age_hours(entry, "last_checked", now)
         value += min(4000, age * 10)
         return value, age
+
+    if mode == "backfill":
+        legacy = []
+        for entry in catalog:
+            recipe = recipes.get(entry.get("recipe_id", ""), {})
+            if recipe.get("needs_evidence_backfill") or recipe.get("evidence_status") == "legacy_unverified":
+                legacy.append(entry)
+        return [dict(x) for x in sorted(legacy, key=score, reverse=True)]
 
     if mode == "hourly":
         ranked = sorted(catalog, key=score, reverse=True)
@@ -60,7 +71,6 @@ def select_refresh_targets(
     for entry in catalog:
         by_source[entry.get("source", "")].append(entry)
     for domain, entries in by_source.items():
-        cfg = source_map[domain]
         cap = global_max_urls if global_max_urls is not None else len(entries)
         entries = sorted(entries, key=lambda x: (_entry_age_hours(x, "last_checked", now), score(x)[0]), reverse=True)
         targets.extend(dict(x) for x in entries[:cap])
@@ -115,12 +125,21 @@ def crawl_targets(
             "conflicts": 0,
             "missing": 0,
             "errors": 0,
+            "legacy_backfill_targets": 0,
+            "legacy_backfill_resolved": 0,
             "robots_status": robots_status,
             "status": "ok",
         }
         for target in source_targets:
             url = target["url"]
             entry = catalog.setdefault(url, dict(target))
+            cached_recipe = recipes.get(entry.get("recipe_id", ""), {})
+            force_evidence_refresh = bool(
+                cached_recipe.get("needs_evidence_backfill")
+                or cached_recipe.get("evidence_status") == "legacy_unverified"
+            )
+            if force_evidence_refresh:
+                metrics["legacy_backfill_targets"] += 1
             try:
                 if not parser.can_fetch(UA, url):
                     entry.update({"last_checked": run_at, "last_status": "robots_denied"})
@@ -129,10 +148,11 @@ def crawl_targets(
             except Exception:
                 pass
             conditional = {}
-            if entry.get("etag"):
-                conditional["If-None-Match"] = entry["etag"]
-            if entry.get("last_modified"):
-                conditional["If-Modified-Since"] = entry["last_modified"]
+            if not force_evidence_refresh:
+                if entry.get("etag"):
+                    conditional["If-None-Match"] = entry["etag"]
+                if entry.get("last_modified"):
+                    conditional["If-Modified-Since"] = entry["last_modified"]
             try:
                 response = get(session, url, 25, headers=conditional)
                 if response.status_code == 304:
@@ -167,6 +187,8 @@ def crawl_targets(
                     entry["recipe_id"] = row.recipe_id
                     rows.append(row)
                     metrics["verified_recipes"] += 1
+                    if force_evidence_refresh and row.evidence_status != "legacy_unverified":
+                        metrics["legacy_backfill_resolved"] += 1
                     if row.evidence_status == "conflict":
                         metrics["conflicts"] += 1
                 else:

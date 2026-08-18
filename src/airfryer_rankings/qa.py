@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from datetime import datetime, timezone
 from typing import Iterable
 
 from .models import RecipeRow, parse_dt
+
+
 def detect_anomalies(state: dict, rows: Iterable[RecipeRow], coverage: Iterable[dict], events: Iterable[dict], run_at: str) -> list[dict]:
     anomalies: list[dict] = []
     for row in rows:
@@ -50,6 +53,78 @@ def detect_anomalies(state: dict, rows: Iterable[RecipeRow], coverage: Iterable[
     return anomalies
 
 
+def _last_checked_by_source(state: dict) -> dict[str, dict]:
+    result: dict[str, dict] = {}
+    for run in state.get("source_history", []):
+        run_at = parse_dt(run.get("run_at"))
+        if not run_at:
+            continue
+        for row in run.get("coverage", []):
+            source = row.get("source", "")
+            status = row.get("status")
+            if not source or status == "not_checked_this_run":
+                continue
+            previous = result.get(source)
+            if previous is None or run_at > previous["timestamp"]:
+                result[source] = {"timestamp": run_at, "status": status or "ok"}
+    return result
+
+
+def source_health_summary(state: dict, coverage: Iterable[dict], configured_sources: Iterable, run_at: str) -> tuple[list[dict], dict]:
+    now = parse_dt(run_at) or datetime.now(timezone.utc)
+    current = {x.get("source", ""): x for x in coverage}
+    last_checked = _last_checked_by_source(state)
+    rows: list[dict] = []
+
+    for cfg in configured_sources:
+        source = getattr(cfg, "domain", str(cfg))
+        current_row = current.get(source, {})
+        checked_this_run = current_row.get("status") != "not_checked_this_run" and bool(current_row)
+        current_success = checked_this_run and current_row.get("status") == "ok"
+        current_degraded = checked_this_run and current_row.get("status") not in {"ok", None}
+        latest = last_checked.get(source)
+        latest_time = latest.get("timestamp") if latest else None
+        hours_since = (now - latest_time).total_seconds() / 3600.0 if latest_time else None
+        last_status = latest.get("status") if latest else "never_checked"
+        healthy_last_check = last_status == "ok"
+        rows.append(
+            {
+                "source": source,
+                "checked_this_run": checked_this_run,
+                "successful_this_run": current_success,
+                "degraded_this_run": current_degraded,
+                "last_checked_at": latest_time.isoformat() if latest_time else None,
+                "hours_since_last_check": hours_since,
+                "healthy_at_last_check": healthy_last_check,
+                "last_check_status": last_status,
+                "checked_within_24h": hours_since is not None and hours_since <= 24,
+                "checked_within_7d": hours_since is not None and hours_since <= 168,
+                "current_targets": current_row.get("targets"),
+                "current_verified": current_row.get("verified_recipes"),
+            }
+        )
+
+    total = len(rows)
+    checked = sum(1 for x in rows if x["checked_this_run"])
+    success = sum(1 for x in rows if x["successful_this_run"])
+    degraded = sum(1 for x in rows if x["degraded_this_run"])
+    healthy = sum(1 for x in rows if x["healthy_at_last_check"])
+    within_24h = sum(1 for x in rows if x["checked_within_24h"])
+    within_7d = sum(1 for x in rows if x["checked_within_7d"])
+    summary = {
+        "sources_configured": total,
+        "sources_checked_this_run": checked,
+        "sources_successful_this_run": success,
+        "sources_degraded_this_run": degraded,
+        "sources_healthy_at_last_check": healthy,
+        "sources_checked_within_24h": within_24h,
+        "sources_checked_within_7d": within_7d,
+        "corpus_coverage_freshness_24h": within_24h / total if total else None,
+        "corpus_coverage_freshness_7d": within_7d / total if total else None,
+    }
+    return rows, summary
+
+
 def source_reliability(state: dict, coverage: Iterable[dict], method: dict) -> list[dict]:
     current_coverage = {x.get("source", ""): x for x in coverage}
     history = state.get("source_history", [])[-30:]
@@ -59,6 +134,8 @@ def source_reliability(state: dict, coverage: Iterable[dict], method: dict) -> l
     sources.update(x.get("source", "") for x in state.get("recipes", {}).values())
     adjustments = method.get("source_adjustments", {})
     anomaly_history = state.get("anomaly_history", [])[-1000:]
+    last_checked = _last_checked_by_source(state)
+    now = datetime.now(timezone.utc)
     result = []
     for source in sorted(x for x in sources if x):
         run_rows = [x for run in history for x in run.get("coverage", []) if x.get("source") == source and x.get("status") != "not_checked_this_run"]
@@ -68,6 +145,9 @@ def source_reliability(state: dict, coverage: Iterable[dict], method: dict) -> l
         anomalies = sum(1 for x in anomaly_history if x.get("source") == source)
         current = current_coverage.get(source, {})
         adj = adjustments.get(source, {})
+        latest = last_checked.get(source)
+        latest_time = latest.get("timestamp") if latest else None
+        hours_since = (now - latest_time).total_seconds() / 3600.0 if latest_time else None
         result.append(
             {
                 "source": source,
@@ -75,9 +155,13 @@ def source_reliability(state: dict, coverage: Iterable[dict], method: dict) -> l
                 "run_success_rate": successful / len(run_rows) if run_rows else None,
                 "known_recipes": len(recipe_rows),
                 "mean_evidence_confidence": sum(confidences) / len(confidences) if confidences else None,
+                "legacy_evidence_pending": sum(1 for x in recipe_rows if x.get("needs_evidence_backfill")),
                 "anomalies_recent": anomalies,
                 "source_rating_mean": adj.get("raw_mean"),
-                "source_bias": adj.get("bias"),
+                "category_adjusted_source_bias": adj.get("bias"),
+                "last_checked_at": latest_time.isoformat() if latest_time else None,
+                "hours_since_last_check": hours_since,
+                "healthy_at_last_check": latest.get("status") == "ok" if latest else False,
                 "current_targets": current.get("targets"),
                 "current_verified": current.get("verified_recipes"),
                 "current_status": current.get("status", "not_checked"),

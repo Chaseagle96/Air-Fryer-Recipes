@@ -1,0 +1,158 @@
+{
+  "version": 1,
+  "description": "Seed benchmark for conservative cross-site air-fryer recipe deduplication. Expand with adjudicated real-world pairs as the corpus grows.",
+  "pairs": [
+    {
+      "id": "dup-chicken-breast",
+      "duplicate": true,
+      "left": {"title": "Air Fryer Chicken Breast", "ingredients": ["1 lb chicken breast", "1 tbsp olive oil", "1 tsp salt", "1/2 tsp paprika"], "instructions": ["Coat chicken with oil and seasoning.", "Air fry at 375 F until cooked through."]},
+      "right": {"title": "Crispy Air Fryer Chicken Breasts", "ingredients": ["1 pound chicken breasts", "olive oil", "salt", "paprika"], "instructions": ["Coat the chicken breasts in olive oil and seasonings.", "Cook in the air fryer at 375 degrees until done."]}
+    },
+    {
+      "id": "dup-salmon",
+      "duplicate": true,
+      "left": {"title": "Air Fryer Salmon", "ingredients": ["salmon fillets", "olive oil", "garlic powder", "salt", "black pepper"], "instructions": ["Brush salmon with oil and season.", "Air fry until flaky."]},
+      "right": {"title": "Easy Air Fryer Salmon Recipe", "ingredients": ["salmon fillet", "extra virgin olive oil", "garlic powder", "salt", "pepper"], "instructions": ["Brush the salmon fillets with oil and seasoning.", "Cook in the air fryer until the salmon flakes easily."]}
+    },
+    {
+      "id": "dup-potato",
+      "duplicate": true,
+      "left": {"title": "Air Fryer Baked Potato", "ingredients": ["russet potatoes", "olive oil", "kosher salt"], "instructions": ["Rub potatoes with oil and salt.", "Air fry until tender and crisp."]},
+      "right": {"title": "Best Air Fryer Baked Potatoes", "ingredients": ["russet potato", "olive oil", "salt"], "instructions": ["Coat each potato with olive oil and salt.", "Cook in the air fryer until crisp outside and tender inside."]}
+    },
+    {
+      "id": "dup-wings",
+      "duplicate": true,
+      "left": {"title": "Air Fryer Chicken Wings", "ingredients": ["chicken wings", "baking powder", "salt", "garlic powder"], "instructions": ["Dry wings and toss with seasonings.", "Air fry, turning once, until crisp."]},
+      "right": {"title": "Crispy Air Fryer Chicken Wings", "ingredients": ["chicken wing sections", "baking powder", "kosher salt", "garlic powder"], "instructions": ["Pat the wings dry and coat with baking powder and seasoning.", "Air fry and flip once until crispy."]}
+    },
+    {
+      "id": "dup-green-beans",
+      "duplicate": true,
+      "left": {"title": "Air Fryer Green Beans", "ingredients": ["fresh green beans", "olive oil", "garlic powder", "salt"], "instructions": ["Toss green beans with oil and seasoning.", "Air fry until blistered and tender."]},
+      "right": {"title": "Easy Air Fryer Green Beans", "ingredients": ["green beans", "olive oil", "garlic powder", "salt"], "instructions": ["Toss the beans in olive oil and seasonings.", "Cook in the air fryer until tender with browned spots."]}
+    },
+    {
+      "id": "dup-pork-chops",
+      "duplicate": true,
+      "left": {"title": "Air Fryer Pork Chops", "ingredients": ["boneless pork chops", "olive oil", "paprika", "garlic powder", "salt"], "instructions": ["Oil and season pork chops.", "Air fry, flipping halfway, until done."]},
+      "right": {"title": "Easy Air Fryer Pork Chop Recipe", "ingredients": ["boneless pork chop", "olive oil", "paprika", "garlic powder", "kosher salt"], "instructions": ["Coat pork chops with oil and spices.", "Cook in the air fryer and turn halfway through."]}
+    },
+    {
+      "id": "dup-fries",
+      "duplicate": true,
+      "left": {"title": "Air Fryer French Fries", "ingredients": ["russet potatoes", "olive oil", "salt"], "instructions": ["Cut potatoes into fries and soak.", "Dry, oil, and air fry until golden."]},
+      "right": {"title": "Homemade Air Fryer French Fries", "ingredients": ["russet potato", "olive oil", "salt"], "instructions": ["Slice the potatoes into fries and soak them.", "Dry well, toss with oil, and air fry until crisp and golden."]}
+    },
+    {
+      "id": "dup-broccoli",
+      "duplicate": true,
+      "left": {"title": "Air Fryer Broccoli", "ingredients": ["broccoli florets", "olive oil", "garlic powder", "salt"], "instructions": ["Toss broccoli with oil and seasoning.", "Air fry until browned at the edges."]},
+      "right": {"title": "Crispy Air Fryer Broccoli", "ingredients": ["broccoli florets", "olive oil", "garlic powder", "salt"], "instructions": ["Coat the broccoli in oil and spices.", "Cook in the air fryer until the edges are crisp."]}
+    },
+    {
+      "id": "dup-shrimp",
+      "duplicate": true,
+      "left": {"title": "Air Fryer Shrimp", "ingredients": ["large shrimp", "olive oil", "paprika", "garlic powder", "salt"], "instructions": ["Season shrimp with oil and spices.", "Air fry just until opaque."]},
+      "right": {"title": "Quick Air Fryer Shrimp Recipe", "ingredients": ["large shrimp", "olive oil", "paprika", "garlic powder", "salt"], "instructions": ["Toss shrimp with olive oil and seasonings.", "Cook in the air fryer until opaque and curled."]}
+    },
+    {
+      "id": "dup-asparagus",
+      "duplicate": true,
+      "left": {"title": "Air Fryer Asparagus", "ingredients": ["asparagus", "olive oil", "salt", "black pepper"], "instructions": ["Toss asparagus with oil, salt, and pepper.", "Air fry until crisp tender."]},
+      "right": {"title": "Easy Air Fryer Asparagus", "ingredients": ["asparagus spears", "olive oil", "salt", "pepper"], "instructions": ["Coat asparagus in oil and seasonings.", "Cook in the air fryer until crisp-tender."]}
+    },
+    {
+      "id": "dup-meatballs",
+      "duplicate": true,
+      "left": {"title": "Air Fryer Meatballs", "ingredients": ["ground beef", "breadcrumbs", "egg", "parmesan", "garlic"], "instructions": ["Mix ingredients and form meatballs.", "Air fry until browned and cooked through."]},
+      "right": {"title": "Easy Air Fryer Meatball Recipe", "ingredients": ["ground beef", "bread crumbs", "egg", "parmesan cheese", "garlic"], "instructions": ["Combine ingredients and shape into meatballs.", "Cook in the air fryer until browned and done inside."]}
+    },
+    {
+      "id": "dup-cauliflower",
+      "duplicate": true,
+      "left": {"title": "Air Fryer Cauliflower", "ingredients": ["cauliflower florets", "olive oil", "paprika", "garlic powder", "salt"], "instructions": ["Season cauliflower with oil and spices.", "Air fry until browned and tender."]},
+      "right": {"title": "Crispy Air Fryer Cauliflower", "ingredients": ["cauliflower florets", "olive oil", "paprika", "garlic powder", "salt"], "instructions": ["Toss cauliflower in olive oil and spices.", "Cook in the air fryer until crisp at the edges and tender."]}
+    },
+    {
+      "id": "nondup-fries-zucchini",
+      "duplicate": false,
+      "note": "Same generic fries concept but different principal ingredient.",
+      "left": {"title": "Air Fryer Fries", "ingredients": ["russet potatoes", "olive oil", "salt"], "instructions": ["Cut potatoes and air fry until crisp."]},
+      "right": {"title": "Air Fryer Fries", "ingredients": ["zucchini", "breadcrumbs", "parmesan", "egg"], "instructions": ["Bread zucchini sticks and air fry until crisp."]}
+    },
+    {
+      "id": "nondup-chicken-cauliflower",
+      "duplicate": false,
+      "left": {"title": "Air Fryer Chicken Bites", "ingredients": ["chicken breast", "olive oil", "paprika", "salt"], "instructions": ["Season chicken and air fry until cooked."]},
+      "right": {"title": "Air Fryer Cauliflower Bites", "ingredients": ["cauliflower", "hot sauce", "breadcrumbs", "butter"], "instructions": ["Bread cauliflower and air fry until crisp."]}
+    },
+    {
+      "id": "nondup-salmon-chicken",
+      "duplicate": false,
+      "left": {"title": "Air Fryer Salmon", "ingredients": ["salmon", "olive oil", "salt"], "instructions": ["Season salmon and air fry."]},
+      "right": {"title": "Air Fryer Chicken", "ingredients": ["chicken breast", "olive oil", "salt"], "instructions": ["Season chicken and air fry."]}
+    },
+    {
+      "id": "nondup-potato-sweet-potato",
+      "duplicate": false,
+      "note": "Closely related but intentionally different recipe family.",
+      "left": {"title": "Air Fryer Baked Potato", "ingredients": ["russet potato", "olive oil", "salt"], "instructions": ["Oil potato and air fry until tender."]},
+      "right": {"title": "Air Fryer Baked Sweet Potato", "ingredients": ["sweet potato", "olive oil", "cinnamon", "salt"], "instructions": ["Oil sweet potato and air fry until tender."]}
+    },
+    {
+      "id": "nondup-wings-tenders",
+      "duplicate": false,
+      "left": {"title": "Air Fryer Chicken Wings", "ingredients": ["chicken wings", "baking powder", "salt"], "instructions": ["Season wings and air fry until crisp."]},
+      "right": {"title": "Air Fryer Chicken Tenders", "ingredients": ["chicken tenderloins", "breadcrumbs", "egg", "salt"], "instructions": ["Bread tenders and air fry until golden."]}
+    },
+    {
+      "id": "nondup-greenbeans-asparagus",
+      "duplicate": false,
+      "left": {"title": "Air Fryer Green Beans", "ingredients": ["green beans", "olive oil", "garlic", "salt"], "instructions": ["Season beans and air fry."]},
+      "right": {"title": "Air Fryer Asparagus", "ingredients": ["asparagus", "olive oil", "garlic", "salt"], "instructions": ["Season asparagus and air fry."]}
+    },
+    {
+      "id": "nondup-pork-chicken",
+      "duplicate": false,
+      "left": {"title": "Air Fryer Pork Chops", "ingredients": ["pork chops", "olive oil", "paprika"], "instructions": ["Season pork and air fry."]},
+      "right": {"title": "Air Fryer Chicken Chops", "ingredients": ["chicken breast", "olive oil", "paprika"], "instructions": ["Season chicken and air fry."]}
+    },
+    {
+      "id": "nondup-broccoli-cauliflower",
+      "duplicate": false,
+      "left": {"title": "Air Fryer Broccoli", "ingredients": ["broccoli", "olive oil", "garlic powder"], "instructions": ["Season broccoli and air fry."]},
+      "right": {"title": "Air Fryer Cauliflower", "ingredients": ["cauliflower", "olive oil", "garlic powder"], "instructions": ["Season cauliflower and air fry."]}
+    },
+    {
+      "id": "nondup-shrimp-scallops",
+      "duplicate": false,
+      "left": {"title": "Air Fryer Shrimp", "ingredients": ["shrimp", "olive oil", "paprika", "salt"], "instructions": ["Season shrimp and air fry briefly."]},
+      "right": {"title": "Air Fryer Scallops", "ingredients": ["scallops", "butter", "lemon", "salt"], "instructions": ["Season scallops and air fry until opaque."]}
+    },
+    {
+      "id": "nondup-meatballs-burgers",
+      "duplicate": false,
+      "left": {"title": "Air Fryer Meatballs", "ingredients": ["ground beef", "breadcrumbs", "egg", "parmesan"], "instructions": ["Form balls and air fry."]},
+      "right": {"title": "Air Fryer Burgers", "ingredients": ["ground beef", "salt", "pepper", "burger buns"], "instructions": ["Form patties and air fry."]}
+    },
+    {
+      "id": "nondup-asparagus-fries",
+      "duplicate": false,
+      "left": {"title": "Air Fryer Asparagus", "ingredients": ["asparagus", "olive oil", "salt"], "instructions": ["Season asparagus and air fry."]},
+      "right": {"title": "Air Fryer Asparagus Fries", "ingredients": ["asparagus", "breadcrumbs", "parmesan", "egg"], "instructions": ["Bread asparagus spears and air fry until crisp."]}
+    },
+    {
+      "id": "nondup-salmon-bites",
+      "duplicate": false,
+      "left": {"title": "Air Fryer Salmon", "ingredients": ["salmon fillet", "olive oil", "garlic", "salt"], "instructions": ["Season whole fillet and air fry."]},
+      "right": {"title": "Air Fryer Salmon Bites", "ingredients": ["salmon cubes", "soy sauce", "honey", "sesame oil"], "instructions": ["Marinate salmon cubes and air fry until caramelized."]}
+    },
+    {
+      "id": "nondup-potato-wedges",
+      "duplicate": false,
+      "left": {"title": "Air Fryer Baked Potato", "ingredients": ["russet potato", "olive oil", "salt"], "instructions": ["Cook whole potato in air fryer."]},
+      "right": {"title": "Air Fryer Potato Wedges", "ingredients": ["russet potatoes", "olive oil", "paprika", "garlic powder"], "instructions": ["Cut potatoes into wedges, season, and air fry until crisp."]}
+    }
+  ]
+}

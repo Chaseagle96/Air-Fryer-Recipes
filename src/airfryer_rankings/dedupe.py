@@ -7,6 +7,7 @@ from typing import Iterable
 
 from .models import GENERIC_TITLE_TOKENS, normalize_ingredient, normalize_text
 
+
 def _tokens(value: str) -> set[str]:
     return {x for x in normalize_text(value).split() if len(x) > 2}
 
@@ -60,6 +61,17 @@ def _jaccard(a: set[str], b: set[str]) -> float | None:
     return len(a & b) / max(1, len(a | b))
 
 
+def _hex_hamming_similarity(left: str, right: str) -> float | None:
+    if not left or not right:
+        return None
+    try:
+        bits = max(len(left), len(right)) * 4
+        xor = int(left, 16) ^ int(right, 16)
+        return 1.0 - (xor.bit_count() / max(1, bits))
+    except Exception:
+        return None
+
+
 def duplicate_similarity(a: dict, b: dict) -> float:
     ca = a.get("canonical_url") or a.get("url")
     cb = b.get("canonical_url") or b.get("url")
@@ -68,24 +80,32 @@ def duplicate_similarity(a: dict, b: dict) -> float:
     title = _title_similarity(a, b)
     ingredient = _jaccard(_ingredient_set(a), _ingredient_set(b))
     instruction = _jaccard(_instruction_set(a), _instruction_set(b))
+    instruction_simhash = _hex_hamming_similarity(a.get("instruction_simhash", ""), b.get("instruction_simhash", ""))
     author_match = bool(normalize_text(a.get("author", "")) and normalize_text(a.get("author", "")) == normalize_text(b.get("author", "")))
-    image_match = bool(a.get("image_fingerprint") and a.get("image_fingerprint") == b.get("image_fingerprint"))
+    perceptual_image = _hex_hamming_similarity(a.get("image_perceptual_hash", ""), b.get("image_perceptual_hash", ""))
+    image_url_match = bool(a.get("image_fingerprint") and a.get("image_fingerprint") == b.get("image_fingerprint"))
 
-    parts: list[tuple[float, float]] = [(title, 0.40)]
+    parts: list[tuple[float, float]] = [(title, 0.38)]
     if ingredient is not None:
         parts.append((ingredient, 0.35))
     if instruction is not None:
-        parts.append((instruction, 0.15))
+        parts.append((instruction, 0.08))
+    if instruction_simhash is not None:
+        parts.append((instruction_simhash, 0.07))
     if author_match:
-        parts.append((1.0, 0.05))
-    if image_match:
-        parts.append((1.0, 0.05))
+        parts.append((1.0, 0.04))
+    if perceptual_image is not None:
+        parts.append((perceptual_image, 0.08))
+    elif image_url_match:
+        parts.append((1.0, 0.03))
     total_weight = sum(w for _, w in parts)
     score = sum(v * w for v, w in parts) / total_weight
 
-    if ingredient is not None and not (title >= 0.88 and ingredient >= 0.62):
+    strong_image = perceptual_image is not None and perceptual_image >= 0.90
+    strong_instruction = instruction_simhash is not None and instruction_simhash >= 0.88
+    if ingredient is not None and not (title >= 0.88 and ingredient >= 0.62) and not (title >= 0.94 and strong_image):
         return min(score, 0.79)
-    if ingredient is None and not (title >= 0.97 and (author_match or image_match)):
+    if ingredient is None and not (title >= 0.97 and (author_match or image_url_match or strong_image or strong_instruction)):
         return min(score, 0.79)
     return score
 
@@ -103,9 +123,36 @@ def _candidate_block_keys(recipe: dict) -> set[str]:
     ingredient_tokens = sorted(_ingredient_set(recipe))
     if ingredient_tokens:
         keys.add("ing:" + "|".join(ingredient_tokens[:3]))
+    if recipe.get("image_perceptual_hash"):
+        keys.add("phash:" + str(recipe["image_perceptual_hash"])[:6])
     if not keys:
         keys.add("id:" + str(recipe.get("recipe_id", "")))
     return keys
+
+
+def candidate_duplicate_pairs(recipes: Iterable[dict], low: float = 0.72, high: float = 0.90, limit: int = 100) -> list[tuple[dict, dict, float]]:
+    recipes = [dict(x) for x in recipes]
+    blocks: dict[str, list[int]] = defaultdict(list)
+    for idx, recipe in enumerate(recipes):
+        for key in _candidate_block_keys(recipe):
+            blocks[key].append(idx)
+    seen = set()
+    output = []
+    for block in blocks.values():
+        if len(block) < 2 or len(block) > 100:
+            continue
+        for pos, left in enumerate(block):
+            for right in block[pos + 1:]:
+                pair = (min(left, right), max(left, right))
+                if pair in seen:
+                    continue
+                seen.add(pair)
+                score = duplicate_similarity(recipes[left], recipes[right])
+                if low <= score <= high:
+                    output.append((recipes[left], recipes[right], score))
+                    if len(output) >= limit:
+                        return output
+    return output
 
 
 def dedupe_current(recipes: Iterable[dict], detailed: bool = False):
@@ -134,7 +181,6 @@ def dedupe_current(recipes: Iterable[dict], detailed: bool = False):
     for block in blocks.values():
         if len(block) < 2:
             continue
-        # Very broad blocks are usually generic ingredients/titles. Bound pair expansion defensively.
         if len(block) > 300:
             block = sorted(block, key=lambda i: int(recipes[i].get("rating_count", 0)), reverse=True)[:300]
         for pos, left in enumerate(block):
@@ -183,7 +229,6 @@ def dedupe_current(recipes: Iterable[dict], detailed: bool = False):
         item["source_evidence"] = evidence
         item["duplicate_group_id"] = group_id if len(group) > 1 else ""
         item["duplicate_confidence"] = confidence if len(group) > 1 else 0.0
-        # We deliberately do not sum review counts across sites. Syndicated listings may share a review population.
         output.append(item)
         if len(group) > 1:
             deduped += len(group) - 1

@@ -9,6 +9,7 @@ on:
       - 'tests/**'
       - 'config/**'
       - 'requirements.txt'
+      - 'data/benchmarks/**'
   schedule:
     - cron: '17 * * * *'      # hourly incremental refresh
     - cron: '43 8 * * *'      # daily discovery + full known-catalog refresh
@@ -24,6 +25,7 @@ on:
           - hourly
           - daily
           - deep
+          - backfill
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -34,7 +36,7 @@ permissions:
 
 concurrency:
   group: air-fryer-rankings-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   refresh:
@@ -78,7 +80,7 @@ jobs:
           fi
           echo "mode=$mode" >> "$GITHUB_OUTPUT"
           echo "production=$production" >> "$GITHUB_OUTPUT"
-          echo "Resolved mode: $mode"
+          echo "Resolved requested mode: $mode"
 
       - name: Create bounded PR smoke source set
         if: steps.mode.outputs.mode == 'smoke'
@@ -113,6 +115,13 @@ jobs:
           retention-days: 30
           path: output/air_fryer_rankings.xlsx
 
+      - name: Upload DuckDB analytical cache
+        uses: actions/upload-artifact@v4
+        with:
+          name: air-fryer-analytics-${{ github.run_number }}-${{ steps.mode.outputs.mode }}
+          retention-days: 30
+          path: output/air_fryer_analytics.duckdb
+
       - name: Upload Pages artifact
         if: steps.mode.outputs.production == 'true'
         uses: actions/upload-pages-artifact@v3
@@ -126,7 +135,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add data/state.json data/observations data/anomalies data/rankings data/coverage
-          git add output/leaderboard.csv output/top50.csv output/source_coverage.csv output/source_reliability.csv output/anomalies.csv output/summary.json
+          git add output/leaderboard.csv output/top50.csv output/source_coverage.csv output/source_reliability.csv output/source_health.csv output/ranking_robustness.csv output/dedupe_benchmark.csv output/anomalies.csv output/summary.json
           git add docs
           if git diff --cached --quiet; then
             echo 'No ranking changes to commit.'

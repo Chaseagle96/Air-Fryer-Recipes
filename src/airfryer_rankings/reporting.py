@@ -53,7 +53,17 @@ def _style_workbook(path: str) -> None:
     wb.save(path)
 
 
-def write_csv_outputs(output_dir: str | Path, ranked: list[dict], coverage: list[dict], reliability: list[dict], anomalies: list[dict]) -> None:
+def write_csv_outputs(
+    output_dir: str | Path,
+    ranked: list[dict],
+    coverage: list[dict],
+    reliability: list[dict],
+    anomalies: list[dict],
+    *,
+    source_health: list[dict] | None = None,
+    robustness: list[dict] | None = None,
+    dedupe_benchmark: list[dict] | None = None,
+) -> None:
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
     df = _df(ranked)
@@ -66,6 +76,9 @@ def write_csv_outputs(output_dir: str | Path, ranked: list[dict], coverage: list
     _df(coverage).to_csv(output / "source_coverage.csv", index=False)
     _df(reliability).to_csv(output / "source_reliability.csv", index=False)
     _df(anomalies).to_csv(output / "anomalies.csv", index=False)
+    _df(source_health).to_csv(output / "source_health.csv", index=False)
+    _df(robustness).to_csv(output / "ranking_robustness.csv", index=False)
+    _df(dedupe_benchmark).to_csv(output / "dedupe_benchmark.csv", index=False)
 
 
 def write_workbook(
@@ -77,14 +90,23 @@ def write_workbook(
     anomalies: list[dict],
     duplicate_groups: list[dict],
     methodology: dict,
+    *,
+    source_health: list[dict] | None = None,
+    uncertainty_calibration: list[dict] | None = None,
+    robustness: list[dict] | None = None,
+    dedupe_benchmark: list[dict] | None = None,
 ) -> None:
     path = str(path)
     df = _df(ranked)
     cov = _df(coverage)
     rel = _df(reliability)
+    health = _df(source_health)
     obs = _df(recent_observations)
     anom = _df(anomalies)
     dup = _df(duplicate_groups)
+    calibration = _df(uncertainty_calibration)
+    robust = _df(robustness)
+    benchmark = _df(dedupe_benchmark)
     trend_chart = pd.DataFrame()
     if not obs.empty and not df.empty and {"recipe_id", "timestamp", "rating_count"}.issubset(obs.columns):
         top_ids = [str(x) for x in df.head(10)["recipe_id"].tolist()] if "recipe_id" in df else []
@@ -100,6 +122,7 @@ def write_workbook(
 
     movers = pd.DataFrame()
     entrants = pd.DataFrame()
+    provenance = pd.DataFrame()
     if not df.empty:
         if "movement" in df:
             movers = df[df["movement"].notna()].copy()
@@ -108,19 +131,33 @@ def write_workbook(
                 movers = movers.sort_values(["abs_movement", "rating_count"], ascending=[False, False]).drop(columns=["abs_movement"])
         if "previous_rank" in df:
             entrants = df[df["previous_rank"].isna()].head(100).copy()
+        provenance_columns = [
+            x for x in (
+                "rank", "title", "source", "rating", "rating_count", "category_expected_rating", "source_bias",
+                "adjusted_rating", "posterior_mean", "uncertainty_penalty", "uncertainty_method",
+                "evidence_penalty", "evidence_grade", "hierarchical_score", "rank_confidence",
+                "rank_range_low", "rank_range_high", "rank_provenance", "url",
+            ) if x in df.columns
+        ]
+        provenance = df[provenance_columns].head(200).copy()
 
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     with pd.ExcelWriter(path, engine="openpyxl") as writer:
         df.head(50).to_excel(writer, index=False, sheet_name="Top 50")
         df.to_excel(writer, index=False, sheet_name="All Rankings")
+        provenance.to_excel(writer, index=False, sheet_name="Rank Explainability")
         cov.to_excel(writer, index=False, sheet_name="Source Coverage")
+        health.to_excel(writer, index=False, sheet_name="Source Health")
         rel.to_excel(writer, index=False, sheet_name="Source Reliability")
         obs.to_excel(writer, index=False, sheet_name="Rating History")
         trend_chart.to_excel(writer, index=False, sheet_name="Rating Trends")
+        calibration.to_excel(writer, index=False, sheet_name="Uncertainty Calibration")
+        robust.to_excel(writer, index=False, sheet_name="Rank Robustness")
         entrants.to_excel(writer, index=False, sheet_name="New Entrants")
         movers.head(200).to_excel(writer, index=False, sheet_name="Biggest Movers")
         anom.to_excel(writer, index=False, sheet_name="QA Anomalies")
         dup.to_excel(writer, index=False, sheet_name="Duplicate Groups")
+        benchmark.to_excel(writer, index=False, sheet_name="Dedupe Benchmark")
         pd.DataFrame([methodology]).to_excel(writer, index=False, sheet_name="Methodology")
         for category in CATEGORY_SHEETS:
             if df.empty or "categories" not in df:
