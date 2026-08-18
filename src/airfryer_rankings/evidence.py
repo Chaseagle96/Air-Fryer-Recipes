@@ -8,7 +8,6 @@ from bs4 import BeautifulSoup
 
 from .models import NUMBER_RE, SourceConfig
 
-
 SCHEMA_ONLY_CONFIDENCE = 0.65
 
 
