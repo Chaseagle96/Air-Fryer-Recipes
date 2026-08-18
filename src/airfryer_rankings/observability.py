@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 from statistics import mean
+from typing import Any
 
 from .models import parse_dt
 
@@ -58,7 +59,7 @@ def build_pipeline_metrics(
             if status == "ok":
                 successful_24h.add(str(record.get("source") or ""))
 
-    metrics = {
+    metrics: dict[str, Any] = {
         "generated_at": run_at,
         "crawl_targets": total_targets,
         "pages_fetched": fetched,
@@ -92,7 +93,7 @@ def build_pipeline_metrics(
         if key != "generated_at"
     ]
     alerts: list[dict] = []
-    rules = (
+    rules: tuple[tuple[str, float | None, float, str], ...] = (
         ("extract_success_rate", metrics["extract_success_rate"], 0.65, "below"),
         ("evidence_conflict_rate", metrics["evidence_conflict_rate"], 0.10, "above"),
         ("ranking_eligible_rate", metrics["ranking_eligible_rate"], 0.60, "below"),
