@@ -1,28 +1,16 @@
 from __future__ import annotations
 
-import gzip
 import hashlib
-import json
-import math
 import re
-import time
-from collections import defaultdict
-from dataclasses import asdict, dataclass, field, fields, replace
-from datetime import datetime, timedelta, timezone
-from difflib import SequenceMatcher
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Iterable, Iterator
-from urllib.parse import urljoin, urlparse, urlsplit, urlunsplit
-from urllib.robotparser import RobotFileParser
-from xml.etree import ElementTree as ET
+from typing import Iterable
+from urllib.parse import urlsplit, urlunsplit
 
-import requests
 import yaml
-from bs4 import BeautifulSoup
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 
-UA = "AirFryerRankingsBot/3.0 (+https://github.com/Chaseagle96/Air-Fryer-Recipes; research crawler)"
+UA = "AirFryerRankingsBot/4.0 (+https://github.com/Chaseagle96/Air-Fryer-Recipes; research crawler)"
 HEADERS = {
     "User-Agent": UA,
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -43,7 +31,8 @@ DEFAULT_STATE = {
     "rank_history": [],
     "source_history": [],
     "anomaly_history": [],
-    "schema_version": 3,
+    "migration": {},
+    "schema_version": 4,
 }
 CATEGORY_RULES = {
     "Chicken": ("chicken", "wing", "wings", "drumstick", "drumsticks", "tender", "tenders"),
@@ -77,11 +66,13 @@ class RecipeRow:
     canonical_url: str = ""
     ingredients: tuple[str, ...] = ()
     instruction_signature: str = ""
+    instruction_simhash: str = ""
     instructions: tuple[str, ...] = ()
     image_url: str = ""
     image_fingerprint: str = ""
+    image_perceptual_hash: str = ""
     extraction_method: str = "jsonld"
-    evidence_confidence: float = 0.85
+    evidence_confidence: float = 0.65
     evidence_status: str = "schema_only"
     page_hash: str = ""
     etag: str = ""
@@ -148,6 +139,25 @@ def instruction_signature(instructions: Iterable[str]) -> str:
         return ""
     payload = "\n".join(normalized)
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:24]
+
+
+def instruction_simhash(instructions: Iterable[str], bits: int = 64) -> str:
+    tokens = []
+    for instruction in instructions:
+        tokens.extend(token for token in normalize_text(instruction).split() if len(token) > 2)
+    if not tokens:
+        return ""
+    vector = [0] * bits
+    for token in tokens:
+        digest = hashlib.sha256(token.encode("utf-8")).digest()
+        value = int.from_bytes(digest[: bits // 8], "big")
+        for bit in range(bits):
+            vector[bit] += 1 if value & (1 << bit) else -1
+    result = 0
+    for bit, weight in enumerate(vector):
+        if weight >= 0:
+            result |= 1 << bit
+    return f"{result:0{bits // 4}x}"
 
 
 def fingerprint_image_url(value: str) -> str:
