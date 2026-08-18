@@ -1,0 +1,66 @@
+name: Hourly Air Fryer Rankings
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/hourly.yml'
+      - 'src/**'
+      - 'tests/**'
+      - 'config/**'
+      - 'requirements.txt'
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: air-fryer-rankings
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Test ranking engine
+        run: PYTHONPATH=src pytest -q
+
+      - name: Refresh rankings
+        run: PYTHONPATH=src python -m airfryer_rankings.run --max-urls 200
+
+      - name: Upload Excel workbook
+        uses: actions/upload-artifact@v4
+        with:
+          name: air-fryer-rankings-${{ github.run_number }}
+          retention-days: 30
+          path: output/air_fryer_rankings.xlsx
+
+      - name: Commit refreshed state and text outputs
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/state.json output/leaderboard.csv output/top50.csv output/summary.json
+          if git diff --cached --quiet; then
+            echo 'No ranking changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Refresh air fryer rankings'
+          git pull --rebase origin main
+          git push origin HEAD:main
