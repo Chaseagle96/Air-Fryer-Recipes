@@ -81,10 +81,16 @@ def build_pipeline_metrics(
         "sources_checked_24h": len(checked_24h),
         "sources_successful_24h": len(successful_24h),
         "sources_healthy_last_check": sum(1 for row in source_health if row.get("healthy_at_last_check")),
-        "sources_stale_24h": sum(1 for row in source_health if not row.get("fresh_within_24h")),
-        "sources_stale_7d": sum(1 for row in source_health if not row.get("fresh_within_7d")),
+        "sources_stale_24h": sum(1 for row in source_health if not row.get("checked_within_24h")),
+        "sources_stale_7d": sum(1 for row in source_health if not row.get("checked_within_7d")),
+        "dom_structure_changes": sum(int(row.get("dom_structure_changes", 0) or 0) for row in coverage),
+        "schema_structure_changes": sum(int(row.get("schema_structure_changes", 0) or 0) for row in coverage),
     }
-    metric_rows = [{"metric": key, "value": value, "generated_at": run_at} for key, value in metrics.items() if key != "generated_at"]
+    metric_rows = [
+        {"metric": key, "value": value, "generated_at": run_at}
+        for key, value in metrics.items()
+        if key != "generated_at"
+    ]
     alerts: list[dict] = []
     rules = (
         ("extract_success_rate", metrics["extract_success_rate"], 0.65, "below"),
@@ -106,4 +112,26 @@ def build_pipeline_metrics(
                     "timestamp": run_at,
                 }
             )
+    if metrics["dom_structure_changes"]:
+        alerts.append(
+            {
+                "type": "publisher_dom_contract_changes",
+                "metric": "dom_structure_changes",
+                "value": metrics["dom_structure_changes"],
+                "threshold": 0,
+                "direction": "above",
+                "timestamp": run_at,
+            }
+        )
+    if metrics["schema_structure_changes"]:
+        alerts.append(
+            {
+                "type": "publisher_schema_contract_changes",
+                "metric": "schema_structure_changes",
+                "value": metrics["schema_structure_changes"],
+                "threshold": 0,
+                "direction": "above",
+                "timestamp": run_at,
+            }
+        )
     return metrics, metric_rows, alerts
