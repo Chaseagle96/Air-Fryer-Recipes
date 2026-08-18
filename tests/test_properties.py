@@ -1,9 +1,15 @@
 from __future__ import annotations
 
-from hypothesis import given, strategies as st
+from hypothesis import given
+from hypothesis import strategies as st
 
 from airfryer_rankings.model_config import ModelParameters
-from airfryer_rankings.ranking_components import bayesian_posterior, score_current, uncertainty_penalty
+from airfryer_rankings.ranking_components import (
+    bayesian_posterior,
+    robustness_lab,
+    score_current,
+    uncertainty_penalty,
+)
 
 
 @given(
@@ -53,6 +59,28 @@ def test_lower_evidence_confidence_cannot_improve_identical_recipe_score(high_co
     assert low_rows[0]["hierarchical_score"] <= high_rows[0]["hierarchical_score"] + 1e-12
 
 
-@given(confidence=st.floats(min_value=0.0, max_value=1.0, allow_nan=False, allow_infinity=False))
-def test_rank_confidence_domain_is_bounded(confidence):
-    assert 0.0 <= confidence <= 1.0
+def test_rank_confidence_generated_by_robustness_lab_is_bounded():
+    current = [
+        {
+            "recipe_id": recipe_id,
+            "title": f"Air Fryer Chicken {recipe_id}",
+            "source": "example.com",
+            "url": f"https://example.com/{recipe_id}",
+            "canonical_url": f"https://example.com/{recipe_id}",
+            "normalized_rating": rating,
+            "rating_count": count,
+            "evidence_confidence": 1.0,
+            "evidence_status": "verified",
+            "last_seen_at": "2026-08-18T20:00:00+00:00",
+            "categories": ["Chicken"],
+        }
+        for recipe_id, rating, count in (("a", 4.9, 5000), ("b", 4.8, 800), ("c", 5.0, 50))
+    ]
+    active = ModelParameters()
+    baseline, _ = score_current(current, None, active)
+    by_recipe, summary = robustness_lab(current, baseline, None, active)
+    assert summary["simulation_count"] == 36
+    assert by_recipe
+    for result in by_recipe.values():
+        assert 0.0 <= result["rank_confidence"] <= 1.0
+        assert result["rank_range_low"] <= result["rank_range_high"]
