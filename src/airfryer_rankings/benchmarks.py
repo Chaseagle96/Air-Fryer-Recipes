@@ -146,8 +146,8 @@ def build_dedupe_label_queue(
         )
     queue.sort(
         key=lambda row: (
-            float(row["distance_from_production_threshold"]),
-            -float(row["similarity"]),
+            float(row.get("distance_from_production_threshold") or 0.0),
+            -float(row.get("similarity") or 0.0),
         )
     )
     return queue
