@@ -71,7 +71,13 @@ jobs:
         run: ruff check src tests
 
       - name: Static type analysis
-        run: mypy src/airfryer_rankings
+        shell: bash
+        run: |
+          mkdir -p output
+          set +e
+          mypy src/airfryer_rankings 2>&1 | tee output/mypy.txt
+          status=${PIPESTATUS[0]}
+          exit "$status"
 
       - name: Test with branch coverage
         run: PYTHONPATH=src pytest --cov=airfryer_rankings --cov-report=term-missing --cov-report=xml
@@ -151,6 +157,7 @@ jobs:
           if-no-files-found: ignore
           path: |
             output/sbom.json
+            output/mypy.txt
             output/quality_gate.json
             output/pipeline_metrics.json
             output/pipeline_metrics.csv
