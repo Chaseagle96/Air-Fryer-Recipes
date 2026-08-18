@@ -36,10 +36,23 @@ jobs:
       - name: Test ranking engine
         run: PYTHONPATH=src pytest -q
 
+      - name: Create bounded PR smoke source set
+        if: github.event_name == 'pull_request'
+        run: |
+          cat > /tmp/smoke-sources.yaml <<'YAML'
+          defaults:
+            max_urls: 2
+            delay: 0.05
+          sources:
+            - domain: pinchofyum.com
+            - domain: budgetbytes.com
+            - domain: skinnytaste.com
+          YAML
+
       - name: Refresh rankings
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            PYTHONPATH=src python -m airfryer_rankings.run --max-urls 3
+            PYTHONPATH=src python -m airfryer_rankings.run --sources /tmp/smoke-sources.yaml --max-urls 2
           else
             PYTHONPATH=src python -m airfryer_rankings.run --max-urls 200
           fi
