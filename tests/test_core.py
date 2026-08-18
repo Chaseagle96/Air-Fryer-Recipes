@@ -177,3 +177,13 @@ def test_jsonld_histogram_is_preserved_and_used():
     merge_observations(state, [row], "2026-08-18T20:00:00+00:00")
     ranked, _ = bayesian_rank(state, stale_days=10000)
     assert ranked[0]["uncertainty_penalty"] < 0.25
+
+
+def test_review_velocity_is_exposed_per_day():
+    state = {"recipes": {}, "rank_history": [], "source_history": [], "url_catalog": {}, "anomaly_history": []}
+    first = recipe("a", "Air Fryer Chicken", "x.com", 4.8, 100)
+    merge_observations(state, [first], "2026-08-18T19:00:00+00:00")
+    second = recipe("a", "Air Fryer Chicken", "x.com", 4.8, 110)
+    merge_observations(state, [second], "2026-08-18T20:00:00+00:00")
+    ranked, _ = bayesian_rank(state, stale_days=10000)
+    assert round(ranked[0]["review_velocity_per_day"], 6) == 240.0
