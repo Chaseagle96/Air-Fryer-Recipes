@@ -1,17 +1,6 @@
-# End-to-end bootstrap smoke run. Production settings are restored after validation.
 name: Hourly Air Fryer Rankings
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/hourly.yml'
-      - 'src/**'
-      - 'tests/**'
-      - 'config/**'
-      - 'requirements.txt'
-  issues:
-    types: [opened]
   schedule:
     - cron: '17 * * * *'
   workflow_dispatch:
@@ -26,26 +15,12 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 55
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Record workflow start
-        run: |
-          mkdir -p output
-          {
-            echo "run_id=${{ github.run_id }}"
-            echo "commit=${{ github.sha }}"
-            echo "started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          } > output/run_started.txt
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add output/run_started.txt
-          git commit -m 'Record ranking workflow start'
-          git push origin HEAD:main
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -57,57 +32,27 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Test ranking engine
-        id: tests
-        continue-on-error: true
         run: PYTHONPATH=src pytest -q
 
-      - name: Create smoke-test source set
-        if: steps.tests.outcome == 'success'
-        run: |
-          cat > /tmp/smoke-sources.yaml <<'YAML'
-          defaults:
-            max_urls: 2
-            delay: 0.05
-          sources:
-            - domain: pinchofyum.com
-            - domain: budgetbytes.com
-            - domain: skinnytaste.com
-          YAML
+      - name: Refresh rankings
+        run: PYTHONPATH=src python -m airfryer_rankings.run --max-urls 200
 
-      - name: Refresh smoke rankings
-        id: refresh
-        if: steps.tests.outcome == 'success'
-        continue-on-error: true
-        run: PYTHONPATH=src python -m airfryer_rankings.run --sources /tmp/smoke-sources.yaml --max-urls 2
-
-      - name: Upload smoke Excel workbook
-        if: steps.refresh.outcome == 'success'
+      - name: Upload Excel workbook
         uses: actions/upload-artifact@v4
         with:
-          name: air-fryer-rankings-smoke-${{ github.run_number }}
+          name: air-fryer-rankings-${{ github.run_number }}
           retention-days: 30
           path: output/air_fryer_rankings.xlsx
 
-      - name: Record smoke-test result
-        if: always()
+      - name: Commit refreshed state and text outputs
         run: |
-          mkdir -p output
-          {
-            echo "run_id=${{ github.run_id }}"
-            echo "commit=${{ github.sha }}"
-            echo "tests=${{ steps.tests.outcome }}"
-            echo "refresh=${{ steps.refresh.outcome }}"
-            echo "completed_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          } > output/smoke_status.txt
-          git add output/smoke_status.txt
-          git add data/state.json output/leaderboard.csv output/top50.csv output/summary.json 2>/dev/null || true
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/state.json output/leaderboard.csv output/top50.csv output/summary.json
           if git diff --cached --quiet; then
+            echo 'No ranking changes to commit.'
             exit 0
           fi
-          git commit -m 'Record initial ranking smoke test'
+          git commit -m 'Refresh air fryer rankings'
           git pull --rebase origin main
           git push origin HEAD:main
-
-      - name: Fail if smoke test failed
-        if: steps.tests.outcome != 'success' || steps.refresh.outcome != 'success'
-        run: exit 1
