@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "policy": "Sanitized snapshots are reviewed before promotion. Live capture candidates never overwrite these fixtures automatically.",
+  "fixtures": [
+    {"fixture":"allrecipes_air_fryer_pork_chops.html","source":"allrecipes.com","url":"https://www.allrecipes.com/recipe/275576/easy-air-fryer-pork-chops/","expected_status":"verified","expected_rating":4.8,"expected_rating_count":361},
+    {"fixture":"budgetbytes_air_fryer_cinnamon_toast.html","source":"budgetbytes.com","url":"https://www.budgetbytes.com/air-fryer-cinnamon-toast/","expected_status":"schema_only","expected_rating":5.0,"expected_rating_count":5},
+    {"fixture":"pinchofyum_air_fryer_salmon.html","source":"pinchofyum.com","url":"https://pinchofyum.com/air-fryer-salmon","expected_status":"schema_only","expected_rating":5.0,"expected_rating_count":101},
+    {"fixture":"natashaskitchen_air_fryer_wings.html","source":"natashaskitchen.com","url":"https://natashaskitchen.com/air-fryer-chicken-wings/","expected_status":"verified","expected_rating":4.99,"expected_rating_count":1028},
+    {"fixture":"feelgoodfoodie_air_fryer_salmon.html","source":"feelgoodfoodie.net","url":"https://feelgoodfoodie.net/recipe/air-fryer-salmon/","expected_status":"schema_only","expected_rating":5.0,"expected_rating_count":37443},
+    {"fixture":"loveandlemons_air_fryer_fries.html","source":"loveandlemons.com","url":"https://www.loveandlemons.com/air-fryer-french-fries/","expected_status":"schema_only","expected_rating":4.98,"expected_rating_count":248},
+    {"fixture":"downshiftology_air_fryer_salmon.html","source":"downshiftology.com","url":"https://downshiftology.com/recipes/air-fryer-salmon/","expected_status":"verified","expected_rating":5.0,"expected_rating_count":139}
+  ]
+}
