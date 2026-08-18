@@ -1,0 +1,40 @@
+{"conflicts": 0, "elapsed_seconds": 13.6, "errors": 0, "fetched": 25, "legacy_backfill_resolved": 0, "legacy_backfill_targets": 0, "missing": 0, "not_modified": 0, "robots_status": "ok", "source": "allrecipes.com", "status": "ok", "targets": 25, "verified_recipes": 25}
+{"source": "foodnetwork.com", "status": "not_checked_this_run"}
+{"conflicts": 0, "elapsed_seconds": 1.41, "errors": 0, "fetched": 1, "legacy_backfill_resolved": 0, "legacy_backfill_targets": 0, "missing": 0, "not_modified": 0, "robots_status": "ok", "source": "delish.com", "status": "ok", "targets": 1, "verified_recipes": 1}
+{"source": "eatingwell.com", "status": "not_checked_this_run"}
+{"source": "tasteofhome.com", "status": "not_checked_this_run"}
+{"conflicts": 0, "elapsed_seconds": 0.51, "errors": 0, "fetched": 1, "legacy_backfill_resolved": 0, "legacy_backfill_targets": 0, "missing": 0, "not_modified": 0, "robots_status": "ok", "source": "skinnytaste.com", "status": "ok", "targets": 1, "verified_recipes": 1}
+{"source": "therecipecritic.com", "status": "not_checked_this_run"}
+{"source": "spendwithpennies.com", "status": "not_checked_this_run"}
+{"conflicts": 0, "elapsed_seconds": 0.36, "errors": 0, "fetched": 1, "legacy_backfill_resolved": 0, "legacy_backfill_targets": 0, "missing": 0, "not_modified": 0, "robots_status": "ok", "source": "pinchofyum.com", "status": "ok", "targets": 1, "verified_recipes": 1}
+{"source": "budgetbytes.com", "status": "not_checked_this_run"}
+{"source": "simplyrecipes.com", "status": "not_checked_this_run"}
+{"conflicts": 0, "elapsed_seconds": 0.29, "errors": 0, "fetched": 0, "legacy_backfill_resolved": 0, "legacy_backfill_targets": 0, "missing": 0, "not_modified": 1, "robots_status": "ok", "source": "wellplated.com", "status": "ok", "targets": 1, "verified_recipes": 1}
+{"conflicts": 0, "elapsed_seconds": 1.28, "errors": 0, "fetched": 3, "legacy_backfill_resolved": 0, "legacy_backfill_targets": 0, "missing": 0, "not_modified": 0, "robots_status": "ok", "source": "natashaskitchen.com", "status": "ok", "targets": 3, "verified_recipes": 3}
+{"source": "downshiftology.com", "status": "not_checked_this_run"}
+{"source": "gimmesomeoven.com", "status": "not_checked_this_run"}
+{"source": "lecremedelacrumb.com", "status": "not_checked_this_run"}
+{"source": "therealfooddietitians.com", "status": "not_checked_this_run"}
+{"source": "loveandlemons.com", "status": "not_checked_this_run"}
+{"source": "thepioneerwoman.com", "status": "not_checked_this_run"}
+{"source": "cookingclassy.com", "status": "not_checked_this_run"}
+{"source": "iheartnaptime.net", "status": "not_checked_this_run"}
+{"conflicts": 0, "elapsed_seconds": 0.35, "errors": 0, "fetched": 0, "legacy_backfill_resolved": 0, "legacy_backfill_targets": 0, "missing": 0, "not_modified": 2, "robots_status": "ok", "source": "feelgoodfoodie.net", "status": "ok", "targets": 2, "verified_recipes": 2}
+{"source": "kristineskitchenblog.com", "status": "not_checked_this_run"}
+{"source": "jocooks.com", "status": "not_checked_this_run"}
+{"source": "recipetineats.com", "status": "not_checked_this_run"}
+{"source": "bbcgoodfood.com", "status": "not_checked_this_run"}
+{"source": "seriouseats.com", "status": "not_checked_this_run"}
+{"source": "thekitchn.com", "status": "not_checked_this_run"}
+{"source": "foodandwine.com", "status": "not_checked_this_run"}
+{"source": "ambitiouskitchen.com", "status": "not_checked_this_run"}
+{"source": "eatingbirdfood.com", "status": "not_checked_this_run"}
+{"source": "wholesomeyum.com", "status": "not_checked_this_run"}
+{"source": "dinneratthezoo.com", "status": "not_checked_this_run"}
+{"source": "diethood.com", "status": "not_checked_this_run"}
+{"source": "twopeasandtheirpod.com", "status": "not_checked_this_run"}
+{"source": "everydayfamilycooking.com", "status": "not_checked_this_run"}
+{"conflicts": 0, "elapsed_seconds": 157.19, "errors": 0, "fetched": 66, "legacy_backfill_resolved": 0, "legacy_backfill_targets": 0, "missing": 0, "not_modified": 0, "robots_status": "ok", "source": "airfryingfoodie.com", "status": "ok", "targets": 66, "verified_recipes": 61}
+{"source": "platedcravings.com", "status": "not_checked_this_run"}
+{"source": "rachelcooks.com", "status": "not_checked_this_run"}
+{"source": "melskitchencafe.com", "status": "not_checked_this_run"}
