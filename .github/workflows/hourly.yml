@@ -31,6 +31,20 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Record workflow start
+        run: |
+          mkdir -p output
+          {
+            echo "run_id=${{ github.run_id }}"
+            echo "commit=${{ github.sha }}"
+            echo "started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > output/run_started.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add output/run_started.txt
+          git commit -m 'Record ranking workflow start'
+          git push origin HEAD:main
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -83,8 +97,6 @@ jobs:
             echo "refresh=${{ steps.refresh.outcome }}"
             echo "completed_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           } > output/smoke_status.txt
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add output/smoke_status.txt
           git add data/state.json output/leaderboard.csv output/top50.csv output/summary.json 2>/dev/null || true
           if git diff --cached --quiet; then
