@@ -4,7 +4,7 @@ import time
 from collections import defaultdict
 from dataclasses import fields, replace
 from datetime import datetime, timezone
-from typing import Iterable
+from typing import Any, Iterable
 
 import requests
 
@@ -116,7 +116,7 @@ def crawl_targets(
         started = time.monotonic()
         session = make_session()
         parser, _, _, robots_status = robots_and_sitemaps(session, cfg)
-        metrics = {
+        metrics: dict[str, Any] = {
             "source": domain,
             "targets": len(source_targets),
             "fetched": 0,
