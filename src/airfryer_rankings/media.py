@@ -12,9 +12,9 @@ from .models import HEADERS, RecipeRow
 
 
 def perceptual_hash_bytes(payload: bytes, size: int = 8) -> str:
-    with Image.open(BytesIO(payload)) as image:
-        image = image.convert("L").resize((size, size))
-        pixels = list(image.getdata())
+    with Image.open(BytesIO(payload)) as opened:
+        grayscale = opened.convert("L").resize((size, size))
+        pixels = list(grayscale.getdata())
     average = sum(pixels) / max(1, len(pixels))
     value = 0
     for idx, pixel in enumerate(pixels):
