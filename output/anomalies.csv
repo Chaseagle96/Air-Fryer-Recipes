@@ -1,1 +1,4 @@
-
+timestamp,severity,type,recipe_id,title,source,url,detail
+2026-08-18T21:25:31.162419+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-accessories/,RetryError
+2026-08-18T21:25:31.162419+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-acorn-squash/,RetryError
+2026-08-18T21:25:31.162419+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-appetizers/,RetryError

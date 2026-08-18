@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-08-18T21:14:29.186853+00:00",
+  "generated_at": "2026-08-18T21:25:31.162419+00:00",
   "mode": "hourly",
-  "observations_this_run": 90,
-  "ranked_recipes": 594,
+  "observations_this_run": 81,
+  "ranked_recipes": 675,
   "configured_sources": 40,
   "catalog_urls": 3726,
   "targets_this_run": 100,
-  "global_prior": 4.766832896476025,
+  "global_prior": 4.767344959776097,
   "volume_prior_m": 50.0,
-  "candidate_count": 594,
+  "candidate_count": 675,
   "deduplicated_count": 0,
   "stale_days": 14,
-  "history_snapshots": 2,
+  "history_snapshots": 3,
   "formula": "hierarchical_score = BayesianPosterior(source-adjusted rating) - uncertainty penalty",
   "prior_definition": "Global prior is sqrt(review-count)-weighted; publisher means are partially pooled toward the global prior before recipe-level Bayesian shrinkage.",
   "uncertainty_definition": "Conservative score subtracts a capped 95%-style maximum-variance uncertainty penalty from the posterior mean.",
@@ -19,11 +19,11 @@
   "dedupe_definition": "High-threshold fuzzy clustering uses title, normalized ingredients, instructions, author, canonical URL, and image-URL fingerprint. Cross-site review counts are NOT summed.",
   "history_definition": "Every successful rating observation is written as an immutable per-run NDJSON record under data/observations/.",
   "source_count": 40,
-  "sources_ok": 40,
-  "observation_file": "data/observations/2026/08/18/211429Z.ndjson",
-  "anomaly_file": null,
-  "coverage_file": "data/coverage/2026/08/18/211429Z.ndjson",
-  "ranking_snapshot_file": "data/rankings/2026/08/18/211429Z.ndjson",
+  "sources_ok": 1,
+  "observation_file": "data/observations/2026/08/18/212531Z.ndjson",
+  "anomaly_file": "data/anomalies/2026/08/18/212531Z.ndjson",
+  "coverage_file": "data/coverage/2026/08/18/212531Z.ndjson",
+  "ranking_snapshot_file": "data/rankings/2026/08/18/212531Z.ndjson",
   "top10": [
     {
       "recipe_id": "da2155fe966f099ace102548",
@@ -33,11 +33,11 @@
       "url": "https://feelgoodfoodie.net/recipe/air-fryer-salmon/",
       "rating": 5.0,
       "rating_count": 37443,
-      "source_bias": 0.10011827665571715,
-      "adjusted_rating": 4.899881723344283,
-      "posterior_mean": 4.899704291787901,
+      "source_bias": 0.0998906929667962,
+      "adjusted_rating": 4.900109307033204,
+      "posterior_mean": 4.899932254853787,
       "uncertainty_penalty": 0.025305853185083736,
-      "hierarchical_score": 4.874398438602817,
+      "hierarchical_score": 4.874626401668703,
       "evidence_confidence": 0.85,
       "evidence_status": "",
       "author": "",
@@ -47,6 +47,7 @@
       "last_seen_at": "2026-08-18T20:31:41.469311+00:00",
       "rating_change": null,
       "review_count_change": null,
+      "review_velocity_per_day": null,
       "rank": 1,
       "previous_rank": 1,
       "movement": 0
@@ -59,11 +60,11 @@
       "url": "https://feelgoodfoodie.net/recipe/air-fryer-green-beans/",
       "rating": 5.0,
       "rating_count": 2723,
-      "source_bias": 0.10011827665571715,
-      "adjusted_rating": 4.899881723344283,
-      "posterior_mean": 4.897482718171757,
+      "source_bias": 0.0998906929667962,
+      "adjusted_rating": 4.900109307033204,
+      "posterior_mean": 4.8977154313163425,
       "uncertainty_penalty": 0.09305102152735632,
-      "hierarchical_score": 4.804431696644401,
+      "hierarchical_score": 4.804664409788987,
       "evidence_confidence": 0.85,
       "evidence_status": "",
       "author": "",
@@ -73,6 +74,7 @@
       "last_seen_at": "2026-08-18T20:31:41.469311+00:00",
       "rating_change": null,
       "review_count_change": null,
+      "review_velocity_per_day": null,
       "rank": 2,
       "previous_rank": 2,
       "movement": 0
@@ -85,11 +87,11 @@
       "url": "https://feelgoodfoodie.net/recipe/air-fryer-hard-boiled-eggs/",
       "rating": 4.97,
       "rating_count": 4331,
-      "source_bias": 0.10011827665571715,
-      "adjusted_rating": 4.869881723344283,
-      "posterior_mean": 4.868705635386417,
+      "source_bias": 0.0998906929667962,
+      "adjusted_rating": 4.8701093070332035,
+      "posterior_mean": 4.8689364658182175,
       "uncertainty_penalty": 0.07403029047480235,
-      "hierarchical_score": 4.794675344911615,
+      "hierarchical_score": 4.7949061753434155,
       "evidence_confidence": 0.85,
       "evidence_status": "",
       "author": "",
@@ -99,9 +101,10 @@
       "last_seen_at": "2026-08-18T20:31:41.469311+00:00",
       "rating_change": null,
       "review_count_change": null,
+      "review_velocity_per_day": null,
       "rank": 3,
-      "previous_rank": 5,
-      "movement": 2
+      "previous_rank": 3,
+      "movement": 0
     },
     {
       "recipe_id": "2b28fee1a6b105ddc0d7ab53",
@@ -111,11 +114,11 @@
       "url": "https://natashaskitchen.com/air-fryer-chicken-wings/",
       "rating": 4.99,
       "rating_count": 1028,
-      "source_bias": 0.0759930861780207,
-      "adjusted_rating": 4.9140069138219795,
-      "posterior_mean": 4.907180660698327,
+      "source_bias": 0.0758113862973504,
+      "adjusted_rating": 4.91418861370265,
+      "posterior_mean": 4.907377683557634,
       "uncertainty_penalty": 0.1492405014489273,
-      "hierarchical_score": 4.757940159249399,
+      "hierarchical_score": 4.758137182108706,
       "evidence_confidence": 0.85,
       "evidence_status": "",
       "author": "",
@@ -125,9 +128,10 @@
       "last_seen_at": "2026-08-18T20:31:41.469311+00:00",
       "rating_change": null,
       "review_count_change": null,
+      "review_velocity_per_day": null,
       "rank": 4,
-      "previous_rank": 3,
-      "movement": -1
+      "previous_rank": 4,
+      "movement": 0
     },
     {
       "recipe_id": "7dbca4c8d97c28e19871bbb5",
@@ -137,11 +141,11 @@
       "url": "https://natashaskitchen.com/air-fryer-baked-potatoes/",
       "rating": 5.0,
       "rating_count": 509,
-      "source_bias": 0.0759930861780207,
-      "adjusted_rating": 4.924006913821979,
-      "posterior_mean": 4.909948414953826,
+      "source_bias": 0.0758113862973504,
+      "adjusted_rating": 4.92418861370265,
+      "posterior_mean": 4.910159664335337,
       "uncertainty_penalty": 0.20724791787452865,
-      "hierarchical_score": 4.702700497079297,
+      "hierarchical_score": 4.702911746460808,
       "evidence_confidence": 0.85,
       "evidence_status": "",
       "author": "",
@@ -151,9 +155,10 @@
       "last_seen_at": "2026-08-18T20:31:41.469311+00:00",
       "rating_change": null,
       "review_count_change": null,
+      "review_velocity_per_day": null,
       "rank": 5,
-      "previous_rank": 4,
-      "movement": -1
+      "previous_rank": 5,
+      "movement": 0
     },
     {
       "recipe_id": "267290180608cac2d366d538",
@@ -163,11 +168,11 @@
       "url": "https://www.loveandlemons.com/air-fryer-french-fries/",
       "rating": 4.98,
       "rating_count": 248,
-      "source_bias": 0.037303008459238285,
-      "adjusted_rating": 4.942696991540762,
-      "posterior_mean": 4.913189593039967,
+      "source_bias": 0.03705354172330555,
+      "adjusted_rating": 4.942946458276695,
+      "posterior_mean": 4.913483119602098,
       "uncertainty_penalty": 0.25,
-      "hierarchical_score": 4.663189593039967,
+      "hierarchical_score": 4.663483119602098,
       "evidence_confidence": 0.85,
       "evidence_status": "",
       "author": "Jeanine Donofrio, Phoebe Moore",
@@ -177,9 +182,10 @@
       "last_seen_at": "2026-08-18T20:31:41.469311+00:00",
       "rating_change": null,
       "review_count_change": null,
+      "review_velocity_per_day": null,
       "rank": 6,
-      "previous_rank": 10,
-      "movement": 4
+      "previous_rank": 6,
+      "movement": 0
     },
     {
       "recipe_id": "f0af83a4a410f3fc2ef59c6f",
@@ -189,11 +195,11 @@
       "url": "https://pinchofyum.com/air-fryer-salmon",
       "rating": 5.0,
       "rating_count": 101,
-      "source_bias": 0.02010734129771663,
-      "adjusted_rating": 4.979892658702283,
-      "posterior_mean": 4.909343068561138,
+      "source_bias": 0.01998917284385282,
+      "adjusted_rating": 4.980010827156147,
+      "posterior_mean": 4.909591665772025,
       "uncertainty_penalty": 0.25,
-      "hierarchical_score": 4.659343068561138,
+      "hierarchical_score": 4.659591665772025,
       "evidence_confidence": 0.85,
       "evidence_status": "",
       "author": "Lindsay Ostrom",
@@ -203,9 +209,10 @@
       "last_seen_at": "2026-08-18T20:31:41.469311+00:00",
       "rating_change": null,
       "review_count_change": null,
+      "review_velocity_per_day": null,
       "rank": 7,
-      "previous_rank": 15,
-      "movement": 8
+      "previous_rank": 7,
+      "movement": 0
     },
     {
       "recipe_id": "cd9a0050517f91c67a8e7b2c",
@@ -215,11 +222,11 @@
       "url": "https://downshiftology.com/recipes/air-fryer-salmon/",
       "rating": 5.0,
       "rating_count": 139,
-      "source_bias": 0.07886373808858238,
-      "adjusted_rating": 4.921136261911418,
-      "posterior_mean": 4.880315265764488,
+      "source_bias": 0.07866201618249402,
+      "adjusted_rating": 4.921337983817506,
+      "posterior_mean": 4.880599088568456,
       "uncertainty_penalty": 0.25,
-      "hierarchical_score": 4.630315265764488,
+      "hierarchical_score": 4.630599088568456,
       "evidence_confidence": 0.85,
       "evidence_status": "",
       "author": "Lisa Bryan",
@@ -229,9 +236,10 @@
       "last_seen_at": "2026-08-18T20:31:41.469311+00:00",
       "rating_change": null,
       "review_count_change": null,
+      "review_velocity_per_day": null,
       "rank": 8,
-      "previous_rank": 11,
-      "movement": 3
+      "previous_rank": 8,
+      "movement": 0
     },
     {
       "recipe_id": "32c095b1f00bd988e07aa3da",
@@ -241,11 +249,11 @@
       "url": "https://www.allrecipes.com/recipe/275576/easy-air-fryer-pork-chops/",
       "rating": 4.8,
       "rating_count": 361,
-      "source_bias": -0.08560250233649036,
-      "adjusted_rating": 4.88560250233649,
-      "posterior_mean": 4.87115364517585,
+      "source_bias": -0.08606361406441554,
+      "adjusted_rating": 4.886063614064415,
+      "posterior_mean": 4.871620955391871,
       "uncertainty_penalty": 0.24169917559682513,
-      "hierarchical_score": 4.629454469579025,
+      "hierarchical_score": 4.629921779795046,
       "evidence_confidence": 0.85,
       "evidence_status": "",
       "author": "Nicole Russell",
@@ -255,9 +263,10 @@
       "last_seen_at": "2026-08-18T20:31:41.469311+00:00",
       "rating_change": null,
       "review_count_change": null,
+      "review_velocity_per_day": null,
       "rank": 9,
-      "previous_rank": null,
-      "movement": null
+      "previous_rank": 9,
+      "movement": 0
     },
     {
       "recipe_id": "ceefd55ca7ccd4bdea91c926",
@@ -267,11 +276,11 @@
       "url": "https://natashaskitchen.com/air-fryer-french-fries/",
       "rating": 4.99,
       "rating_count": 152,
-      "source_bias": 0.0759930861780207,
-      "adjusted_rating": 4.9140069138219795,
-      "posterior_mean": 4.877577701607635,
+      "source_bias": 0.0758113862973504,
+      "adjusted_rating": 4.91418861370265,
+      "posterior_mean": 4.877841174611919,
       "uncertainty_penalty": 0.25,
-      "hierarchical_score": 4.627577701607635,
+      "hierarchical_score": 4.627841174611919,
       "evidence_confidence": 0.85,
       "evidence_status": "",
       "author": "",
@@ -281,394 +290,195 @@
       "last_seen_at": "2026-08-18T20:31:41.469311+00:00",
       "rating_change": null,
       "review_count_change": null,
+      "review_velocity_per_day": null,
       "rank": 10,
-      "previous_rank": 13,
-      "movement": 3
+      "previous_rank": 10,
+      "movement": 0
     }
   ],
   "coverage": [
     {
       "source": "allrecipes.com",
-      "discovered_urls": 742,
-      "new_urls": 742,
-      "sitemap_docs": 6,
-      "robots_status": "ok",
-      "elapsed_seconds": 1.83,
-      "status": "ok",
-      "targets": 100,
-      "fetched": 100,
-      "not_modified": 0,
-      "verified_recipes": 90,
-      "conflicts": 0,
-      "missing": 0,
-      "errors": 0,
-      "crawl_robots_status": "ok",
-      "crawl_elapsed_seconds": 45.6
+      "status": "not_checked_this_run"
     },
     {
       "source": "foodnetwork.com",
-      "discovered_urls": 0,
-      "new_urls": 0,
-      "sitemap_docs": 1,
-      "robots_status": "unavailable:HTTPError",
-      "elapsed_seconds": 0.32,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "delish.com",
-      "discovered_urls": 150,
-      "new_urls": 150,
-      "sitemap_docs": 11,
-      "robots_status": "ok",
-      "elapsed_seconds": 2.47,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "eatingwell.com",
-      "discovered_urls": 150,
-      "new_urls": 150,
-      "sitemap_docs": 4,
-      "robots_status": "ok",
-      "elapsed_seconds": 0.78,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "tasteofhome.com",
-      "discovered_urls": 230,
-      "new_urls": 230,
-      "sitemap_docs": 49,
-      "robots_status": "ok",
-      "elapsed_seconds": 59.03,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "skinnytaste.com",
-      "discovered_urls": 374,
-      "new_urls": 110,
-      "sitemap_docs": 1,
-      "robots_status": "ok",
-      "elapsed_seconds": 0.21,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "therecipecritic.com",
-      "discovered_urls": 120,
-      "new_urls": 120,
-      "sitemap_docs": 7,
-      "robots_status": "ok",
-      "elapsed_seconds": 17.29,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "spendwithpennies.com",
-      "discovered_urls": 84,
-      "new_urls": 84,
-      "sitemap_docs": 7,
-      "robots_status": "ok",
-      "elapsed_seconds": 0.67,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "pinchofyum.com",
-      "discovered_urls": 7,
-      "new_urls": 7,
-      "sitemap_docs": 7,
-      "robots_status": "ok",
-      "elapsed_seconds": 0.29,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "budgetbytes.com",
-      "discovered_urls": 73,
-      "new_urls": 38,
-      "sitemap_docs": 7,
-      "robots_status": "ok",
-      "elapsed_seconds": 27.26,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "simplyrecipes.com",
-      "discovered_urls": 52,
-      "new_urls": 52,
-      "sitemap_docs": 3,
-      "robots_status": "ok",
-      "elapsed_seconds": 0.42,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "wellplated.com",
-      "discovered_urls": 60,
-      "new_urls": 60,
-      "sitemap_docs": 5,
-      "robots_status": "ok",
-      "elapsed_seconds": 13.4,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "natashaskitchen.com",
-      "discovered_urls": 13,
-      "new_urls": 12,
-      "sitemap_docs": 12,
-      "robots_status": "ok",
-      "elapsed_seconds": 0.8,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "downshiftology.com",
-      "discovered_urls": 20,
-      "new_urls": 17,
-      "sitemap_docs": 9,
-      "robots_status": "ok",
-      "elapsed_seconds": 1.69,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "gimmesomeoven.com",
-      "discovered_urls": 0,
-      "new_urls": 0,
-      "sitemap_docs": 1,
-      "robots_status": "ok",
-      "elapsed_seconds": 3.87,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "lecremedelacrumb.com",
-      "discovered_urls": 7,
-      "new_urls": 7,
-      "sitemap_docs": 5,
-      "robots_status": "ok",
-      "elapsed_seconds": 4.35,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "therealfooddietitians.com",
-      "discovered_urls": 20,
-      "new_urls": 12,
-      "sitemap_docs": 5,
-      "robots_status": "ok",
-      "elapsed_seconds": 4.92,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "loveandlemons.com",
-      "discovered_urls": 19,
-      "new_urls": 19,
-      "sitemap_docs": 6,
-      "robots_status": "ok",
-      "elapsed_seconds": 2.26,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "thepioneerwoman.com",
-      "discovered_urls": 59,
-      "new_urls": 58,
-      "sitemap_docs": 8,
-      "robots_status": "ok",
-      "elapsed_seconds": 1.84,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "cookingclassy.com",
-      "discovered_urls": 0,
-      "new_urls": 0,
-      "sitemap_docs": 10,
-      "robots_status": "ok",
-      "elapsed_seconds": 8.77,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "iheartnaptime.net",
-      "discovered_urls": 4,
-      "new_urls": 4,
-      "sitemap_docs": 10,
-      "robots_status": "ok",
-      "elapsed_seconds": 6.66,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "feelgoodfoodie.net",
-      "discovered_urls": 42,
-      "new_urls": 42,
-      "sitemap_docs": 7,
-      "robots_status": "ok",
-      "elapsed_seconds": 9.81,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "kristineskitchenblog.com",
-      "discovered_urls": 42,
-      "new_urls": 42,
-      "sitemap_docs": 4,
-      "robots_status": "ok",
-      "elapsed_seconds": 3.31,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "jocooks.com",
-      "discovered_urls": 0,
-      "new_urls": 0,
-      "sitemap_docs": 1,
-      "robots_status": "ok",
-      "elapsed_seconds": 0.56,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "recipetineats.com",
-      "discovered_urls": 0,
-      "new_urls": 0,
-      "sitemap_docs": 9,
-      "robots_status": "ok",
-      "elapsed_seconds": 23.37,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "bbcgoodfood.com",
-      "discovered_urls": 227,
-      "new_urls": 227,
-      "sitemap_docs": 120,
-      "robots_status": "ok",
-      "elapsed_seconds": 48.23,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "seriouseats.com",
-      "discovered_urls": 41,
-      "new_urls": 41,
-      "sitemap_docs": 3,
-      "robots_status": "ok",
-      "elapsed_seconds": 0.48,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "thekitchn.com",
-      "discovered_urls": 0,
-      "new_urls": 0,
-      "sitemap_docs": 2,
-      "robots_status": "ok",
-      "elapsed_seconds": 0.29,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "foodandwine.com",
-      "discovered_urls": 77,
-      "new_urls": 75,
-      "sitemap_docs": 4,
-      "robots_status": "ok",
-      "elapsed_seconds": 0.9,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "ambitiouskitchen.com",
-      "discovered_urls": 0,
-      "new_urls": 0,
-      "sitemap_docs": 120,
-      "robots_status": "ok",
-      "elapsed_seconds": 18.06,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "eatingbirdfood.com",
-      "discovered_urls": 32,
-      "new_urls": 32,
-      "sitemap_docs": 5,
-      "robots_status": "ok",
-      "elapsed_seconds": 4.49,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "wholesomeyum.com",
-      "discovered_urls": 55,
-      "new_urls": 55,
-      "sitemap_docs": 11,
-      "robots_status": "ok",
-      "elapsed_seconds": 20.06,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "dinneratthezoo.com",
-      "discovered_urls": 12,
-      "new_urls": 12,
-      "sitemap_docs": 5,
-      "robots_status": "ok",
-      "elapsed_seconds": 4.98,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "diethood.com",
-      "discovered_urls": 54,
-      "new_urls": 54,
-      "sitemap_docs": 6,
-      "robots_status": "ok",
-      "elapsed_seconds": 14.92,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "twopeasandtheirpod.com",
-      "discovered_urls": 0,
-      "new_urls": 0,
-      "sitemap_docs": 6,
-      "robots_status": "ok",
-      "elapsed_seconds": 6.14,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "everydayfamilycooking.com",
-      "discovered_urls": 533,
-      "new_urls": 455,
-      "sitemap_docs": 4,
-      "robots_status": "ok",
-      "elapsed_seconds": 6.25,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "airfryingfoodie.com",
-      "discovered_urls": 802,
-      "new_urls": 677,
-      "sitemap_docs": 4,
+      "targets": 100,
+      "fetched": 97,
+      "not_modified": 0,
+      "verified_recipes": 81,
+      "conflicts": 0,
+      "missing": 0,
+      "errors": 3,
       "robots_status": "ok",
-      "elapsed_seconds": 3.46,
-      "status": "ok"
+      "status": "ok",
+      "elapsed_seconds": 259.73
     },
     {
       "source": "platedcravings.com",
-      "discovered_urls": 57,
-      "new_urls": 57,
-      "sitemap_docs": 4,
-      "robots_status": "ok",
-      "elapsed_seconds": 1.83,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "rachelcooks.com",
-      "discovered_urls": 82,
-      "new_urls": 82,
-      "sitemap_docs": 7,
-      "robots_status": "ok",
-      "elapsed_seconds": 16.43,
-      "status": "ok"
+      "status": "not_checked_this_run"
     },
     {
       "source": "melskitchencafe.com",
-      "discovered_urls": 3,
-      "new_urls": 3,
-      "sitemap_docs": 6,
-      "robots_status": "ok",
-      "elapsed_seconds": 16.87,
-      "status": "ok"
+      "status": "not_checked_this_run"
     }
   ],
   "source_reliability": [
     {
       "source": "airfryingfoodie.com",
-      "runs_sampled": 1,
+      "runs_sampled": 2,
       "run_success_rate": 1.0,
-      "known_recipes": 0,
-      "mean_evidence_confidence": null,
-      "anomalies_recent": 0,
-      "source_rating_mean": null,
-      "source_bias": null,
-      "current_targets": null,
-      "current_verified": null,
+      "known_recipes": 81,
+      "mean_evidence_confidence": 0.85,
+      "anomalies_recent": 3,
+      "source_rating_mean": 4.774219527023851,
+      "source_bias": 0.005513266802654293,
+      "current_targets": 100,
+      "current_verified": 81,
       "current_status": "ok"
     },
     {
@@ -679,10 +489,10 @@
       "mean_evidence_confidence": 0.42265193370165743,
       "anomalies_recent": 0,
       "source_rating_mean": 4.671771554102354,
-      "source_bias": -0.08560250233649036,
-      "current_targets": 100,
-      "current_verified": 90,
-      "current_status": "ok"
+      "source_bias": -0.08606361406441554,
+      "current_targets": null,
+      "current_verified": null,
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "ambitiouskitchen.com",
@@ -695,7 +505,7 @@
       "source_bias": null,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "bbcgoodfood.com",
@@ -708,7 +518,7 @@
       "source_bias": null,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "budgetbytes.com",
@@ -718,10 +528,10 @@
       "mean_evidence_confidence": 0.0,
       "anomalies_recent": 0,
       "source_rating_mean": 4.713993956700108,
-      "source_bias": -0.02935496654217573,
+      "source_bias": -0.02963944615332803,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "cookingclassy.com",
@@ -734,7 +544,7 @@
       "source_bias": null,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "delish.com",
@@ -744,10 +554,10 @@
       "mean_evidence_confidence": 0.0,
       "anomalies_recent": 0,
       "source_rating_mean": 4.286058558241834,
-      "source_bias": -0.38742009780036746,
+      "source_bias": -0.387832731333436,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "diethood.com",
@@ -760,7 +570,7 @@
       "source_bias": null,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "dinneratthezoo.com",
@@ -773,7 +583,7 @@
       "source_bias": null,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "downshiftology.com",
@@ -783,10 +593,10 @@
       "mean_evidence_confidence": 0.0,
       "anomalies_recent": 0,
       "source_rating_mean": 4.967025462393196,
-      "source_bias": 0.07886373808858238,
+      "source_bias": 0.07866201618249402,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "eatingbirdfood.com",
@@ -799,7 +609,7 @@
       "source_bias": null,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "eatingwell.com",
@@ -809,10 +619,10 @@
       "mean_evidence_confidence": 0.0,
       "anomalies_recent": 0,
       "source_rating_mean": 4.696680900315665,
-      "source_bias": -0.054387502641177754,
+      "source_bias": -0.054784495536739364,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "everydayfamilycooking.com",
@@ -825,7 +635,7 @@
       "source_bias": null,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "feelgoodfoodie.net",
@@ -835,10 +645,10 @@
       "mean_evidence_confidence": 0.0,
       "anomalies_recent": 0,
       "source_rating_mean": 4.992099018951389,
-      "source_bias": 0.10011827665571715,
+      "source_bias": 0.0998906929667962,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "foodandwine.com",
@@ -851,7 +661,7 @@
       "source_bias": null,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "foodnetwork.com",
@@ -864,7 +674,7 @@
       "source_bias": null,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "gimmesomeoven.com",
@@ -877,7 +687,7 @@
       "source_bias": null,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "iheartnaptime.net",
@@ -887,10 +697,10 @@
       "mean_evidence_confidence": 0.0,
       "anomalies_recent": 0,
       "source_rating_mean": 5.0,
-      "source_bias": 0.03886118392066251,
+      "source_bias": 0.038775840037317266,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "jocooks.com",
@@ -903,7 +713,7 @@
       "source_bias": null,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "kristineskitchenblog.com",
@@ -913,10 +723,10 @@
       "mean_evidence_confidence": 0.0,
       "anomalies_recent": 0,
       "source_rating_mean": 4.986683509670156,
-      "source_bias": 0.08660781731889955,
+      "source_bias": 0.08640609541281119,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "lecremedelacrumb.com",
@@ -926,10 +736,10 @@
       "mean_evidence_confidence": 0.0,
       "anomalies_recent": 0,
       "source_rating_mean": 4.9523336061911065,
-      "source_bias": 0.04280785608809623,
+      "source_bias": 0.04268968763423331,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "loveandlemons.com",
@@ -939,10 +749,10 @@
       "mean_evidence_confidence": 0.0,
       "anomalies_recent": 0,
       "source_rating_mean": 4.843402229629199,
-      "source_bias": 0.037303008459238285,
+      "source_bias": 0.03705354172330555,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "melskitchencafe.com",
@@ -955,7 +765,7 @@
       "source_bias": null,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "natashaskitchen.com",
@@ -965,10 +775,10 @@
       "mean_evidence_confidence": 0.0,
       "anomalies_recent": 0,
       "source_rating_mean": 4.980995230250446,
-      "source_bias": 0.0759930861780207,
+      "source_bias": 0.0758113862973504,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "pinchofyum.com",
@@ -978,10 +788,10 @@
       "mean_evidence_confidence": 0.0,
       "anomalies_recent": 0,
       "source_rating_mean": 4.853964708766128,
-      "source_bias": 0.02010734129771663,
+      "source_bias": 0.01998917284385282,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "platedcravings.com",
@@ -994,7 +804,7 @@
       "source_bias": null,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "rachelcooks.com",
@@ -1007,7 +817,7 @@
       "source_bias": null,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "recipetineats.com",
@@ -1020,7 +830,7 @@
       "source_bias": null,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "seriouseats.com",
@@ -1033,7 +843,7 @@
       "source_bias": null,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "simplyrecipes.com",
@@ -1043,10 +853,10 @@
       "mean_evidence_confidence": 0.0,
       "anomalies_recent": 0,
       "source_rating_mean": 4.551123052577719,
-      "source_bias": -0.11537968394560583,
+      "source_bias": -0.11565357826890033,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "skinnytaste.com",
@@ -1056,10 +866,10 @@
       "mean_evidence_confidence": 0.0,
       "anomalies_recent": 0,
       "source_rating_mean": 4.8877255212643025,
-      "source_bias": 0.061920612696434674,
+      "source_bias": 0.061658336372008016,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "spendwithpennies.com",
@@ -1069,10 +879,10 @@
       "mean_evidence_confidence": 0.0,
       "anomalies_recent": 0,
       "source_rating_mean": 4.97810724680981,
-      "source_bias": 0.10292852964979282,
+      "source_bias": 0.10267906291386009,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "tasteofhome.com",
@@ -1082,10 +892,10 @@
       "mean_evidence_confidence": 0.0,
       "anomalies_recent": 0,
       "source_rating_mean": 4.619834271140495,
-      "source_bias": -0.07349931266776544,
+      "source_bias": -0.07375534431780117,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "thekitchn.com",
@@ -1098,7 +908,7 @@
       "source_bias": null,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "thepioneerwoman.com",
@@ -1108,10 +918,10 @@
       "mean_evidence_confidence": 0.0,
       "anomalies_recent": 0,
       "source_rating_mean": 4.455363278938727,
-      "source_bias": -0.16989251865670774,
+      "source_bias": -0.17017182591129298,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "therealfooddietitians.com",
@@ -1121,10 +931,10 @@
       "mean_evidence_confidence": 0.0,
       "anomalies_recent": 0,
       "source_rating_mean": 4.972253919422465,
-      "source_bias": 0.0637513519488957,
+      "source_bias": 0.06359243575232121,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "therecipecritic.com",
@@ -1134,10 +944,10 @@
       "mean_evidence_confidence": 0.0,
       "anomalies_recent": 0,
       "source_rating_mean": 4.726547547450676,
-      "source_bias": -0.019082533748849606,
+      "source_bias": -0.019325090048883276,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "twopeasandtheirpod.com",
@@ -1150,7 +960,7 @@
       "source_bias": null,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "wellplated.com",
@@ -1160,10 +970,10 @@
       "mean_evidence_confidence": 0.0,
       "anomalies_recent": 0,
       "source_rating_mean": 4.7689976707472015,
-      "source_bias": 0.0008913776410732765,
+      "source_bias": 0.0006805280469253105,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     },
     {
       "source": "wholesomeyum.com",
@@ -1176,130 +986,167 @@
       "source_bias": null,
       "current_targets": null,
       "current_verified": null,
-      "current_status": "ok"
+      "current_status": "not_checked_this_run"
     }
   ],
-  "anomalies": [],
+  "anomalies": [
+    {
+      "timestamp": "2026-08-18T21:25:31.162419+00:00",
+      "severity": "medium",
+      "type": "fetch_error",
+      "recipe_id": "",
+      "title": "",
+      "source": "airfryingfoodie.com",
+      "url": "https://airfryingfoodie.com/air-fryer-accessories/",
+      "detail": "RetryError"
+    },
+    {
+      "timestamp": "2026-08-18T21:25:31.162419+00:00",
+      "severity": "medium",
+      "type": "fetch_error",
+      "recipe_id": "",
+      "title": "",
+      "source": "airfryingfoodie.com",
+      "url": "https://airfryingfoodie.com/air-fryer-acorn-squash/",
+      "detail": "RetryError"
+    },
+    {
+      "timestamp": "2026-08-18T21:25:31.162419+00:00",
+      "severity": "medium",
+      "type": "fetch_error",
+      "recipe_id": "",
+      "title": "",
+      "source": "airfryingfoodie.com",
+      "url": "https://airfryingfoodie.com/air-fryer-appetizers/",
+      "detail": "RetryError"
+    }
+  ],
   "source_adjustments": {
     "allrecipes.com": {
       "raw_mean": 4.671771554102354,
-      "shrunk_mean": 4.681230394139535,
-      "bias": -0.08560250233649036,
+      "shrunk_mean": 4.681281345711682,
+      "bias": -0.08606361406441554,
       "recipe_count": 181
     },
     "eatingwell.com": {
       "raw_mean": 4.696680900315665,
-      "shrunk_mean": 4.712445393834847,
-      "bias": -0.054387502641177754,
+      "shrunk_mean": 4.712560464239358,
+      "bias": -0.054784495536739364,
       "recipe_count": 69
     },
     "kristineskitchenblog.com": {
       "raw_mean": 4.986683509670156,
-      "shrunk_mean": 4.8534407137949245,
-      "bias": 0.08660781731889955,
+      "shrunk_mean": 4.8537510551889085,
+      "bias": 0.08640609541281119,
       "recipe_count": 13
     },
     "loveandlemons.com": {
       "raw_mean": 4.843402229629199,
-      "shrunk_mean": 4.804135904935263,
-      "bias": 0.037303008459238285,
+      "shrunk_mean": 4.804398501499403,
+      "bias": 0.03705354172330555,
       "recipe_count": 19
     },
     "tasteofhome.com": {
       "raw_mean": 4.619834271140495,
-      "shrunk_mean": 4.6933335838082595,
-      "bias": -0.07349931266776544,
+      "shrunk_mean": 4.693589615458296,
+      "bias": -0.07375534431780117,
       "recipe_count": 20
     },
     "simplyrecipes.com": {
       "raw_mean": 4.551123052577719,
-      "shrunk_mean": 4.651453212530419,
-      "bias": -0.11537968394560583,
+      "shrunk_mean": 4.651691381507197,
+      "bias": -0.11565357826890033,
       "recipe_count": 23
     },
     "delish.com": {
       "raw_mean": 4.286058558241834,
-      "shrunk_mean": 4.3794127986756575,
-      "bias": -0.38742009780036746,
+      "shrunk_mean": 4.379512228442661,
+      "bias": -0.387832731333436,
       "recipe_count": 83
     },
     "therealfooddietitians.com": {
       "raw_mean": 4.972253919422465,
-      "shrunk_mean": 4.830584248424921,
-      "bias": 0.0637513519488957,
+      "shrunk_mean": 4.8309373955284185,
+      "bias": 0.06359243575232121,
       "recipe_count": 9
     },
     "budgetbytes.com": {
       "raw_mean": 4.713993956700108,
-      "shrunk_mean": 4.737477929933849,
-      "bias": -0.02935496654217573,
+      "shrunk_mean": 4.737705513622769,
+      "bias": -0.02963944615332803,
       "recipe_count": 25
     },
     "thepioneerwoman.com": {
       "raw_mean": 4.455363278938727,
-      "shrunk_mean": 4.596940377819317,
-      "bias": -0.16989251865670774,
+      "shrunk_mean": 4.597173133864804,
+      "bias": -0.17017182591129298,
       "recipe_count": 24
     },
     "skinnytaste.com": {
       "raw_mean": 4.8877255212643025,
-      "shrunk_mean": 4.82875350917246,
-      "bias": 0.061920612696434674,
+      "shrunk_mean": 4.829003296148105,
+      "bias": 0.061658336372008016,
       "recipe_count": 21
     },
     "wellplated.com": {
       "raw_mean": 4.7689976707472015,
-      "shrunk_mean": 4.767724274117098,
-      "bias": 0.0008913776410732765,
+      "shrunk_mean": 4.768025487823023,
+      "bias": 0.0006805280469253105,
       "recipe_count": 14
     },
     "downshiftology.com": {
       "raw_mean": 4.967025462393196,
-      "shrunk_mean": 4.845696634564607,
-      "bias": 0.07886373808858238,
+      "shrunk_mean": 4.846006975958591,
+      "bias": 0.07866201618249402,
       "recipe_count": 13
     },
     "lecremedelacrumb.com": {
       "raw_mean": 4.9523336061911065,
-      "shrunk_mean": 4.809640752564121,
-      "bias": 0.04280785608809623,
+      "shrunk_mean": 4.810034647410331,
+      "bias": 0.04268968763423331,
       "recipe_count": 6
     },
     "feelgoodfoodie.net": {
       "raw_mean": 4.992099018951389,
-      "shrunk_mean": 4.866951173131742,
-      "bias": 0.10011827665571715,
+      "shrunk_mean": 4.8672356527428935,
+      "bias": 0.0998906929667962,
       "recipe_count": 16
     },
     "therecipecritic.com": {
       "raw_mean": 4.726547547450676,
-      "shrunk_mean": 4.747750362727175,
-      "bias": -0.019082533748849606,
+      "shrunk_mean": 4.748019869727214,
+      "bias": -0.019325090048883276,
       "recipe_count": 18
     },
     "spendwithpennies.com": {
       "raw_mean": 4.97810724680981,
-      "shrunk_mean": 4.869761426125818,
-      "bias": 0.10292852964979282,
+      "shrunk_mean": 4.870024022689957,
+      "bias": 0.10267906291386009,
       "recipe_count": 19
     },
     "pinchofyum.com": {
       "raw_mean": 4.853964708766128,
-      "shrunk_mean": 4.786940237773742,
-      "bias": 0.02010734129771663,
+      "shrunk_mean": 4.78733413261995,
+      "bias": 0.01998917284385282,
       "recipe_count": 6
     },
     "natashaskitchen.com": {
       "raw_mean": 4.980995230250446,
-      "shrunk_mean": 4.842825982654046,
-      "bias": 0.0759930861780207,
+      "shrunk_mean": 4.843156346073448,
+      "bias": 0.0758113862973504,
       "recipe_count": 11
     },
     "iheartnaptime.net": {
       "raw_mean": 5.0,
-      "shrunk_mean": 4.805694080396687,
-      "bias": 0.03886118392066251,
+      "shrunk_mean": 4.806120799813415,
+      "bias": 0.038775840037317266,
       "recipe_count": 4
+    },
+    "airfryingfoodie.com": {
+      "raw_mean": 4.774219527023851,
+      "shrunk_mean": 4.772858226578752,
+      "bias": 0.005513266802654293,
+      "recipe_count": 81
     }
   }
 }

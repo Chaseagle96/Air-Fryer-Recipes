@@ -23,7 +23,7 @@ a{color:LinkText}.score{font-variant-numeric:tabular-nums}.badge{white-space:now
 <label><span class="sr">Minimum evidence confidence</span><select id="confidence"><option value="0">Any confidence</option><option value="0.8">≥ 0.80</option><option value="0.9">≥ 0.90</option></select></label>
 </div>
 <div id="stats" class="muted"></div>
-<table aria-describedby="stats"><thead><tr><th>Rank</th><th>Recipe</th><th>Publisher</th><th>Score</th><th>Stars</th><th>Ratings</th><th>Evidence</th><th>Movement</th></tr></thead><tbody id="rows"></tbody></table>
+<table aria-describedby="stats"><thead><tr><th>Rank</th><th>Recipe</th><th>Publisher</th><th>Score</th><th>Stars</th><th>Ratings</th><th>Evidence</th><th>Velocity/day</th><th>Movement</th></tr></thead><tbody id="rows"></tbody></table>
 <details><summary>Methodology and coverage</summary><pre id="methodology" style="white-space:pre-wrap"></pre></details>
 <footer class="muted">Data is automatically refreshed from public recipe pages. Rankings are statistical estimates, not taste-test judgments.</footer>
 <script>
@@ -35,7 +35,7 @@ function render(){
  const min=Number(document.querySelector('#confidence').value||0);
  const rows=DATA.leaderboard.filter(r=>(!q||(`${r.title} ${r.source} ${r.combined_sources}`).toLowerCase().includes(q)))&&(!cat||(r.categories||'').split(' | ').includes(cat))&&Number(r.evidence_confidence||0)>=min);
  document.querySelector('#stats').textContent=`Showing ${rows.length} of ${DATA.leaderboard.length} ranked recipes`;
- document.querySelector('#rows').innerHTML=rows.map(r=>`<tr><td>${r.rank}</td><td><a href="${esc(r.url)}" rel="noopener noreferrer">${esc(r.title)}</a><br><small>${esc(r.categories||'')}</small></td><td>${esc(r.combined_sources||r.source)}</td><td class="score">${Number(r.hierarchical_score).toFixed(4)}</td><td>${Number(r.rating).toFixed(2)}</td><td>${Number(r.rating_count).toLocaleString()}</td><td class="badge">${Number(r.evidence_confidence||0).toFixed(2)} ${esc(r.evidence_status||'')}</td><td>${r.movement==null?'New':(r.movement>0?'▲ '+r.movement:r.movement<0?'▼ '+Math.abs(r.movement):'—')}</td></tr>`).join('');
+ document.querySelector('#rows').innerHTML=rows.map(r=>`<tr><td>${r.rank}</td><td><a href="${esc(r.url)}" rel="noopener noreferrer">${esc(r.title)}</a><br><small>${esc(r.categories||'')}</small></td><td>${esc(r.combined_sources||r.source)}</td><td class="score">${Number(r.hierarchical_score).toFixed(4)}</td><td>${Number(r.rating).toFixed(2)}</td><td>${Number(r.rating_count).toLocaleString()}</td><td class="badge">${Number(r.evidence_confidence||0).toFixed(2)} ${esc(r.evidence_status||'')}</td><td>${r.review_velocity_per_day==null?'—':Number(r.review_velocity_per_day).toFixed(1)}</td><td>${r.movement==null?'New':(r.movement>0?'▲ '+r.movement:r.movement<0?'▼ '+Math.abs(r.movement):'—')}</td></tr>`).join('');
 }
 fetch('data.json',{cache:'no-store'}).then(r=>r.json()).then(data=>{
  DATA=data;
