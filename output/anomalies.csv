@@ -1,7 +1,11 @@
 timestamp,severity,type,recipe_id,title,source,url,detail
-2026-08-18T21:44:52.082063+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-enchiladas/,RetryError
-2026-08-18T21:44:52.082063+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-english-muffins/,RetryError
-2026-08-18T21:44:52.082063+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-filet-mignon/,RetryError
-2026-08-18T21:44:52.082063+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-fish-tacos/,RetryError
-2026-08-18T21:44:52.082063+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-flamin-hot-cheeto-chicken/,RetryError
-2026-08-18T21:44:52.082063+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-french-bread-pizza/,RetryError
+2026-08-18T22:11:58.441699+00:00,high,review_count_decrease,3816ac709666b19fa73e4fcd,Air Fryer Baked Potatoes,simplyrecipes.com,https://www.simplyrecipes.com/air-fryer-baked-potatoes-recipe-6281225,2 -> 1
+2026-08-18T22:11:58.441699+00:00,medium,fetch_error,,,tasteofhome.com,https://www.tasteofhome.com/recipes/air-fryer-herb-and-cheese-stuffed-burgers/,RetryError
+2026-08-18T22:11:58.441699+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-bacon-wrapped-scallops/,RetryError
+2026-08-18T22:11:58.441699+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-bacon-wrapped-shrimp/,RetryError
+2026-08-18T22:11:58.441699+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-bacon-wrapped-smokies/,RetryError
+2026-08-18T22:11:58.441699+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-bacon-wrapped-tater-tots/,RetryError
+2026-08-18T22:11:58.441699+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-bacon/,RetryError
+2026-08-18T22:11:58.441699+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-bagel-bites/,RetryError
+2026-08-18T22:11:58.441699+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-baked-apples/,RetryError
+2026-08-18T22:11:58.441699+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-baked-beans/,RetryError
