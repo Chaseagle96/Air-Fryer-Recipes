@@ -1,0 +1,30 @@
+defaults:
+  max_urls: 200
+  delay: 0.20
+sources:
+  - domain: allrecipes.com
+  - domain: foodnetwork.com
+  - domain: delish.com
+  - domain: eatingwell.com
+  - domain: tasteofhome.com
+  - domain: skinnytaste.com
+  - domain: therecipecritic.com
+  - domain: spendwithpennies.com
+  - domain: pinchofyum.com
+  - domain: budgetbytes.com
+  - domain: simplyrecipes.com
+  - domain: wellplated.com
+  - domain: natashaskitchen.com
+  - domain: downshiftology.com
+  - domain: gimmesomeoven.com
+  - domain: lecremedelacrumb.com
+  - domain: therealfooddietitians.com
+  - domain: loveandlemons.com
+  - domain: thepioneerwoman.com
+  - domain: cookingclassy.com
+  - domain: iheartnaptime.net
+  - domain: feelgoodfoodie.net
+  - domain: kristineskitchenblog.com
+  - domain: jocooks.com
+  - domain: recipetineats.com
+  - domain: bbcgoodfood.com
