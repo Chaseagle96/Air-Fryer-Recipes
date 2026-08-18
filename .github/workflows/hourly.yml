@@ -10,6 +10,8 @@ on:
       - 'tests/**'
       - 'config/**'
       - 'requirements.txt'
+  issues:
+    types: [opened]
   schedule:
     - cron: '17 * * * *'
   workflow_dispatch:
