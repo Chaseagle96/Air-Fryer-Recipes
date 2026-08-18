@@ -80,7 +80,13 @@ jobs:
           exit "$status"
 
       - name: Test with branch coverage
-        run: PYTHONPATH=src pytest --cov=airfryer_rankings --cov-report=term-missing --cov-report=xml
+        shell: bash
+        run: |
+          mkdir -p output
+          set +e
+          PYTHONPATH=src pytest --cov=airfryer_rankings --cov-report=term-missing --cov-report=xml 2>&1 | tee output/pytest.txt
+          status=${PIPESTATUS[0]}
+          exit "$status"
 
       - name: Resolve refresh mode
         id: mode
@@ -158,6 +164,7 @@ jobs:
           path: |
             output/sbom.json
             output/mypy.txt
+            output/pytest.txt
             output/quality_gate.json
             output/pipeline_metrics.json
             output/pipeline_metrics.csv
