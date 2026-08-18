@@ -1,0 +1,23 @@
+model_version: 5
+active_parameters:
+  max_source_bias: 0.15
+  evidence_confidence_target: 0.80
+  evidence_penalty_scale: 0.20
+  uncertainty_cap: 0.25
+  source_prior_strength: 20.0
+  category_prior_strength: 20.0
+  volume_prior_quantile: 0.60
+  minimum_volume_prior: 50.0
+promotion_policy:
+  automatic_parameter_promotion: false
+  minimum_backtest_windows: 4
+  minimum_backtest_recipes: 75
+  minimum_history_days: 30
+  freeze_days_after_promotion: 14
+backtest_grid:
+  max_source_bias: [0.10, 0.15, 0.20]
+  evidence_penalty_scale: [0.10, 0.20, 0.30]
+  source_prior_strength: [10.0, 20.0, 40.0]
+  category_prior_strength: [10.0, 20.0, 40.0]
+  uncertainty_cap: [0.20, 0.25, 0.30]
+  volume_prior_multiplier: [0.80, 1.00, 1.20]
