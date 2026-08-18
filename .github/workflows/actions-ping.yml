@@ -3,6 +3,8 @@ name: Actions Ping
 on:
   issues:
     types: [opened]
+  pull_request:
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 permissions:
