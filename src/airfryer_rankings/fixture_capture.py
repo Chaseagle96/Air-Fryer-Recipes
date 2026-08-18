@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 
 from .evidence import jsonld_objects
 from .http import get, make_session, robots_and_sitemaps
-from .models import SourceConfig, load_sources
+from .models import UA, SourceConfig, load_sources
 from .storage import load_state
 
 FIXTURE_JSONLD_FIELDS = {
@@ -105,7 +105,7 @@ def capture_candidate_fixtures(
         session = make_session()
         parser, _, _, _ = robots_and_sitemaps(session, cfg)
         try:
-            if not parser.can_fetch("AirFryerRankingsBot/5.0", url):
+            if not parser.can_fetch(UA, url):
                 manifest["failed"].append({"source": cfg.domain, "url": url, "reason": "robots_denied"})
                 continue
         except Exception:
