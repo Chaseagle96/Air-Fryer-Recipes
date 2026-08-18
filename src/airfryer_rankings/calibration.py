@@ -40,7 +40,7 @@ def build_empirical_uncertainty(observations: list[dict], min_pairs: int = 30) -
     deltas: dict[str, list[float]] = defaultdict(list)
     for rows in grouped.values():
         rows.sort(key=lambda item: item["timestamp"])
-        for previous, current in zip(rows, rows[1:]):
+        for previous, current in zip(rows, rows[1:], strict=False):
             if current["timestamp"] <= previous["timestamp"]:
                 continue
             bucket = volume_bucket(max(previous["rating_count"], current["rating_count"]))
@@ -93,7 +93,7 @@ def _linear_slope(rows: list[dict], key: str) -> float | None:
     denominator = sum((x - mean_x) ** 2 for x in xs)
     if denominator <= 0:
         return None
-    return sum((x - mean_x) * (y - mean_y) for x, y in zip(xs, ys)) / denominator
+    return sum((x - mean_x) * (y - mean_y) for x, y in zip(xs, ys, strict=True)) / denominator
 
 
 def _rate_between(start: dict | None, end: dict | None) -> float | None:
@@ -182,7 +182,7 @@ def build_historical_metrics(
             hashes = [(row["timestamp"], row["page_hash"]) for row in last_30 if row["page_hash"]]
             changes = [
                 current_hash
-                for previous_hash, current_hash in zip(hashes, hashes[1:])
+                for previous_hash, current_hash in zip(hashes, hashes[1:], strict=False)
                 if previous_hash[1] != current_hash[1]
             ]
             metrics["page_change_count_30d"] = len(changes)
