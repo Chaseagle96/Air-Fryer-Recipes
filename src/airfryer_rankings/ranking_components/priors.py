@@ -24,7 +24,7 @@ def global_prior(current: list[dict]) -> float:
         return 0.0
     weights = [math.sqrt(max(1, int(item["rating_count"]))) for item in current]
     ratings = [float(item["normalized_rating"]) for item in current]
-    return sum(rating * weight for rating, weight in zip(ratings, weights)) / max(1e-9, sum(weights))
+    return sum(rating * weight for rating, weight in zip(ratings, weights, strict=True)) / max(1e-9, sum(weights))
 
 
 def volume_prior_m(current: list[dict], params: ModelParameters) -> tuple[float, float]:
