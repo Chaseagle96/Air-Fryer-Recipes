@@ -1,1 +1,2 @@
 Public-repository GitHub Actions smoke validation.
+Retry with bounded three-source crawl.
