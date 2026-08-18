@@ -98,7 +98,7 @@ def _configuration_grid(model_payload: dict[str, Any], active: ModelParameters, 
     raw_combinations = list(itertools.product(*(values[name] for name in names)))
     combinations: list[ModelParameters] = [active]
     for combo in raw_combinations:
-        overrides = {name: float(value) for name, value in zip(names, combo)}
+        overrides = {name: float(value) for name, value in zip(names, combo, strict=True)}
         candidate = active.with_overrides(**overrides)
         if candidate not in combinations:
             combinations.append(candidate)
