@@ -22,8 +22,10 @@ from .models import (
     fingerprint_image_url,
     ingredient_signature,
     instruction_signature,
+    instruction_simhash,
     now_iso,
 )
+
 
 def extract_recipe_from_html(
     html: str,
@@ -90,6 +92,7 @@ def extract_recipe_from_html(
                 canonical_url=canonical,
                 ingredients=ingredients,
                 instruction_signature=instruction_signature(instructions),
+                instruction_simhash=instruction_simhash(instructions),
                 instructions=instructions,
                 image_url=image,
                 image_fingerprint=fingerprint_image_url(image),
