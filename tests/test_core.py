@@ -49,6 +49,7 @@ def test_bayesian_rewards_volume_without_ignoring_rating():
     assert ranked[0]["recipe_id"] == "b"
     assert method["volume_prior_m"] >= 50
     assert "uncertainty_penalty" in ranked[0]
+    assert "evidence_penalty" in ranked[0]
 
 
 def test_cross_site_duplicate_does_not_double_count_review_population():
@@ -108,6 +109,25 @@ def test_verified_dual_evidence_gets_high_confidence():
     assert row.evidence_confidence == 1.0
 
 
+def test_schema_only_evidence_is_rankable_but_penalized():
+    html = '''
+    <html><head><title>Air Fryer Schema Only</title></head><body>
+    <script type="application/ld+json">{
+      "@type":"Recipe","name":"Air Fryer Schema Only",
+      "recipeIngredient":["potato","salt"],
+      "aggregateRating":{"ratingValue":"4.9","ratingCount":"250","bestRating":"5"}
+    }</script></body></html>'''
+    row, _ = extract_recipe_from_html(html, "https://x.com/schema", "x.com", SourceConfig("x.com"))
+    assert row is not None
+    assert row.evidence_status == "schema_only"
+    assert row.evidence_confidence == 0.65
+    state = {"recipes": {}, "rank_history": [], "source_history": [], "url_catalog": {}, "anomaly_history": []}
+    merge_observations(state, [row], "2026-08-18T20:00:00+00:00")
+    ranked, _ = bayesian_rank(state, stale_days=10000)
+    assert ranked[0]["recipe_id"] == row.recipe_id
+    assert ranked[0]["evidence_penalty"] > 0
+
+
 def test_publisher_bias_is_partially_pooled():
     state = {"recipes": {}, "rank_history": [], "source_history": [], "url_catalog": {}, "anomaly_history": []}
     rows = []
@@ -118,6 +138,24 @@ def test_publisher_bias_is_partially_pooled():
     _, method = bayesian_rank(state, stale_days=10000)
     assert method["source_adjustments"]["inflated.com"]["bias"] > 0
     assert method["source_adjustments"]["strict.com"]["bias"] < 0
+
+
+def test_publisher_bias_correction_is_capped_before_adjusting_recipe_rating():
+    state = {"recipes": {}, "rank_history": [], "source_history": [], "url_catalog": {}, "anomaly_history": []}
+    rows = []
+    for i in range(20):
+        rows.append(recipe(f"strict-{i}", f"Strict Recipe {i}", "strict.com", 4.0, 500 + i))
+        rows.append(recipe(f"inflated-{i}", f"Inflated Recipe {i}", "inflated.com", 5.0, 500 + i))
+    rows.append(recipe("target", "Target Air Fryer Potatoes", "strict.com", 4.82, 500))
+    merge_observations(state, rows, "2026-08-18T20:00:00+00:00")
+    ranked, method = bayesian_rank(state, stale_days=10000)
+    adjustment = method["source_adjustments"]["strict.com"]
+    target = next(row for row in ranked if row["recipe_id"] == "target")
+    assert adjustment["raw_bias"] < -0.15
+    assert adjustment["bias"] == -0.15
+    assert adjustment["bias_capped"] is True
+    assert abs(target["adjusted_rating"] - 4.97) < 1e-9
+    assert target["adjusted_rating"] < 5.0
 
 
 def test_hourly_selector_prioritizes_top_rank_and_new_urls():

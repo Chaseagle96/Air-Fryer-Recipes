@@ -7,6 +7,12 @@ from datetime import datetime, timedelta, timezone
 from .dedupe import dedupe_current
 from .models import categorize_recipe, now_iso, parse_dt
 
+
+MAX_SOURCE_BIAS = 0.15
+EVIDENCE_CONFIDENCE_TARGET = 0.80
+EVIDENCE_PENALTY_SCALE = 0.20
+
+
 def _percentile(values: list[int], q: float) -> float:
     if not values:
         return 0.0
@@ -26,8 +32,12 @@ def _fresh(recipe: dict, now: datetime, stale_days: int) -> bool:
     return bool(dt and dt >= now - timedelta(days=stale_days))
 
 
-
-def _source_adjustments(current: list[dict], global_prior: float, prior_strength: float = 20.0) -> dict[str, dict]:
+def _source_adjustments(
+    current: list[dict],
+    global_prior: float,
+    prior_strength: float = 20.0,
+    max_abs_bias: float = MAX_SOURCE_BIAS,
+) -> dict[str, dict]:
     grouped: dict[str, list[dict]] = defaultdict(list)
     for item in current:
         grouped[item.get("source", "")].append(item)
@@ -38,10 +48,14 @@ def _source_adjustments(current: list[dict], global_prior: float, prior_strength
         raw_mean = sum(r * w for r, w in zip(ratings, weights)) / max(1e-9, sum(weights))
         n = float(len(items))
         shrunk_mean = (n / (n + prior_strength)) * raw_mean + (prior_strength / (n + prior_strength)) * global_prior
+        raw_bias = shrunk_mean - global_prior
+        bias = max(-max_abs_bias, min(max_abs_bias, raw_bias))
         result[source] = {
             "raw_mean": raw_mean,
             "shrunk_mean": shrunk_mean,
-            "bias": shrunk_mean - global_prior,
+            "raw_bias": raw_bias,
+            "bias": bias,
+            "bias_capped": not math.isclose(raw_bias, bias, rel_tol=0.0, abs_tol=1e-12),
             "recipe_count": int(n),
         }
     return result
@@ -104,7 +118,7 @@ def bayesian_rank(state: dict, stale_days: int = 14, history_limit: int = 168) -
         else:
             uncertainty_penalty = min(0.25, 1.96 * 2.5 / math.sqrt(max(1.0, v + m)))
         confidence = float(item.get("evidence_confidence", 0.85))
-        evidence_penalty = max(0.0, 0.80 - confidence) * 0.20
+        evidence_penalty = max(0.0, EVIDENCE_CONFIDENCE_TARGET - confidence) * EVIDENCE_PENALTY_SCALE
         hierarchical_score = max(0.0, posterior - uncertainty_penalty - evidence_penalty)
         previous_count = item.get("previous_rating_count")
         previous_seen = parse_dt(item.get("previous_seen_at"))
@@ -128,6 +142,7 @@ def bayesian_rank(state: dict, stale_days: int = 14, history_limit: int = 168) -
                 "adjusted_rating": adjusted_rating,
                 "posterior_mean": posterior,
                 "uncertainty_penalty": uncertainty_penalty,
+                "evidence_penalty": evidence_penalty,
                 "hierarchical_score": hierarchical_score,
                 "evidence_confidence": confidence,
                 "evidence_status": item.get("evidence_status", ""),
@@ -178,5 +193,6 @@ def bayesian_rank(state: dict, stale_days: int = 14, history_limit: int = 168) -
         "history_snapshots": len(history),
         "source_adjustments": source_adjustments,
         "duplicate_groups": duplicate_rows,
-        "formula": "hierarchical_score = BayesianPosterior(source-adjusted rating) - uncertainty penalty",
+        "max_source_bias": MAX_SOURCE_BIAS,
+        "formula": "hierarchical_score = BayesianPosterior(capped source-adjusted rating) - uncertainty penalty - evidence penalty",
     }
