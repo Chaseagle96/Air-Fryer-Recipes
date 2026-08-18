@@ -6,7 +6,6 @@ from typing import Any
 
 from bs4 import BeautifulSoup
 
-
 STRUCTURAL_ATTRIBUTES = ("itemprop", "itemtype", "itemscope", "type", "rel")
 
 
