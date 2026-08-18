@@ -8,6 +8,8 @@ from openpyxl.chart import LineChart, Reference
 from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
 
+from .dashboard import write_dashboard as write_dashboard
+
 CATEGORY_SHEETS = ["Chicken", "Potatoes", "Vegetables", "Desserts", "Beef", "Pork", "Seafood", "Breakfast", "Snacks"]
 
 
