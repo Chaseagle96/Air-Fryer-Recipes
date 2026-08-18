@@ -46,6 +46,9 @@ ignore = ["B008"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["B011"]
+# Legacy monolithic regression module retains a harmless compatibility import;
+# new V5 tests are held to the normal F401 rule.
+"tests/test_core.py" = ["B011", "F401"]
 
 [tool.mypy]
 python_version = "3.12"
