@@ -1,6 +1,14 @@
 name: Air Fryer Rankings
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/hourly.yml'
+      - 'src/**'
+      - 'tests/**'
+      - 'config/**'
+      - 'requirements.txt'
   schedule:
     - cron: '17 * * * *'      # hourly incremental refresh
     - cron: '43 8 * * *'      # daily discovery + full known-catalog refresh
