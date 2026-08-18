@@ -9,13 +9,15 @@ from typing import Iterable
 from .contracts import CLEAN_RECIPE_SCHEMA_VERSION, RAW_OBSERVATION_SCHEMA_VERSION
 from .models import DEFAULT_STATE, RecipeRow, parse_dt
 
-STATE_SCHEMA_VERSION = CLEAN_RECIPE_SCHEMA_VERSION
+# The persisted state envelope remains v4 for backward compatibility. Individual
+# clean recipe records and downstream contracts are independently versioned at V5.
+STATE_SCHEMA_VERSION = 4
 LEGACY_EVIDENCE_CONFIDENCE = 0.60
 KNOWN_EVIDENCE_STATUSES = {"verified", "schema_only", "visible_only", "conflict", "legacy_unverified"}
 
 
 def migrate_state(state: dict) -> dict:
-    """Upgrade persisted state without silently preserving obsolete evidence or structural assumptions."""
+    """Upgrade persisted records without silently preserving obsolete evidence or structural assumptions."""
     previous_version = int(state.get("schema_version") or 0)
     recipes = state.setdefault("recipes", {})
     catalog = state.setdefault("url_catalog", {})
@@ -61,6 +63,7 @@ def migrate_state(state: dict) -> dict:
     state["migration"] = {
         "from_schema_version": previous_version,
         "to_schema_version": STATE_SCHEMA_VERSION,
+        "clean_recipe_schema_version": CLEAN_RECIPE_SCHEMA_VERSION,
         "legacy_evidence_marked": legacy_marked,
         "legacy_evidence_pending": pending,
         "legacy_default_confidence": LEGACY_EVIDENCE_CONFIDENCE,
@@ -78,6 +81,7 @@ def load_state(path: str | Path) -> dict:
         state["migration"] = {
             "from_schema_version": STATE_SCHEMA_VERSION,
             "to_schema_version": STATE_SCHEMA_VERSION,
+            "clean_recipe_schema_version": CLEAN_RECIPE_SCHEMA_VERSION,
             "legacy_evidence_marked": 0,
             "legacy_evidence_pending": 0,
             "legacy_default_confidence": LEGACY_EVIDENCE_CONFIDENCE,
