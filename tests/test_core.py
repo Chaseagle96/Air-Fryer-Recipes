@@ -154,7 +154,7 @@ def test_publisher_bias_correction_is_capped_before_adjusting_recipe_rating():
     assert adjustment["raw_bias"] < -0.15
     assert adjustment["bias"] == -0.15
     assert adjustment["bias_capped"] is True
-    assert target["adjusted_rating"] <= 4.97
+    assert abs(target["adjusted_rating"] - 4.97) < 1e-9
     assert target["adjusted_rating"] < 5.0
 
 
