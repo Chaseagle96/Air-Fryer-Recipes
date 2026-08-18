@@ -1,1 +1,7 @@
-
+timestamp,severity,type,recipe_id,title,source,url,detail
+2026-08-18T21:44:52.082063+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-enchiladas/,RetryError
+2026-08-18T21:44:52.082063+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-english-muffins/,RetryError
+2026-08-18T21:44:52.082063+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-filet-mignon/,RetryError
+2026-08-18T21:44:52.082063+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-fish-tacos/,RetryError
+2026-08-18T21:44:52.082063+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-flamin-hot-cheeto-chicken/,RetryError
+2026-08-18T21:44:52.082063+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-french-bread-pizza/,RetryError
