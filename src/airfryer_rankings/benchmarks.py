@@ -144,5 +144,10 @@ def build_dedupe_label_queue(
                 "adjudication_note": "",
             }
         )
-    queue.sort(key=lambda row: (row["distance_from_production_threshold"], -row["similarity"]))
+    queue.sort(
+        key=lambda row: (
+            float(row["distance_from_production_threshold"]),
+            -float(row["similarity"]),
+        )
+    )
     return queue
