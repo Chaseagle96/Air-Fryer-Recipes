@@ -7,6 +7,11 @@ from typing import Iterable
 
 from .models import GENERIC_TITLE_TOKENS, normalize_ingredient, normalize_text
 
+# duplicate_similarity hard-caps pairs that fail the strong evidence gate at 0.79.
+# The production threshold is therefore aligned immediately above that gate instead
+# of the former 0.88 cutoff, which benchmark data showed sacrificed substantial recall.
+DEDUPE_THRESHOLD = 0.80
+
 
 def _tokens(value: str) -> set[str]:
     return {x for x in normalize_text(value).split() if len(x) > 2}
@@ -104,9 +109,9 @@ def duplicate_similarity(a: dict, b: dict) -> float:
     strong_image = perceptual_image is not None and perceptual_image >= 0.90
     strong_instruction = instruction_simhash is not None and instruction_simhash >= 0.88
     if ingredient is not None and not (title >= 0.88 and ingredient >= 0.62) and not (title >= 0.94 and strong_image):
-        return min(score, 0.79)
+        return min(score, DEDUPE_THRESHOLD - 0.01)
     if ingredient is None and not (title >= 0.97 and (author_match or image_url_match or strong_image or strong_instruction)):
-        return min(score, 0.79)
+        return min(score, DEDUPE_THRESHOLD - 0.01)
     return score
 
 
@@ -190,7 +195,7 @@ def dedupe_current(recipes: Iterable[dict], detailed: bool = False):
                     continue
                 seen_pairs.add(pair)
                 confidence = duplicate_similarity(recipes[left], recipes[right])
-                if confidence >= 0.88:
+                if confidence >= DEDUPE_THRESHOLD:
                     pair_confidence[pair] = confidence
                     union(left, right)
 

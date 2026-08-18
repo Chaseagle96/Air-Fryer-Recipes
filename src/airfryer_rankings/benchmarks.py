@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from .dedupe import duplicate_similarity
+from .dedupe import DEDUPE_THRESHOLD, duplicate_similarity
 from .models import instruction_simhash
 
 
@@ -15,7 +15,7 @@ def _prepare(recipe: dict) -> dict:
     return item
 
 
-def evaluate_dedupe_benchmark(path: str | Path, threshold: float = 0.88) -> tuple[dict, list[dict]]:
+def evaluate_dedupe_benchmark(path: str | Path, threshold: float = DEDUPE_THRESHOLD) -> tuple[dict, list[dict]]:
     p = Path(path)
     if not p.exists():
         return {"benchmark_pairs": 0, "precision": None, "recall": None, "f1": None, "threshold": threshold}, []
