@@ -1,0 +1,1 @@
+Public-repository GitHub Actions smoke validation.
