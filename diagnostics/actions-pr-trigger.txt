@@ -1,0 +1,1 @@
+Diagnostic branch used to verify pull-request-triggered GitHub Actions execution.
