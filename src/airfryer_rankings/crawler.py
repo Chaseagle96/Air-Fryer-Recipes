@@ -52,9 +52,6 @@ def select_refresh_targets(
                 value += min(5000, growth * 10)
         age = _entry_age_hours(entry, "last_checked", now)
         if entry.get("last_status") == "no_verified_rating" and age < 24 * 7:
-            # A URL that was fetched recently but did not even expose recipe
-            # structure should be revisited by discovery, not repeatedly consume
-            # production-hourly ranking capacity.
             value -= 12000
         value += min(4000, age * 10)
         return value, age
@@ -74,11 +71,6 @@ def select_refresh_targets(
         if not ranked:
             return []
 
-        # Hourly production is primarily an incremental refresh of already
-        # validated recipe documents. Broad catalog qualification belongs to the
-        # daily/deep discovery paths. Keep a small exploration budget so new URLs
-        # are still sampled without letting a burst of unvalidated catalog entries
-        # drive the publication-quality denominator below its SLO.
         validated = [entry for entry in ranked if entry.get("recipe_id") or entry.get("recipe_recognized")]
         exploratory = [entry for entry in ranked if not (entry.get("recipe_id") or entry.get("recipe_recognized"))]
         exploration_limit = 0
@@ -254,11 +246,11 @@ def crawl_targets(
                     and entry.get("schema_signature") != schema_signature
                 )
                 priority = "contract_changed" if dom_changed or schema_changed else "changed" if content_changed else "stable"
-                status = "ok" if row else "recognized_no_verified_rating" if recognized else "no_verified_rating"
+                entry_status = "ok" if row else "recognized_no_verified_rating" if recognized else "no_verified_rating"
                 entry.update(
                     {
                         "last_checked": run_at,
-                        "last_status": status,
+                        "last_status": entry_status,
                         "etag": str(response.headers.get("ETag") or ""),
                         "last_modified": str(response.headers.get("Last-Modified") or ""),
                         "page_hash": page_hash,
@@ -291,20 +283,20 @@ def crawl_targets(
                     event_type = "recipe_without_verified_rating" if recognized else "no_verified_rating"
                     events.append({"type": event_type, "source": domain, "url": url, "timestamp": run_at})
             except requests.HTTPError as exc:
-                status = getattr(exc.response, "status_code", None)
+                http_status = getattr(exc.response, "status_code", None)
                 entry["last_checked"] = run_at
-                entry["last_status"] = f"http_{status}" if status else "http_error"
-                if status == 403:
+                entry["last_status"] = f"http_{http_status}" if http_status else "http_error"
+                if http_status == 403:
                     metrics["http_403"] += 1
-                if status == 429:
+                if http_status == 429:
                     metrics["http_429"] += 1
-                if status in (404, 410):
+                if http_status in (404, 410):
                     metrics["missing"] += 1
                     entry["missing_count"] = int(entry.get("missing_count", 0)) + 1
-                    events.append({"type": "recipe_disappeared", "source": domain, "url": url, "status": status, "timestamp": run_at})
+                    events.append({"type": "recipe_disappeared", "source": domain, "url": url, "status": http_status, "timestamp": run_at})
                 else:
                     metrics["errors"] += 1
-                    events.append({"type": "fetch_error", "source": domain, "url": url, "status": status, "timestamp": run_at})
+                    events.append({"type": "fetch_error", "source": domain, "url": url, "status": http_status, "timestamp": run_at})
             except Exception as exc:
                 metrics["errors"] += 1
                 entry.update({"last_checked": run_at, "last_status": f"error:{type(exc).__name__}"})
