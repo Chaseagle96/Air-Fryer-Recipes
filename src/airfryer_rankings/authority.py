@@ -138,15 +138,23 @@ def publish_authority(
     source_hash, source_domains = _source_fingerprint(sources)
     allowed_sources = set(source_domains)
     catalog_hash, effective_catalog_count = _catalog_fingerprint(state, allowed_sources)
+    raw_catalog_count = len(state.get("url_catalog", {}) or {})
 
     summary_source_count = int(summary.get("configured_sources") or 0)
-    summary_effective_catalog_count = int(summary.get("effective_catalog_urls") or 0)
+    summary_catalog_count = int(summary.get("catalog_urls") or 0)
     if summary_source_count != len(sources):
         raise AuthorityError(f"source mismatch: summary={summary_source_count} current={len(sources)}")
-    if summary_effective_catalog_count != effective_catalog_count:
+    if summary_catalog_count != raw_catalog_count:
+        raise AuthorityError(f"catalog mismatch: summary={summary_catalog_count} current={raw_catalog_count}")
+
+    ranking_scope = state.get("effective_source_domains")
+    persisted_source_domains = sorted(
+        {str(domain) for domain in ranking_scope if str(domain)}
+    ) if isinstance(ranking_scope, list) else []
+    if persisted_source_domains != source_domains:
         raise AuthorityError(
-            "effective catalog mismatch: "
-            f"summary={summary_effective_catalog_count} current={effective_catalog_count}"
+            "ranking source scope does not match current effective allowlist: "
+            f"ranking={persisted_source_domains} current={source_domains}"
         )
 
     source_gate_version = int(registry.get("source_gate_version") or 0)
@@ -168,7 +176,6 @@ def publish_authority(
     if ranking_at is None or ranking_at < catalog_sync_at:
         raise AuthorityError("ranking generation predates the latest catalog synchronization")
 
-    raw_catalog_count = len(state.get("url_catalog", {}) or {})
     metrics_catalog_count = int(metrics.get("catalog_url_count") or 0)
     if raw_catalog_count < metrics_catalog_count:
         raise AuthorityError(
