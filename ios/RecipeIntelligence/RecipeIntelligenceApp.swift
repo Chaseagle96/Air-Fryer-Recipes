@@ -22,13 +22,15 @@ struct RecipeIntelligenceApp: App {
         ])
         let isUITesting = ProcessInfo.processInfo.arguments.contains("--ui-testing")
         let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: isUITesting)
+        let container: ModelContainer
         do {
-            modelContainer = try ModelContainer(for: schema, configurations: [configuration])
+            container = try ModelContainer(for: schema, configurations: [configuration])
         } catch {
             fatalError("Unable to create Recipe Intelligence data store: \(error)")
         }
         let client: any RecipeIntelligenceClient = isUITesting ? PreviewRecipeIntelligenceClient() : LiveRecipeIntelligenceClient()
-        _appModel = StateObject(wrappedValue: AppModel(modelContext: modelContainer.mainContext, client: client))
+        modelContainer = container
+        _appModel = StateObject(wrappedValue: AppModel(modelContext: container.mainContext, client: client))
         URLCache.shared = URLCache(memoryCapacity: 64 * 1024 * 1024, diskCapacity: 256 * 1024 * 1024)
     }
 
