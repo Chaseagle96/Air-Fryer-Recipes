@@ -9,18 +9,27 @@ from airfryer_rankings.authority import AuthorityError, publish_authority
 from airfryer_rankings.core import RecipeRow, bayesian_rank, merge_observations
 
 
-def _recipe(recipe_id: str, source: str, rating: float, count: int) -> RecipeRow:
+def _recipe(
+    recipe_id: str,
+    source: str,
+    rating: float,
+    count: int,
+    *,
+    title: str | None = None,
+    url: str | None = None,
+) -> RecipeRow:
+    recipe_url = url or f"https://{source}/{recipe_id}"
     return RecipeRow(
         recipe_id=recipe_id,
-        title=f"Air Fryer {recipe_id}",
+        title=title or f"Air Fryer {recipe_id}",
         source=source,
-        url=f"https://{source}/{recipe_id}",
+        url=recipe_url,
         rating=rating,
         rating_count=count,
         best_rating=5.0,
         normalized_rating=rating,
         retrieved_at="2026-08-19T12:00:00+00:00",
-        canonical_url=f"https://{source}/{recipe_id}",
+        canonical_url=recipe_url,
         evidence_confidence=1.0,
         evidence_status="verified",
     )
@@ -93,7 +102,7 @@ def _authority_fixture(tmp_path: Path) -> dict[str, Path]:
     )
 
     leaderboard = tmp_path / "leaderboard.csv"
-    leaderboard.write_text("rank,title,source\n1,Air Fryer A,trusted.example\n", encoding="utf-8")
+    leaderboard.write_text("rank,title,source,url\n1,Air Fryer A,trusted.example,https://trusted.example/a\n", encoding="utf-8")
     authority = tmp_path / "authority.json"
     return {
         "sources": sources,
@@ -151,6 +160,50 @@ def test_bayesian_rank_immediately_evicts_non_effective_sources() -> None:
     assert "suspended.example" not in method["source_adjustments"]
 
 
+def test_slow_cooker_ranking_evicts_retained_cross_vertical_recipe() -> None:
+    state = {
+        "recipes": {},
+        "url_catalog": {},
+        "rank_history": [],
+        "source_history": [],
+        "anomaly_history": [],
+        "migration": {},
+        "schema_version": 5,
+    }
+    merge_observations(
+        state,
+        [
+            _recipe(
+                "birria",
+                "budgetbytes.com",
+                5.0,
+                50000,
+                title="Birria Tacos",
+                url="https://www.budgetbytes.com/birria-tacos/",
+            ),
+            _recipe(
+                "slow-lemon",
+                "skinnytaste.com",
+                4.9,
+                1000,
+                title="Slow Cooker Lemon Feta Drumsticks",
+                url="https://www.skinnytaste.com/slow-cooker-lemon-feta-chicken/",
+            ),
+        ],
+        "2026-08-19T12:00:00+00:00",
+    )
+
+    ranked, method = bayesian_rank(
+        state,
+        stale_days=10000,
+        model_config_path="config/verticals/slow_cooker/model.yaml",
+        allowed_sources={"budgetbytes.com", "skinnytaste.com"},
+    )
+
+    assert [row["recipe_id"] for row in ranked] == ["slow-lemon"]
+    assert method["candidate_count"] == 1
+
+
 def test_new_authority_baseline_requires_entire_effective_catalog(tmp_path: Path) -> None:
     paths = _authority_fixture(tmp_path)
     summary = json.loads(paths["summary"].read_text(encoding="utf-8"))
@@ -174,11 +227,30 @@ def test_backfill_cannot_establish_new_authority_baseline(tmp_path: Path) -> Non
 def test_authority_rejects_leaderboard_source_outside_effective_registry(tmp_path: Path) -> None:
     paths = _authority_fixture(tmp_path)
     paths["leaderboard"].write_text(
-        "rank,title,source\n1,Stale Recipe,suspended.example\n",
+        "rank,title,source,url\n1,Stale Recipe,suspended.example,https://suspended.example/stale\n",
         encoding="utf-8",
     )
 
     with pytest.raises(AuthorityError, match="non-effective sources"):
+        _publish(paths)
+
+
+def test_authority_rejects_recipe_outside_strict_vertical_policy(tmp_path: Path) -> None:
+    paths = _authority_fixture(tmp_path)
+    paths["sources"].write_text(
+        "defaults:\n"
+        "  include_pattern: '(?:slow[-_ ]?cook(?:er|ing|ed)|crock[-_ ]?pot)'\n"
+        "  allow_unmatched_discovery_links: false\n"
+        "sources:\n"
+        "  - domain: trusted.example\n",
+        encoding="utf-8",
+    )
+    paths["leaderboard"].write_text(
+        "rank,title,source,url\n1,Birria Tacos,trusted.example,https://trusted.example/birria-tacos/\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(AuthorityError, match="strict vertical policy"):
         _publish(paths)
 
 
