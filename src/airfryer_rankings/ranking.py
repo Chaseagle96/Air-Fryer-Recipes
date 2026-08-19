@@ -28,6 +28,11 @@ def bayesian_rank(
     if model_params is not None:
         params = model_params
 
+    if allowed_sources is None:
+        persisted_scope = state.get("effective_source_domains")
+        if isinstance(persisted_scope, list):
+            allowed_sources = {str(domain) for domain in persisted_scope if str(domain)}
+
     current = eligible_current(state, stale_days, allowed_sources=allowed_sources)
     current, deduplicated, duplicate_rows = dedupe_current(current, detailed=True)
     if not current:
