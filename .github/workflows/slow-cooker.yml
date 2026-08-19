@@ -201,6 +201,22 @@ jobs:
           print('Slow Cooker mobile corpus:', 'ranked=', ranked, 'corpus=', corpus, 'statuses=', manifest['corpus_status_counts'])
           PY
 
+      - name: Certify Slow Cooker authority before publication
+        if: steps.mode.outputs.production == 'true'
+        working-directory: verticals/slow_cooker
+        run: |
+          PYTHONPATH=../../src python ../../scripts/ranking_authority.py publish \
+            --vertical slow_cooker \
+            --sources ../../config/verticals/slow_cooker/sources.yaml \
+            --state data/state.json \
+            --registry data/source_registry.json \
+            --metrics output/source_expansion.json \
+            --summary output/summary.json \
+            --leaderboard output/leaderboard.csv \
+            --authority output/authority.json \
+            --public-authority docs/api/authority.json \
+            --manifest docs/api/manifest.json
+
       - name: Upload Slow Cooker Excel workbook
         if: always() && hashFiles('verticals/slow_cooker/output/slow_cooker_rankings.xlsx') != ''
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -235,6 +251,7 @@ jobs:
             verticals/slow_cooker/output/dedupe_label_queue.csv
             verticals/slow_cooker/output/storage_health.json
             verticals/slow_cooker/output/summary.json
+            verticals/slow_cooker/output/authority.json
 
       - name: Upload Slow Cooker history Parquet archive
         if: always() && hashFiles('verticals/slow_cooker/output/history_archive.parquet') != ''
@@ -270,6 +287,7 @@ jobs:
             verticals/slow_cooker/output/quality_gate.json \
             verticals/slow_cooker/output/pipeline_metrics.json \
             verticals/slow_cooker/output/storage_health.json \
+            verticals/slow_cooker/output/authority.json \
             verticals/slow_cooker/output/summary.json; do
             [ ! -e "$file" ] || git add "$file"
           done

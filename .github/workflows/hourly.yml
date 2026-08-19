@@ -156,6 +156,21 @@ jobs:
           print('Air Fryer mobile corpus:', 'ranked=', ranked, 'corpus=', corpus, 'statuses=', manifest['corpus_status_counts'])
           PY
 
+      - name: Certify Air Fryer authority before publication
+        if: steps.mode.outputs.production == 'true'
+        run: |
+          PYTHONPATH=src python scripts/ranking_authority.py publish \
+            --vertical air_fryer \
+            --sources config/sources.yaml \
+            --state data/state.json \
+            --registry data/source_registry.json \
+            --metrics output/source_expansion.json \
+            --summary output/summary.json \
+            --leaderboard output/leaderboard.csv \
+            --authority output/authority.json \
+            --public-authority docs/api/authority.json \
+            --manifest docs/api/manifest.json
+
       - name: Capture sanitized publisher fixture candidates
         if: steps.mode.outputs.mode == 'deep' && steps.mode.outputs.production == 'true'
         run: PYTHONPATH=src python -m airfryer_rankings.fixture_capture --output output/fixture_candidates
@@ -196,6 +211,7 @@ jobs:
             output/evidence_label_results.csv
             output/dedupe_label_queue.csv
             output/storage_health.json
+            output/authority.json
             coverage.xml
 
       - name: Upload Air Fryer history Parquet archive
@@ -248,6 +264,7 @@ jobs:
             output/quality_gate.json \
             output/pipeline_metrics.json \
             output/storage_health.json \
+            output/authority.json \
             output/summary.json; do
             [ ! -e "$file" ] || git add "$file"
           done
