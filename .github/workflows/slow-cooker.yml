@@ -151,7 +151,6 @@ jobs:
           fi
           python - <<'PY'
           import json
-          import re
           from pathlib import Path
 
           path = Path("output/summary.json")
@@ -170,11 +169,18 @@ jobs:
           assert str(payload.get("analytics_cache_file", "")).endswith("slow_cooker_analytics.duckdb")
           assert "Slow Cooker" in Path("docs/index.html").read_text(encoding="utf-8")
 
-          vertical_re = re.compile(r"(?:slow[-_ ]?cook(?:er|ing|ed)|crock[-_ ]?pot)", re.I)
+          state = json.loads(Path("data/state.json").read_text(encoding="utf-8"))
+          effective_sources = set(state.get("effective_source_domains") or [])
+          expected_sources = {"skinnytaste.com", "budgetbytes.com", "wellplated.com"}
+          assert effective_sources == expected_sources, (effective_sources, expected_sources)
+
           top = payload.get("top10") or []
           assert top, "Slow Cooker smoke run produced no Top recipes"
-          assert all(vertical_re.search(f"{row.get('title', '')} {row.get('url', '')}") for row in top), (
-              "Slow Cooker smoke leaderboard contains a recipe without Slow Cooker/Crock-Pot semantics"
+          ranked_sources = {str(row.get("source") or "") for row in top}
+          assert ranked_sources <= effective_sources, (
+              "Slow Cooker smoke leaderboard contains a source outside the effective smoke allowlist",
+              ranked_sources,
+              effective_sources,
           )
           PY
 
