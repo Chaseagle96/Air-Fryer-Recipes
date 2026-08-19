@@ -40,15 +40,15 @@ jobs:
         run: |
           set -euo pipefail
 
-          has_active_run() {
+          has_active_recovery() {
             local workflow="$1"
             gh run list \
               --repo "$GITHUB_REPOSITORY" \
               --workflow "$workflow" \
               --branch main \
               --limit 20 \
-              --json status \
-              --jq 'any(.[]; .status == "queued" or .status == "in_progress" or .status == "waiting" or .status == "pending")'
+              --json status,event \
+              --jq 'any(.[]; .event == "workflow_dispatch" and (.status == "queued" or .status == "in_progress" or .status == "waiting" or .status == "pending"))'
           }
 
           dispatch_if_stale() {
@@ -61,8 +61,8 @@ jobs:
               return
             fi
 
-            if [ "$(has_active_run "$workflow")" = "true" ]; then
-              echo "$label is non-authoritative, but a ranking run is already active."
+            if [ "$(has_active_recovery "$workflow")" = "true" ]; then
+              echo "$label is non-authoritative, but a full recovery refresh is already queued or running."
               return
             fi
 
