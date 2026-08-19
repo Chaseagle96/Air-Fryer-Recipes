@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/hourly.yml'
       - 'src/**'
+      - 'scripts/**'
       - 'tests/**'
       - 'config/**'
       - 'requirements.txt'
@@ -38,7 +39,10 @@ permissions:
 
 concurrency:
   group: recipe-intelligence-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  # A newly merged code/config change should supersede an older production run
+  # that is still holding the main concurrency slot. Scheduled hourly/daily/deep
+  # runs do not cancel each other, preserving long research refreshes.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
 
 jobs:
   refresh:
