@@ -1,4 +1,5 @@
 from airfryer_rankings.models import RecipeRow, SourceConfig
+from airfryer_rankings.observability import build_pipeline_metrics
 from airfryer_rankings.qa import detect_anomalies, source_health_summary, source_reliability
 
 
@@ -39,10 +40,11 @@ def test_source_health_and_reliability_distinguish_stale_unchecked_and_degraded_
             {"source": "bad.com", "type": "source_failure"},
             {"source": "bad.com", "type": "fetch_error"},
         ],
+        "migration": {"legacy_evidence_pending": 1},
     }
     coverage = [
-        {"source": "good.com", "status": "ok", "targets": 1, "verified_recipes": 1},
-        {"source": "bad.com", "status": "degraded", "targets": 1, "verified_recipes": 0},
+        {"source": "good.com", "status": "ok", "targets": 1, "verified_recipes": 1, "elapsed_seconds": 0.2},
+        {"source": "bad.com", "status": "degraded", "targets": 1, "verified_recipes": 0, "elapsed_seconds": 0.4},
         {"source": "idle.com", "status": "not_checked_this_run"},
     ]
     configs = [SourceConfig("good.com"), SourceConfig("bad.com"), SourceConfig("idle.com")]
@@ -54,6 +56,21 @@ def test_source_health_and_reliability_distinguish_stale_unchecked_and_degraded_
     assert by_source["idle.com"]["checked_this_run"] is False
     assert summary["sources_checked_this_run"] == 2
     assert summary["sources_degraded_this_run"] == 1
+
+    metrics, _, _ = build_pipeline_metrics(
+        state,
+        coverage,
+        [],
+        [{"recipe_id": "a"}],
+        [],
+        health,
+        [],
+        [{"url": "https://good.com/a"}, {"url": "https://bad.com/b"}],
+        "2026-08-18T21:00:00+00:00",
+    )
+    assert metrics["sources_stale_24h"] == 1
+    assert metrics["sources_stale_7d"] == 1
+    assert metrics["legacy_evidence_pending"] == 1
 
     method = {
         "source_adjustments": {
