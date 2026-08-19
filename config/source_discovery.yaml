@@ -33,14 +33,14 @@ budgets:
     max_search_queries_per_run: 32
     search_results_per_query: 10
     max_candidate_domains_per_run: 30
-    max_candidate_domains_evaluated: 10
-    max_candidate_pages_per_domain: 12
-    max_total_qualification_pages: 120
-    max_candidate_sitemap_docs: 60
-    candidate_url_scan_cap: 300
-    max_outbound_pages_per_run: 30
-    max_new_promotions_per_run: 5
-    max_discovery_seconds: 1800
+    max_candidate_domains_evaluated: 8
+    max_candidate_pages_per_domain: 10
+    max_total_qualification_pages: 80
+    max_candidate_sitemap_docs: 45
+    candidate_url_scan_cap: 240
+    max_outbound_pages_per_run: 20
+    max_new_promotions_per_run: 4
+    max_discovery_seconds: 900
     candidate_page_delay: 0.10
     auto_source_max_urls: 300
     auto_source_delay: 0.25
