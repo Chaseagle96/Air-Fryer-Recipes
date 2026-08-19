@@ -20,6 +20,7 @@ protocol RecipeIntelligenceClient: Sendable {
     func fetchVerticals(forceRefresh: Bool) async throws -> [RecipeVertical]
     func fetchFeedManifest(vertical: RecipeVertical, forceRefresh: Bool) async throws -> FeedManifest
     func fetchRecipePage(vertical: RecipeVertical, pageIndex: Int) async throws -> RecipePageEnvelope
+    func fetchCorpusPage(vertical: RecipeVertical, pageIndex: Int) async throws -> RecipePageEnvelope
 }
 
 extension RecipeIntelligenceClient {
@@ -29,6 +30,12 @@ extension RecipeIntelligenceClient {
 
     func fetchFeedManifest(vertical: RecipeVertical) async throws -> FeedManifest {
         try await fetchFeedManifest(vertical: vertical, forceRefresh: false)
+    }
+
+    // Test doubles and older clients can continue treating the ranked feed as the
+    // corpus until they explicitly implement the broader mobile contract.
+    func fetchCorpusPage(vertical: RecipeVertical, pageIndex: Int) async throws -> RecipePageEnvelope {
+        try await fetchRecipePage(vertical: vertical, pageIndex: pageIndex)
     }
 }
 
@@ -72,17 +79,41 @@ actor LiveRecipeIntelligenceClient: RecipeIntelligenceClient {
 
     func fetchRecipePage(vertical: RecipeVertical, pageIndex: Int) async throws -> RecipePageEnvelope {
         let manifest = try await fetchFeedManifest(vertical: vertical, forceRefresh: false)
-        guard pageIndex >= 0, pageIndex < manifest.pages.count else {
+        return try await fetchPage(
+            vertical: vertical,
+            pageIndex: pageIndex,
+            references: manifest.pages,
+            manifest: manifest
+        )
+    }
+
+    func fetchCorpusPage(vertical: RecipeVertical, pageIndex: Int) async throws -> RecipePageEnvelope {
+        let manifest = try await fetchFeedManifest(vertical: vertical, forceRefresh: false)
+        return try await fetchPage(
+            vertical: vertical,
+            pageIndex: pageIndex,
+            references: manifest.effectiveCorpusPages,
+            manifest: manifest
+        )
+    }
+
+    private func fetchPage(
+        vertical: RecipeVertical,
+        pageIndex: Int,
+        references: [FeedPageReference],
+        manifest: FeedManifest
+    ) async throws -> RecipePageEnvelope {
+        guard pageIndex >= 0, pageIndex < references.count else {
             throw RecipeIntelligenceClientError.pageOutOfRange
         }
-        let pageReference = manifest.pages[pageIndex]
+        let pageReference = references[pageIndex]
         guard let pageURL = URL(string: pageReference.path, relativeTo: vertical.manifestURL)?.absoluteURL else {
             throw RecipeIntelligenceClientError.badResponse
         }
 
         // Page filenames are intentionally stable. Key the HTTP request by the
-        // manifest generation so a newly published ranking snapshot cannot be
-        // masked by URLCache or an upstream raw-content cache entry.
+        // manifest generation so a newly published snapshot cannot be masked by
+        // URLCache or an upstream raw-content cache entry.
         let versionedPageURL = cacheBustedURL(pageURL, token: manifest.generatedAt)
         let page: RecipePageEnvelope = try await request(versionedPageURL, forceRefresh: false)
         guard page.schemaVersion == 1 else {
@@ -93,8 +124,7 @@ actor LiveRecipeIntelligenceClient: RecipeIntelligenceClient {
         }
         guard page.generatedAt == manifest.generatedAt else {
             // `main` can advance between the manifest and page HTTP requests.
-            // Never mix two generations into one deck; keep the old snapshot and
-            // let the foreground/periodic/manual refresh path retry cleanly.
+            // Never mix two generations into one client snapshot.
             throw RecipeIntelligenceClientError.inconsistentSnapshot
         }
         return page
@@ -137,6 +167,14 @@ actor PreviewRecipeIntelligenceClient: RecipeIntelligenceClient {
     }
 
     func fetchRecipePage(vertical: RecipeVertical, pageIndex: Int) async throws -> RecipePageEnvelope {
+        try page(vertical: vertical, pageIndex: pageIndex)
+    }
+
+    func fetchCorpusPage(vertical: RecipeVertical, pageIndex: Int) async throws -> RecipePageEnvelope {
+        try page(vertical: vertical, pageIndex: pageIndex)
+    }
+
+    private func page(vertical: RecipeVertical, pageIndex: Int) throws -> RecipePageEnvelope {
         guard pageIndex == 0 else { throw RecipeIntelligenceClientError.pageOutOfRange }
         let recipes = SampleData.recipes.filter { $0.verticalID == vertical.id }
         return RecipePageEnvelope(

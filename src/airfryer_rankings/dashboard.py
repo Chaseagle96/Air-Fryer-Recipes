@@ -64,6 +64,30 @@ for(const id of ['search','category','confidence','rankconfidence'])document.que
     return html.replace("Air Fryer", vertical_name())
 
 
+def _existing_normalized_corpus(docs_dir: str | Path) -> tuple[list[dict] | None, int | None]:
+    """Read already-crawled clean state for production mobile publication.
+
+    Production runs call write_dashboard with the relative `docs` directory. Tests
+    and alternate report destinations do not implicitly read repository state.
+    This is deliberately a local projection only: no discovery or network request
+    occurs here, so publishing the corpus cannot perturb ranking or crawl history.
+    """
+    if Path(docs_dir) != Path("docs"):
+        return None, None
+    state_path = Path("data/state.json")
+    if not state_path.exists():
+        return None, None
+    try:
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None, None
+    recipes = state.get("recipes", {}) if isinstance(state, dict) else {}
+    catalog = state.get("url_catalog", {}) if isinstance(state, dict) else {}
+    if not isinstance(recipes, dict):
+        return None, len(catalog) if isinstance(catalog, dict) else None
+    return [dict(row) for row in recipes.values() if isinstance(row, dict)], len(catalog) if isinstance(catalog, dict) else None
+
+
 def write_dashboard(
     docs_dir: str | Path,
     generated_at: str,
@@ -72,6 +96,11 @@ def write_dashboard(
     anomalies: list[dict],
     methodology: dict,
     source_count: int,
+    *,
+    corpus: list[dict] | None = None,
+    duplicate_groups: list[dict] | None = None,
+    stale_days: int = 14,
+    catalog_url_count: int | None = None,
 ) -> None:
     docs = Path(docs_dir)
     docs.mkdir(parents=True, exist_ok=True)
@@ -87,4 +116,20 @@ def write_dashboard(
     (docs / "data.json").write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     (docs / "index.html").write_text(_dashboard_html(), encoding="utf-8")
     (docs / ".nojekyll").write_text("", encoding="utf-8")
-    write_app_feed(docs, generated_at, ranked, source_count)
+
+    if corpus is None:
+        existing_corpus, existing_catalog_count = _existing_normalized_corpus(docs_dir)
+        corpus = existing_corpus
+        if catalog_url_count is None:
+            catalog_url_count = existing_catalog_count
+    effective_stale_days = int(methodology.get("stale_days") or stale_days)
+    write_app_feed(
+        docs,
+        generated_at,
+        ranked,
+        source_count,
+        corpus=corpus,
+        duplicate_groups=duplicate_groups,
+        stale_days=effective_stale_days,
+        catalog_url_count=catalog_url_count,
+    )

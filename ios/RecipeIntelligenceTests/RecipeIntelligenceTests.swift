@@ -23,6 +23,33 @@ final class RecipeIntelligenceTests: XCTestCase {
         XCTAssertEqual(recipe.rank, 1)
         XCTAssertEqual(recipe.ingredients, ["1 onion"])
         XCTAssertEqual(recipe.photoURL?.absoluteString, "https://example.com/r1.jpg")
+        XCTAssertTrue(recipe.isGloballyRanked, "Older ranked pages remain discoverable when corpus metadata is absent.")
+    }
+
+    func testManifestDecodesCompleteCorpusMetadata() throws {
+        let json = """
+        {"schema_version":1,"generated_at":"v2","vertical":{"id":"air_fryer","name":"Air Fryer","source_count":40},"recipe_count":1068,"ranked_recipe_count":1068,"page_size":100,"pages":[{"index":1,"path":"recipes/0001.json","count":100}],"corpus_recipe_count":1842,"corpus_pages":[{"index":1,"path":"corpus/0001.json","count":100},{"index":2,"path":"corpus/0002.json","count":100}],"corpus_status_counts":{"discover":1068,"explore":510,"archive":240,"suppressed":24},"catalog_url_count":3744}
+        """
+        let manifest = try JSONDecoder().decode(FeedManifest.self, from: Data(json.utf8))
+        XCTAssertEqual(manifest.effectiveRankedRecipeCount, 1068)
+        XCTAssertEqual(manifest.effectiveCorpusRecipeCount, 1842)
+        XCTAssertEqual(manifest.effectiveCorpusPages.first?.path, "corpus/0001.json")
+        XCTAssertEqual(manifest.corpusStatusCounts?["explore"], 510)
+        XCTAssertEqual(manifest.catalogURLCount, 3744)
+    }
+
+    func testCorpusRecipeDecodesServeabilityWithoutFakeRank() throws {
+        let json = """
+        {"schema_version":1,"generated_at":"v2","vertical_id":"air_fryer","vertical_name":"Air Fryer","page":1,"recipes":[{"recipe_id":"r2","vertical_id":"air_fryer","vertical_name":"Air Fryer","title":"Unranked Chicken","source":"example.com","combined_sources":"example.com","url":"https://example.com/r2","canonical_url":"https://example.com/r2","image_url":"https://example.com/r2.jpg","author":"Chef","categories":["Chicken"],"ingredients":["1 onion"],"has_instructions":true,"instruction_count":5,"rank":0,"rating":4.8,"rating_count":0,"hierarchical_score":0.0,"evidence_confidence":0.4,"evidence_grade":"","evidence_status":"schema_only","rank_confidence":0.0,"rank_range_low":null,"rank_range_high":null,"rank_provenance":"","is_ranked":false,"discover_eligible":false,"explore_eligible":true,"serveability":"explore","status_reasons":["no_rating_evidence","low_evidence"],"last_seen_at":"2026-08-19T00:00:00Z"}]}
+        """
+        let page = try JSONDecoder().decode(RecipePageEnvelope.self, from: Data(json.utf8))
+        let recipe = try XCTUnwrap(page.recipes.first)
+        XCTAssertFalse(recipe.isGloballyRanked)
+        XCTAssertFalse(recipe.isDiscoverEligible)
+        XCTAssertTrue(recipe.isExploreEligible)
+        XCTAssertEqual(recipe.serveability, "explore")
+        XCTAssertEqual(recipe.rankingLabel, "Exploratory · Air Fryer")
+        XCTAssertEqual(recipe.statusReasons ?? [], ["no_rating_evidence", "low_evidence"])
     }
 
     func testRecommendationFiltersSavedSkippedAndNotNow() {
