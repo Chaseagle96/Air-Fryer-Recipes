@@ -5,6 +5,14 @@ on:
     workflows:
       - Recipe Intelligence Source Catalog Sync
     types: [completed]
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/authority-invalidate.yml'
+      - '.github/workflows/authoritative-refresh.yml'
+      - '.github/workflows/authority-postcheck.yml'
+      - 'src/airfryer_rankings/authority.py'
+      - 'scripts/ranking_authority.py'
   workflow_dispatch:
 
 permissions:
@@ -12,12 +20,13 @@ permissions:
   contents: read
 
 concurrency:
-  group: recipe-intelligence-source-network-${{ github.event.workflow_run.head_branch || github.ref_name }}
+  group: recipe-intelligence-authoritative-refresh-main
   cancel-in-progress: false
 
 jobs:
   dispatch:
     if: >-
+      github.event_name == 'push' ||
       github.event_name == 'workflow_dispatch' ||
       (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-latest
