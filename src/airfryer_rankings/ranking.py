@@ -22,12 +22,13 @@ def bayesian_rank(
     historical_metrics: dict[str, dict] | None = None,
     model_params: ModelParameters | None = None,
     model_config_path: str = "config/model.yaml",
+    allowed_sources: set[str] | None = None,
 ) -> tuple[list[dict], dict]:
     params, model_payload = load_model_config(model_config_path)
     if model_params is not None:
         params = model_params
 
-    current = eligible_current(state, stale_days)
+    current = eligible_current(state, stale_days, allowed_sources=allowed_sources)
     current, deduplicated, duplicate_rows = dedupe_current(current, detailed=True)
     if not current:
         return [], {
