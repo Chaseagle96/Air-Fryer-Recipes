@@ -33,9 +33,16 @@ DEFAULT_MODEL_PARAMETERS = ModelParameters()
 def load_model_config(path: str | Path = "config/model.yaml") -> tuple[ModelParameters, dict[str, Any]]:
     target = Path(path)
     if not target.exists():
-        return DEFAULT_MODEL_PARAMETERS, {"model_version": 5, "active_parameters": DEFAULT_MODEL_PARAMETERS.to_dict()}
+        return DEFAULT_MODEL_PARAMETERS, {
+            "model_version": 5,
+            "active_parameters": DEFAULT_MODEL_PARAMETERS.to_dict(),
+        }
+
     payload = yaml.safe_load(target.read_text(encoding="utf-8")) or {}
-    raw = payload.get("active_parameters", {}) or {}
+    # V5's canonical key is active_parameters. Accept the short-lived `active`
+    # spelling as a backward-compatible alias so experimental configs and older
+    # test fixtures remain readable without changing the frozen production config.
+    raw = payload.get("active_parameters") or payload.get("active") or {}
     params = ModelParameters(
         max_source_bias=float(raw.get("max_source_bias", DEFAULT_MODEL_PARAMETERS.max_source_bias)),
         evidence_confidence_target=float(
@@ -49,5 +56,8 @@ def load_model_config(path: str | Path = "config/model.yaml") -> tuple[ModelPara
         ),
         volume_prior_quantile=float(raw.get("volume_prior_quantile", DEFAULT_MODEL_PARAMETERS.volume_prior_quantile)),
         minimum_volume_prior=float(raw.get("minimum_volume_prior", DEFAULT_MODEL_PARAMETERS.minimum_volume_prior)),
+        volume_prior_multiplier=float(
+            raw.get("volume_prior_multiplier", DEFAULT_MODEL_PARAMETERS.volume_prior_multiplier)
+        ),
     )
     return params, payload
