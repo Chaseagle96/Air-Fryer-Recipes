@@ -57,7 +57,7 @@ The checked-in source YAML files remain the maintainer-owned base layer. Machine
 
 ## Candidate discovery
 
-`airfryer_rankings.source_expansion` supports several independent candidate mechanisms:
+The shared source-expansion engine supports several independent candidate mechanisms:
 
 1. **Brave Search API**, when `BRAVE_SEARCH_API_KEY` is configured.
 2. **Google Custom Search JSON API**, when `GOOGLE_CSE_API_KEY` and `GOOGLE_CSE_ID` are configured.
@@ -110,13 +110,21 @@ DISCOVERED -> CANDIDATE -> QUARANTINED -> QUALIFIED -> PROMOTED -> ACTIVE
 
 A newly discovered domain never enters production directly. Normal automatic promotion requires two qualifying evaluations. A weekly deep run can fast-track an exceptionally strong source only when it clears the higher score/sample/reliability/relevance requirements configured in the gate.
 
-## Source qualification gate v1
+## Source qualification gate v2
 
-`source_gate_version: 1` is persisted with every decision. Promotion thresholds and weights are versioned in `config/source_discovery.yaml`.
+`source_gate_version: 2` is the current decision model. Every new evaluation and transition records that version, while historical v1 audit events retain the exact gate version and metrics that justified their original decisions.
+
+Gate v2 corrects an important distinction in the original bootstrap model. The production ranking extractor intentionally emits a ranking row only when a recipe has usable rating/review evidence. Therefore, a recipe page without public ratings is not an extractor failure. V2 separates:
+
+- **recipe structure/extractability**, meaning the publisher exposes substantive recipe data Recipe Intelligence can parse;
+- **ranking-evidence coverage**, meaning the share of sampled recipes currently carrying usable rating/review evidence;
+- **conditional extraction success**, meaning the production ranking extractor's success rate only among pages where ranking evidence is present.
+
+This prevents a legitimate editorial or test-kitchen publisher from being penalized merely for omitting public star ratings, while still detecting genuine extractor incompatibility on publishers that do expose ranking evidence.
 
 ### Hard gates
 
-A domain cannot compensate for a hard integrity failure with a high weighted score. Gate v1 checks, among other things:
+A domain cannot compensate for a hard integrity failure with a high weighted score. Gate v2 checks, among other things:
 
 - robots/technical availability and fetch yield;
 - minimum bounded sample size;
@@ -124,21 +132,22 @@ A domain cannot compensate for a hard integrity failure with a high weighted sco
 - Recipe structured-content yield;
 - vertical relevance;
 - substantive ingredients/instructions;
+- ranking-extractor compatibility when at least three sampled pages contain ranking evidence;
 - external-canonical/mirror behavior;
 - extreme within-source duplicate content;
 - crawler-trap URL patterns;
 - repeated visible/structured rating conflicts.
 
-Temporary evidence shortfalls such as an unavailable robots endpoint, too few sampled pages, or transient fetch failure remain quarantined instead of becoming permanent rejection from one run.
+The default conditional extraction hard gate is 60% once at least three evidence-bearing sample pages exist. Sparse or absent rating evidence does not trigger that gate. Temporary evidence shortfalls such as an unavailable robots endpoint, too few sampled pages, or transient fetch failure remain quarantined instead of becoming permanent rejection from one run.
 
 ### Weighted score
 
-The configurable v1 weights are:
+The configurable v2 weights are:
 
 | Component | Weight |
 |---|---:|
 | Vertical relevance / usable yield | 20% |
-| Recipe structure / extraction completeness | 20% |
+| Recipe structure / extraction reliability | 20% |
 | Editorial provenance | 15% |
 | Crawl stability | 15% |
 | Rating/review integrity | 10% |
@@ -146,7 +155,9 @@ The configurable v1 weights are:
 | Freshness | 5% |
 | General source-quality signals | 5% |
 
-The default qualification threshold is 74/100. Normal promotion requires two independent qualifying attempts. A deep fast-track requires at least 88/100 plus a larger sample and stricter fetch/structure/relevance conditions.
+Within the extraction-reliability component, conditional production-extractor success is included when ranking evidence exists. When no ranking evidence is present, that sub-weight is redistributed across recipe structure, field completeness, and substantive-content signals instead of treating missing ratings as failure.
+
+The default qualification threshold remains 74/100. Normal promotion requires two independent qualifying attempts. A deep fast-track requires at least 88/100 plus a larger sample and stricter fetch/structure/relevance conditions.
 
 **Public star ratings are not a prerequisite for source legitimacy.** A publisher with no public rating system receives neutral rating-integrity treatment at the source gate. Individual recipes still need the normal Recipe Intelligence evidence required by the Bayesian ranking system, so source trust cannot manufacture recipe-rating evidence.
 
@@ -157,7 +168,9 @@ The bounded evaluator samples multiple vertical-relevant URLs and records:
 - candidate vertical URL count;
 - pages sampled/fetched;
 - Recipe JSON-LD recognition;
-- ranking-extractor success;
+- ranking-evidence page count and coverage;
+- ranking-row yield;
+- conditional ranking-extractor success;
 - ingredient/instruction substance;
 - yield/time/author/publisher/date completeness;
 - vertical relevance ratio;
@@ -206,6 +219,8 @@ Candidate-domain awareness is shared, but vertical trust is not. If Air Fryer di
 
 A source-expansion or catalog-sync workflow failure does **not** prevent Air Fryer or Slow Cooker hourly refreshes from operating against their last approved effective allowlists and catalogs.
 
+Production source expansion runs through `airfryer_rankings.source_expansion_v2`, which installs gate-v2 scoring and metrics over the shared discovery, security, registry, lifecycle, and persistence engine. This keeps the decision model explicitly versioned while preserving all historical v1 audit evidence.
+
 ## Observability and auditability
 
 Each vertical writes `output/source_expansion.json`; the aggregate run writes `output/source_expansion_all.json`. Metrics include:
@@ -215,7 +230,8 @@ Each vertical writes `output/source_expansion.json`; the aggregate run writes `o
 - promotion rate;
 - median source quality score;
 - qualification pages fetched;
-- qualification extraction success rate;
+- qualification conditional extraction success rate;
+- qualification ranking-row yield;
 - manual, auto, and effective source counts;
 - URL catalog count and post-promotion URL additions;
 - per-source catalog synchronization evidence;
