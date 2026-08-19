@@ -79,12 +79,12 @@ Dynamic domains are untrusted input. `source_security.py`:
 - rejects credentials and non-standard ports;
 - rejects IP literals as publisher identities;
 - strips only a leading `www.` alias and preserves meaningful publisher subdomains;
-- rejects obvious social, search, shopping, ad, CDN, image, analytics, and generic-hosting candidates;
+- rejects obvious social, search, shopping, affiliate/shortener, aggregator, ad, CDN, image, analytics, auth, and generic-hosting candidates;
 - resolves candidate hosts before requests and rejects loopback, private, link-local, reserved/non-global, and known metadata targets;
 - follows redirects manually and revalidates every redirect destination;
-- applies guarded network fetches throughout robots, sitemap, category discovery, qualification, and production crawling for machine-discovered sources.
+- applies guarded network fetches throughout robots, sitemap, category discovery, qualification, catalog synchronization, and production crawling for machine-discovered sources.
 
-Pinned/manual sources preserve the pre-existing networking behavior, limiting regression risk while all new autonomous input is guarded.
+Pinned/manual sources preserve the pre-existing networking behavior, limiting regression risk while all new autonomous input is guarded. Historical non-publisher candidates are audit-retired without deleting their discovery provenance.
 
 ## Lifecycle
 
@@ -172,7 +172,9 @@ This makes the answer to “why is this domain trusted?” reproducible from per
 
 ## Promotion and production crawling
 
-When a candidate is promoted, its machine-owned `crawl_config` contains its relevant sitemap/discovery entry points, inclusion pattern, crawl delay, and URL cap. It immediately becomes part of the effective allowlist. The next normal vertical daily/deep discovery run uses the same existing `discover_source_urls()` path as manual sources to seed and expand the persistent URL catalog. Source-expansion automation deliberately does not write ranking state files itself, avoiding cross-workflow state races while keeping promotion automatic.
+When a candidate is promoted, its machine-owned `crawl_config` contains its relevant sitemap/discovery entry points, inclusion pattern, crawl delay, and URL cap. It immediately becomes part of the effective allowlist. After a successful production source-expansion run, `.github/workflows/source-catalog-sync.yml` invokes `airfryer_rankings.source_catalog_sync` to seed every production-eligible discovered publisher into that vertical's persistent URL catalog through the existing `discover_source_urls()` path.
+
+Trust decisions and ranking-state mutation remain isolated. Source expansion owns qualification and the machine registry; catalog sync mutates only `url_catalog`, reuses robots and dynamic-source SSRF protections, validates that every effective auto-source has persistent catalog coverage, and refuses to commit if that invariant is not satisfied. It does not rewrite recipes, observations, priors, rankings, or historical evidence.
 
 All recipes from an auto source still flow through the existing extraction, evidence validation, anomaly detection, dedupe, Bayesian ranking, robustness, and publication gates. Source promotion changes the universe that Recipe Intelligence is allowed to research; it does not bypass recipe-level quality controls.
 
@@ -195,13 +197,14 @@ Candidate-domain awareness is shared, but vertical trust is not. If Air Fryer di
 
 ## Cadence and failure isolation
 
-`.github/workflows/source-expansion.yml` is separate from the high-frequency ranking workflows.
+`.github/workflows/source-expansion.yml` and `.github/workflows/source-catalog-sync.yml` are separate from the high-frequency ranking workflows.
 
 - Hourly ranking: approved sources and the existing URL catalog only. No internet-wide search.
 - Daily source expansion: bounded query/outbound discovery and a small qualification queue.
 - Weekly deep source expansion: broader query family, larger samples, cross-vertical re-evaluation, suspended-source recovery, and more promotion capacity.
+- Post-expansion catalog sync: after a successful production source-expansion run, seed/refresh auto-promoted publishers in the persistent URL catalogs and persist synchronization diagnostics.
 
-A source-expansion workflow failure does **not** prevent Air Fryer or Slow Cooker hourly refreshes from operating against their last approved effective allowlists.
+A source-expansion or catalog-sync workflow failure does **not** prevent Air Fryer or Slow Cooker hourly refreshes from operating against their last approved effective allowlists and catalogs.
 
 ## Observability and auditability
 
@@ -214,7 +217,8 @@ Each vertical writes `output/source_expansion.json`; the aggregate run writes `o
 - qualification pages fetched;
 - qualification extraction success rate;
 - manual, auto, and effective source counts;
-- URL catalog count;
+- URL catalog count and post-promotion URL additions;
+- per-source catalog synchronization evidence;
 - provider availability/errors;
 - pinned-source degradation warnings.
 
@@ -244,4 +248,4 @@ A new vertical does not copy the source-expansion engine. Add one entry under `v
 - the method-specific inclusion regex;
 - query terms and diversification dimensions.
 
-Use the normal vertical working-directory/state isolation pattern. The shared discovery, qualification, security, registry, lifecycle, and observability implementation then applies unchanged.
+Use the normal vertical working-directory/state isolation pattern. The shared discovery, qualification, security, registry, lifecycle, catalog synchronization, and observability implementation then applies unchanged.
