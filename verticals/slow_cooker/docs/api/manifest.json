@@ -1,12 +1,13 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-19T04:07:54.568060+00:00",
+  "generated_at": "2026-08-19T04:46:36.227580+00:00",
   "vertical": {
     "id": "slow_cooker",
     "name": "Slow Cooker",
     "source_count": 38
   },
-  "recipe_count": 216,
+  "recipe_count": 274,
+  "ranked_recipe_count": 274,
   "page_size": 100,
   "pages": [
     {
@@ -22,11 +23,34 @@
     {
       "index": 3,
       "path": "recipes/0003.json",
+      "count": 74
+    }
+  ],
+  "corpus_recipe_count": 216,
+  "corpus_pages": [
+    {
+      "index": 1,
+      "path": "corpus/0001.json",
+      "count": 100
+    },
+    {
+      "index": 2,
+      "path": "corpus/0002.json",
+      "count": 100
+    },
+    {
+      "index": 3,
+      "path": "corpus/0003.json",
       "count": 16
     }
   ],
+  "corpus_status_counts": {
+    "discover": 216
+  },
+  "catalog_url_count": 3692,
   "content_policy": {
     "ingredients": "factual structured ingredient lines",
-    "instructions": "publisher prose not republished; open canonical_url for full directions"
+    "instructions": "publisher prose not republished; open canonical_url for full directions",
+    "corpus": "all normalized recipe records are published with serveability metadata; default Discover remains ranking-gated"
   }
 }
