@@ -10,6 +10,7 @@ from .discovery import discover_source_urls
 from .models import load_sources, now_iso
 from .source_registry import effective_source_configs, load_source_registry
 from .storage import load_state, save_state
+from .url_normalization import normalize_url_catalog
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -43,6 +44,17 @@ def _resolved_mode(config: dict[str, Any], requested: str) -> str:
     return mode if mode in {"daily", "deep"} else "daily"
 
 
+def _reconcile_activation_diagnostics(payload: dict[str, Any]) -> None:
+    evaluations = payload.get("evaluations", []) or []
+    if not isinstance(evaluations, list):
+        return
+    for row in evaluations:
+        if isinstance(row, dict) and row.get("production_activation"):
+            row["production_activation"] = (
+                "effective allowlist immediately; persistent URL catalog synchronized after successful source expansion"
+            )
+
+
 def sync_promoted_source_catalogs(
     config_path: str | Path = "config/source_discovery.yaml",
     *,
@@ -50,13 +62,13 @@ def sync_promoted_source_catalogs(
     dry_run: bool = False,
     run_at: str | None = None,
 ) -> dict[str, Any]:
-    """Seed every production-eligible discovered publisher into its vertical URL catalog.
+    """Seed production-eligible discovered publishers into normalized URL catalogs.
 
     Source qualification owns trust decisions while this finalization step owns the
-    narrow ranking-state mutation required by promotion: adding URLs to ``url_catalog``.
-    It never changes recipes, observations, priors, rankings, or historical evidence.
-    Dynamic-source sitemap and page requests continue through the SSRF-safe discovery
-    path because their SourceConfig origin is ``discovered``.
+    narrow ranking-state mutation required by promotion: adding and canonicalizing
+    URLs in ``url_catalog``. It never changes recipes, observations, priors, rankings,
+    or historical evidence. Dynamic-source network requests continue through the
+    SSRF-safe discovery path because their SourceConfig origin is ``discovered``.
     """
 
     config = _load_config(config_path)
@@ -100,7 +112,9 @@ def sync_promoted_source_catalogs(
         effective_sources = effective_source_configs(base_sources, registry)
         auto_sources = [source for source in effective_sources if source.origin == "discovered"]
         state = load_state(state_path)
-        before_count = len(state.get("url_catalog", {}) or {})
+        raw_before_count = len(state.get("url_catalog", {}) or {})
+        normalization = normalize_url_catalog(state)
+        normalized_before_count = len(state.get("url_catalog", {}) or {})
         results: list[dict[str, Any]] = []
 
         for source in auto_sources:
@@ -113,9 +127,13 @@ def sync_promoted_source_catalogs(
             )
             results.append(result)
 
+        after_normalization = normalize_url_catalog(state)
         after_count = len(state.get("url_catalog", {}) or {})
-        added = max(0, after_count - before_count)
-        if not dry_run and after_count != before_count:
+        added = max(0, after_count - normalized_before_count)
+        coalesced = int(normalization["aliases_coalesced"]) + int(after_normalization["aliases_coalesced"])
+        rewritten = int(normalization["urls_rewritten"]) + int(after_normalization["urls_rewritten"])
+        changed = after_count != raw_before_count or rewritten > 0
+        if not dry_run and changed:
             save_state(state_path, state)
 
         vertical_summary: dict[str, Any] = {
@@ -123,9 +141,13 @@ def sync_promoted_source_catalogs(
             "manual_source_count": len(base_sources),
             "auto_source_count": len(auto_sources),
             "effective_source_count": len(effective_sources),
-            "catalog_url_count_before": before_count,
+            "catalog_url_count_before": raw_before_count,
+            "catalog_url_count_after_normalization": normalized_before_count,
             "catalog_url_count_after": after_count,
             "catalog_urls_added": added,
+            "catalog_urls_coalesced": coalesced,
+            "catalog_urls_rewritten": rewritten,
+            "catalog_net_change": after_count - raw_before_count,
             "sources": results,
         }
         summary_verticals[str(slug)] = vertical_summary
@@ -133,8 +155,12 @@ def sync_promoted_source_catalogs(
         metrics_path = output_dir / "source_expansion.json"
         metrics = _read_json(metrics_path)
         if metrics:
+            _reconcile_activation_diagnostics(metrics)
             metrics["catalog_url_count"] = after_count
             metrics["catalog_urls_added_after_promotion"] = added
+            metrics["catalog_urls_coalesced"] = coalesced
+            metrics["catalog_urls_rewritten"] = rewritten
+            metrics["catalog_net_change"] = after_count - raw_before_count
             metrics["catalog_sync_generated_at"] = timestamp
             metrics["catalog_sync"] = results
             if not dry_run:
@@ -142,8 +168,12 @@ def sync_promoted_source_catalogs(
 
         aggregate_vertical = aggregate_verticals.get(str(slug))
         if isinstance(aggregate_vertical, dict):
+            _reconcile_activation_diagnostics(aggregate_vertical)
             aggregate_vertical["catalog_url_count"] = after_count
             aggregate_vertical["catalog_urls_added_after_promotion"] = added
+            aggregate_vertical["catalog_urls_coalesced"] = coalesced
+            aggregate_vertical["catalog_urls_rewritten"] = rewritten
+            aggregate_vertical["catalog_net_change"] = after_count - raw_before_count
             aggregate_vertical["catalog_sync_generated_at"] = timestamp
             aggregate_vertical["catalog_sync"] = results
 
