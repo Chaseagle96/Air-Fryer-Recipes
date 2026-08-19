@@ -2,6 +2,7 @@ import SwiftUI
 
 struct RemoteRecipeDetailView: View {
     @EnvironmentObject private var appModel: AppModel
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
     let recipe: RemoteRecipe
 
@@ -110,6 +111,13 @@ struct RemoteRecipeDetailView: View {
         }
         .navigationTitle("Recipe")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Close", systemImage: "xmark") { dismiss() }
+                    .labelStyle(.iconOnly)
+                    .accessibilityIdentifier("detail.close")
+            }
+        }
         .recipeToolbarBehavior()
     }
 
