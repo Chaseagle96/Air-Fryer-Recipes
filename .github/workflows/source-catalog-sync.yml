@@ -10,6 +10,8 @@ on:
       - '.github/workflows/source-catalog-sync.yml'
       - 'scripts/sync_promoted_source_catalogs.py'
       - 'src/airfryer_rankings/source_catalog_sync.py'
+      - 'src/airfryer_rankings/url_normalization.py'
+      - 'src/airfryer_rankings/discovery.py'
       - 'config/source_discovery.yaml'
   pull_request:
     types: [opened, synchronize, reopened]
@@ -17,7 +19,10 @@ on:
       - '.github/workflows/source-catalog-sync.yml'
       - 'scripts/sync_promoted_source_catalogs.py'
       - 'src/airfryer_rankings/source_catalog_sync.py'
+      - 'src/airfryer_rankings/url_normalization.py'
+      - 'src/airfryer_rankings/discovery.py'
       - 'tests/test_source_catalog_sync.py'
+      - 'tests/test_url_normalization.py'
       - 'config/source_discovery.yaml'
   workflow_dispatch:
 
@@ -56,13 +61,16 @@ jobs:
           ruff check
           scripts/sync_promoted_source_catalogs.py
           src/airfryer_rankings/source_catalog_sync.py
+          src/airfryer_rankings/url_normalization.py
+          src/airfryer_rankings/discovery.py
           tests/test_source_catalog_sync.py
+          tests/test_url_normalization.py
 
       - name: Static type analysis
         run: mypy src/airfryer_rankings
 
       - name: Run catalog sync regression tests
-        run: PYTHONPATH=src pytest tests/test_source_catalog_sync.py
+        run: PYTHONPATH=src pytest tests/test_source_catalog_sync.py tests/test_url_normalization.py
 
       - name: Sync promoted publishers into URL catalogs
         if: github.event_name != 'pull_request'
@@ -76,6 +84,7 @@ jobs:
           from pathlib import Path
           from airfryer_rankings.models import load_sources
           from airfryer_rankings.source_registry import effective_source_configs, load_source_registry
+          from airfryer_rankings.url_normalization import normalize_discovered_url
 
           checks = [
               ('air_fryer', Path('config/sources.yaml'), Path('data/source_registry.json'), Path('data/state.json'), Path('output/source_expansion.json')),
@@ -90,11 +99,20 @@ jobs:
               metrics = json.loads(metrics_path.read_text(encoding='utf-8'))
               catalog = state.get('url_catalog', {})
               assert int(metrics['catalog_url_count']) == len(catalog)
+              assert all(key == normalize_discovered_url(key) for key in catalog), (
+                  vertical, 'persistent URL catalog contains non-normalized aliases'
+              )
               for source in auto:
                   assert any(row.get('source') == source.domain for row in catalog.values()), (
                       vertical, source.domain, 'promoted source has no persistent catalog URLs'
                   )
-              print(vertical, 'effective=', len(effective), 'auto=', len(auto), 'catalog=', len(catalog))
+              print(
+                  vertical,
+                  'effective=', len(effective),
+                  'auto=', len(auto),
+                  'catalog=', len(catalog),
+                  'coalesced=', metrics.get('catalog_urls_coalesced', 0),
+              )
           PY
 
       - name: Upload catalog sync diagnostics
@@ -122,6 +140,6 @@ jobs:
             echo 'No promoted-source catalog changes to commit.'
             exit 0
           fi
-          git commit -m 'Sync promoted recipe sources into URL catalogs'
+          git commit -m 'Normalize promoted recipe URL catalogs'
           git pull --rebase origin main
           git push origin HEAD:main
