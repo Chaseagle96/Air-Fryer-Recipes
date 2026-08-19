@@ -46,7 +46,14 @@ def _compile_include_pattern(cfg: SourceConfig) -> re.Pattern[str]:
         raise ValueError(f"Invalid include_pattern for {cfg.domain}: {cfg.include_pattern!r}") from exc
 
 
-def _looks_recipe_link(url: str, text: str, domain: str, include_re: re.Pattern[str]) -> bool:
+def _looks_recipe_link(
+    url: str,
+    text: str,
+    domain: str,
+    include_re: re.Pattern[str],
+    *,
+    allow_unmatched: bool = True,
+) -> bool:
     if not _same_domain(url, domain):
         return False
     parsed = urlparse(url)
@@ -55,7 +62,9 @@ def _looks_recipe_link(url: str, text: str, domain: str, include_re: re.Pattern[
         return False
     if include_re.search(url + " " + text):
         return True
-    # Trusted vertical discovery pages may link to recipes whose slugs omit the cooking method.
+    if not allow_unmatched:
+        return False
+    # Backward-compatible mode for trusted vertical pages whose recipe slugs omit the cooking method.
     return path.count("/") >= 2 and not path.endswith((".jpg", ".jpeg", ".png", ".webp", ".pdf"))
 
 
@@ -108,7 +117,13 @@ def discover_source_urls(
         for anchor in soup.find_all("a", href=True):
             href = urljoin(discovery_url, str(anchor.get("href") or "").strip())
             text = anchor.get_text(" ", strip=True)
-            if not _looks_recipe_link(href, text, cfg.domain, include_re):
+            if not _looks_recipe_link(
+                href,
+                text,
+                cfg.domain,
+                include_re,
+                allow_unmatched=cfg.allow_unmatched_discovery_links,
+            ):
                 continue
             href = href.split("#", 1)[0]
             newly_discovered += int(_catalog_update(state, cfg, href, run_at, method="category"))
