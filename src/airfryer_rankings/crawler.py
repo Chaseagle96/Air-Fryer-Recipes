@@ -51,6 +51,11 @@ def select_refresh_targets(
             if growth > 0:
                 value += min(5000, growth * 10)
         age = _entry_age_hours(entry, "last_checked", now)
+        if entry.get("last_status") == "no_verified_rating" and age < 24 * 7:
+            # A newly discovered URL that produced no rankable rating evidence
+            # should be revisited eventually, but it must not monopolize every
+            # hourly refresh while the rest of the corpus goes stale.
+            value -= 12000
         value += min(4000, age * 10)
         return value, age
 
@@ -63,8 +68,38 @@ def select_refresh_targets(
         return [dict(entry) for entry in sorted(legacy, key=score, reverse=True)]
 
     if mode == "hourly":
+        if hourly_limit <= 0:
+            return []
         ranked = sorted(catalog, key=score, reverse=True)
-        return [dict(entry) for entry in ranked[:hourly_limit]]
+        if not ranked:
+            return []
+
+        # Preserve the global priority score while preventing one newly promoted
+        # publisher from consuming the entire bounded hourly budget. We balance
+        # across up to ten publishers, then use overflow only when the catalog
+        # does not contain enough source diversity to fill the requested budget.
+        domains = {str(entry.get("source") or "") for entry in ranked if entry.get("source")}
+        diversity_slots = max(1, min(10, len(domains), hourly_limit))
+        per_source_cap = max(1, (hourly_limit + diversity_slots - 1) // diversity_slots)
+        selected: list[dict] = []
+        overflow: list[dict] = []
+        selected_by_source: dict[str, int] = defaultdict(int)
+
+        for entry in ranked:
+            domain = str(entry.get("source") or "")
+            if selected_by_source[domain] < per_source_cap:
+                selected.append(dict(entry))
+                selected_by_source[domain] += 1
+                if len(selected) >= hourly_limit:
+                    return selected
+            else:
+                overflow.append(entry)
+
+        for entry in overflow:
+            if len(selected) >= hourly_limit:
+                break
+            selected.append(dict(entry))
+        return selected
 
     targets: list[dict] = []
     by_source: dict[str, list[dict]] = defaultdict(list)
