@@ -63,7 +63,7 @@ from .source_security import (
     is_non_publisher_domain,
     safe_get,
 )
-from .storage import load_state, save_state, write_run_records
+from .storage import load_state, write_run_records
 
 
 @dataclass(frozen=True)
@@ -1368,9 +1368,9 @@ def run_source_expansion(
                 if outcome in {PROMOTED, ACTIVE} and str(record.get("status")) in {PROMOTED, ACTIVE}:
                     if outcome == PROMOTED:
                         promotions += 1
-                    catalog_result = _promoted_catalog_discovery(context, record, mode, budget, run_at)
-                    if catalog_result is not None:
-                        metrics["promotion_catalog_discovery"] = catalog_result
+                    metrics["production_activation"] = (
+                        "effective allowlist immediately; URL catalog expansion on the next vertical daily/deep discovery run"
+                    )
                 if promotions >= max_promotions:
                     break
 
@@ -1378,7 +1378,6 @@ def run_source_expansion(
         aggregate["verticals"][context.slug] = metrics_payload
         if not dry_run:
             save_source_registry(context.registry_path, context.registry)
-            save_state(context.state_path, context.state)
             context.output_dir.mkdir(parents=True, exist_ok=True)
             (context.output_dir / "source_expansion.json").write_text(
                 json.dumps(metrics_payload, indent=2, sort_keys=True, default=str) + "\n",

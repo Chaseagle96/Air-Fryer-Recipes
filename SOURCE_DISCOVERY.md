@@ -172,7 +172,7 @@ This makes the answer to “why is this domain trusted?” reproducible from per
 
 ## Promotion and production crawling
 
-When a candidate is promoted, its machine-owned `crawl_config` contains its relevant sitemap/discovery entry points, inclusion pattern, crawl delay, and URL cap. It immediately becomes part of the effective allowlist. A bounded catalog-discovery pass can seed the vertical URL catalog, and subsequent normal daily/deep discovery uses the same existing `discover_source_urls()` path as manual sources.
+When a candidate is promoted, its machine-owned `crawl_config` contains its relevant sitemap/discovery entry points, inclusion pattern, crawl delay, and URL cap. It immediately becomes part of the effective allowlist. The next normal vertical daily/deep discovery run uses the same existing `discover_source_urls()` path as manual sources to seed and expand the persistent URL catalog. Source-expansion automation deliberately does not write ranking state files itself, avoiding cross-workflow state races while keeping promotion automatic.
 
 All recipes from an auto source still flow through the existing extraction, evidence validation, anomaly detection, dedupe, Bayesian ranking, robustness, and publication gates. Source promotion changes the universe that Recipe Intelligence is allowed to research; it does not bypass recipe-level quality controls.
 
