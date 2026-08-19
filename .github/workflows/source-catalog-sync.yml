@@ -1,0 +1,127 @@
+name: Recipe Intelligence Source Catalog Sync
+
+on:
+  workflow_run:
+    workflows: ["Recipe Intelligence Source Expansion"]
+    types: [completed]
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source-catalog-sync.yml'
+      - 'scripts/sync_promoted_source_catalogs.py'
+      - 'src/airfryer_rankings/source_catalog_sync.py'
+      - 'config/source_discovery.yaml'
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/source-catalog-sync.yml'
+      - 'scripts/sync_promoted_source_catalogs.py'
+      - 'src/airfryer_rankings/source_catalog_sync.py'
+      - 'tests/test_source_catalog_sync.py'
+      - 'config/source_discovery.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: recipe-intelligence-source-catalog-sync-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'main' }}
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install dependencies and quality tooling
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint catalog sync
+        run: >-
+          ruff check
+          scripts/sync_promoted_source_catalogs.py
+          src/airfryer_rankings/source_catalog_sync.py
+          tests/test_source_catalog_sync.py
+
+      - name: Static type analysis
+        run: mypy src/airfryer_rankings
+
+      - name: Run catalog sync regression tests
+        run: PYTHONPATH=src pytest tests/test_source_catalog_sync.py
+
+      - name: Sync promoted publishers into URL catalogs
+        if: github.event_name != 'pull_request'
+        run: PYTHONPATH=src python scripts/sync_promoted_source_catalogs.py --mode auto
+
+      - name: Validate persistent catalogs
+        if: github.event_name != 'pull_request'
+        run: |
+          PYTHONPATH=src python - <<'PY'
+          import json
+          from pathlib import Path
+          from airfryer_rankings.models import load_sources
+          from airfryer_rankings.source_registry import effective_source_configs, load_source_registry
+
+          checks = [
+              ('air_fryer', Path('config/sources.yaml'), Path('data/source_registry.json'), Path('data/state.json'), Path('output/source_expansion.json')),
+              ('slow_cooker', Path('config/verticals/slow_cooker/sources.yaml'), Path('verticals/slow_cooker/data/source_registry.json'), Path('verticals/slow_cooker/data/state.json'), Path('verticals/slow_cooker/output/source_expansion.json')),
+          ]
+          for vertical, sources_path, registry_path, state_path, metrics_path in checks:
+              registry = load_source_registry(registry_path, vertical)
+              base = load_sources(sources_path, include_discovered=False)
+              effective = effective_source_configs(base, registry)
+              auto = [source for source in effective if source.origin == 'discovered']
+              state = json.loads(state_path.read_text(encoding='utf-8'))
+              metrics = json.loads(metrics_path.read_text(encoding='utf-8'))
+              catalog = state.get('url_catalog', {})
+              assert int(metrics['catalog_url_count']) == len(catalog)
+              for source in auto:
+                  assert any(row.get('source') == source.domain for row in catalog.values()), (
+                      vertical, source.domain, 'promoted source has no persistent catalog URLs'
+                  )
+              print(vertical, 'effective=', len(effective), 'auto=', len(auto), 'catalog=', len(catalog))
+          PY
+
+      - name: Upload catalog sync diagnostics
+        if: always() && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: recipe-intelligence-source-catalog-sync-${{ github.run_number }}
+          retention-days: 30
+          if-no-files-found: ignore
+          path: |
+            output/source_expansion.json
+            output/source_expansion_all.json
+            verticals/slow_cooker/output/source_expansion.json
+
+      - name: Commit synchronized URL catalogs
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/state.json verticals/slow_cooker/data/state.json
+          git add output/source_expansion.json output/source_expansion_all.json
+          git add verticals/slow_cooker/output/source_expansion.json
+          if git diff --cached --quiet; then
+            echo 'No promoted-source catalog changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Sync promoted recipe sources into URL catalogs'
+          git pull --rebase origin main
+          git push origin HEAD:main
