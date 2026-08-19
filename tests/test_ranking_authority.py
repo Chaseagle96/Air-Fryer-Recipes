@@ -13,6 +13,19 @@ def _write(path: Path, payload: dict) -> None:
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
+def _manifest_payload() -> dict:
+    return {
+        "generated_at": "2026-08-19T10:10:00+00:00",
+        "vertical": {"id": "air_fryer", "name": "Air Fryer", "source_count": 1},
+        "catalog_url_count": 1,
+        "recipe_count": 1,
+        "ranked_recipe_count": 1,
+        "pages": [{"index": 1, "path": "recipes/0001.json", "count": 1}],
+        "corpus_recipe_count": 1,
+        "corpus_pages": [{"index": 1, "path": "corpus/0001.json", "count": 1}],
+    }
+
+
 def _fixture(tmp_path: Path) -> dict[str, Path]:
     sources = tmp_path / "sources.yaml"
     sources.write_text("sources:\n  - domain: trusted.example\n", encoding="utf-8")
@@ -73,7 +86,9 @@ def _fixture(tmp_path: Path) -> dict[str, Path]:
     authority = tmp_path / "authority.json"
     public_authority = tmp_path / "docs" / "api" / "authority.json"
     manifest = tmp_path / "docs" / "api" / "manifest.json"
-    _write(manifest, {"ranked_recipe_count": 1})
+    _write(manifest, _manifest_payload())
+    dashboard = tmp_path / "docs" / "index.html"
+    dashboard.write_text("<html><body>old leaderboard</body></html>\n", encoding="utf-8")
     return {
         "sources": sources,
         "state": state,
@@ -84,6 +99,7 @@ def _fixture(tmp_path: Path) -> dict[str, Path]:
         "authority": authority,
         "public_authority": public_authority,
         "manifest": manifest,
+        "dashboard": dashboard,
     }
 
 
@@ -114,7 +130,12 @@ def test_publish_authority_certifies_matching_generation(tmp_path: Path) -> None
     assert payload["full_catalog_baseline"] is True
     assert len(payload["generation_fingerprint_sha256"]) == 64
     assert json.loads(paths["summary"].read_text(encoding="utf-8"))["authority"]["authoritative"] is True
-    assert json.loads(paths["manifest"].read_text(encoding="utf-8"))["authority"]["authoritative"] is True
+    manifest = json.loads(paths["manifest"].read_text(encoding="utf-8"))
+    assert manifest["authority"]["authoritative"] is True
+    assert manifest["ranked_serving_available"] is True
+    assert manifest["ranked_serving_status"] == "authoritative"
+    assert manifest["ranked_recipe_count"] == 1
+    assert manifest["pages"]
 
 
 def test_publish_authority_rejects_ranking_older_than_catalog_sync(tmp_path: Path) -> None:
@@ -150,6 +171,39 @@ def test_publish_authority_rejects_ranking_scope_drift(tmp_path: Path) -> None:
         _publish(paths)
 
 
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    [
+        ("generated_at", "2026-08-19T10:09:59+00:00", "manifest generation"),
+        ("ranked_recipe_count", 0, "manifest ranked count"),
+        ("catalog_url_count", 0, "manifest catalog count"),
+    ],
+)
+def test_publish_authority_rejects_stale_public_manifest(
+    tmp_path: Path,
+    field: str,
+    value: object,
+    message: str,
+) -> None:
+    paths = _fixture(tmp_path)
+    manifest = json.loads(paths["manifest"].read_text(encoding="utf-8"))
+    manifest[field] = value
+    _write(paths["manifest"], manifest)
+
+    with pytest.raises(AuthorityError, match=message):
+        _publish(paths)
+
+
+def test_publish_authority_rejects_public_manifest_source_drift(tmp_path: Path) -> None:
+    paths = _fixture(tmp_path)
+    manifest = json.loads(paths["manifest"].read_text(encoding="utf-8"))
+    manifest["vertical"]["source_count"] = 2
+    _write(paths["manifest"], manifest)
+
+    with pytest.raises(AuthorityError, match="manifest source count"):
+        _publish(paths)
+
+
 @pytest.mark.parametrize("mode", ["hourly", "backfill"])
 def test_new_generation_requires_true_full_refresh_before_certification(tmp_path: Path, mode: str) -> None:
     paths = _fixture(tmp_path)
@@ -176,6 +230,9 @@ def test_new_generation_rejects_partial_daily_catalog_coverage(tmp_path: Path) -
     summary["catalog_urls"] = 2
     summary["targets_this_run"] = 1
     _write(paths["summary"], summary)
+    manifest = _manifest_payload()
+    manifest["catalog_url_count"] = 2
+    _write(paths["manifest"], manifest)
 
     with pytest.raises(AuthorityError, match="complete effective catalog"):
         _publish(paths)
@@ -195,6 +252,9 @@ def test_non_effective_catalog_rows_do_not_expand_authority_universe(tmp_path: P
     summary = json.loads(paths["summary"].read_text(encoding="utf-8"))
     summary["catalog_urls"] = 2
     _write(paths["summary"], summary)
+    manifest = _manifest_payload()
+    manifest["catalog_url_count"] = 2
+    _write(paths["manifest"], manifest)
 
     payload = _publish(paths)
     assert payload["effective_catalog_url_count"] == 1
@@ -211,12 +271,42 @@ def test_hourly_refresh_inherits_authority_when_inputs_are_unchanged(tmp_path: P
     summary["targets_this_run"] = 0
     _write(paths["summary"], summary)
     paths["leaderboard"].write_text("rank,title\n1,Air Fryer Potatoes\n", encoding="utf-8")
+    manifest = _manifest_payload()
+    manifest["generated_at"] = "2026-08-19T11:10:00+00:00"
+    _write(paths["manifest"], manifest)
 
     hourly = _publish(paths)
     assert hourly["authoritative"] is True
     assert hourly["full_catalog_baseline"] is False
     assert hourly["input_fingerprint_sha256"] == baseline["input_fingerprint_sha256"]
     assert hourly["leaderboard_fingerprint_sha256"] != baseline["leaderboard_fingerprint_sha256"]
+
+
+def test_invalidation_removes_public_ranked_serving_pointers(tmp_path: Path) -> None:
+    paths = _fixture(tmp_path)
+    payload = invalidate_authority(
+        vertical="air_fryer",
+        metrics_path=paths["metrics"],
+        summary_path=paths["summary"],
+        authority_path=paths["authority"],
+        public_authority_path=paths["public_authority"],
+        manifest_path=paths["manifest"],
+        invalidated_at="2026-08-19T10:06:00+00:00",
+    )
+
+    assert payload["authoritative"] is False
+    manifest = json.loads(paths["manifest"].read_text(encoding="utf-8"))
+    assert manifest["ranked_serving_available"] is False
+    assert manifest["ranked_serving_status"] == "refresh_required"
+    assert manifest["recipe_count"] == 0
+    assert manifest["ranked_recipe_count"] == 0
+    assert manifest["pages"] == []
+    assert manifest["corpus_recipe_count"] == 1
+    assert manifest["corpus_pages"]
+    dashboard = paths["dashboard"].read_text(encoding="utf-8")
+    assert "Rankings temporarily unavailable" in dashboard
+    assert "refresh_required" in dashboard
+    assert "old leaderboard" not in dashboard
 
 
 def test_invalidation_is_fail_closed_but_ignores_late_race(tmp_path: Path) -> None:
@@ -232,6 +322,8 @@ def test_invalidation_is_fail_closed_but_ignores_late_race(tmp_path: Path) -> No
     )
     assert first["authoritative"] is False
 
+    # A real ranking run regenerates the public feed before authority publication.
+    _write(paths["manifest"], _manifest_payload())
     _publish(paths)
     late = invalidate_authority(
         vertical="air_fryer",

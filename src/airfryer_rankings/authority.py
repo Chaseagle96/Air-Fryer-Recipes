@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import html
 import json
 from dataclasses import asdict
 from datetime import datetime, timezone
@@ -92,7 +93,36 @@ def _leaderboard_fingerprint(path: str | Path) -> str:
     return hashlib.sha256(target.read_bytes()).hexdigest()
 
 
-def _update_manifest(path: str | Path | None, authority: dict[str, Any]) -> None:
+def _validate_public_manifest(
+    path: str | Path | None,
+    *,
+    summary: dict[str, Any],
+    source_count: int,
+    catalog_count: int,
+) -> None:
+    if not path:
+        return
+    target = Path(path)
+    manifest = _read_json(target)
+    if not manifest:
+        raise AuthorityError(f"public manifest missing or invalid: {target}")
+    if str(manifest.get("generated_at") or "") != str(summary.get("generated_at") or ""):
+        raise AuthorityError("public manifest generation does not match ranking generation")
+    if int(manifest.get("ranked_recipe_count") or 0) != int(summary.get("ranked_recipes") or 0):
+        raise AuthorityError("public manifest ranked count does not match ranking summary")
+    if int(manifest.get("catalog_url_count") or 0) != catalog_count:
+        raise AuthorityError("public manifest catalog count does not match current catalog")
+    vertical = manifest.get("vertical")
+    if not isinstance(vertical, dict) or int(vertical.get("source_count") or 0) != source_count:
+        raise AuthorityError("public manifest source count does not match effective sources")
+
+
+def _update_manifest(
+    path: str | Path | None,
+    authority: dict[str, Any],
+    *,
+    serving_available: bool,
+) -> None:
     if not path:
         return
     target = Path(path)
@@ -102,7 +132,48 @@ def _update_manifest(path: str | Path | None, authority: dict[str, Any]) -> None
     if not manifest:
         return
     manifest["authority"] = authority
+    manifest["ranked_serving_available"] = serving_available
+    manifest["ranked_serving_status"] = authority.get("status")
+    if not serving_available:
+        # Keep the broader corpus metadata for research/exploration, but remove every
+        # standard Discover pointer so clients cannot accidentally serve stale ranks.
+        manifest["recipe_count"] = 0
+        manifest["ranked_recipe_count"] = 0
+        manifest["pages"] = []
     _write_json(target, manifest)
+
+
+def _write_unavailable_dashboard(
+    manifest_path: str | Path | None,
+    authority: dict[str, Any],
+) -> None:
+    if not manifest_path:
+        return
+    manifest = Path(manifest_path)
+    docs_root = manifest.parent.parent
+    if not docs_root.exists():
+        return
+    dashboard = docs_root / "index.html"
+    vertical = html.escape(str(authority.get("vertical") or "Recipe Intelligence"))
+    invalidated_at = html.escape(str(authority.get("invalidated_at") or "unknown"))
+    reason = html.escape(str(authority.get("reason") or "ranking authority invalidated"))
+    dashboard.write_text(
+        "<!doctype html>\n"
+        '<html lang="en"><head><meta charset="utf-8">'
+        '<meta name="viewport" content="width=device-width, initial-scale=1">'
+        "<title>Recipe Intelligence - Rankings Refreshing</title></head>\n"
+        "<body><main>"
+        "<h1>Rankings temporarily unavailable</h1>"
+        "<p>The previous ranked generation is not authoritative. Recipe Intelligence "
+        "will publish rankings again only after a complete current-corpus refresh passes "
+        "the authority contract.</p>"
+        f"<p><strong>Vertical:</strong> {vertical}</p>"
+        f"<p><strong>Status:</strong> refresh_required</p>"
+        f"<p><strong>Reason:</strong> {reason}</p>"
+        f"<p><strong>Invalidated at:</strong> {invalidated_at}</p>"
+        "</main></body></html>\n",
+        encoding="utf-8",
+    )
 
 
 def publish_authority(
@@ -182,6 +253,13 @@ def publish_authority(
             f"current catalog regressed below synchronized catalog: current={raw_catalog_count} synced={metrics_catalog_count}"
         )
 
+    _validate_public_manifest(
+        manifest_path,
+        summary=summary,
+        source_count=len(sources),
+        catalog_count=raw_catalog_count,
+    )
+
     input_fingerprint = _canonical_hash(
         {
             "authority_contract_version": AUTHORITY_CONTRACT_VERSION,
@@ -252,7 +330,7 @@ def publish_authority(
     _write_json(authority_path, authority)
     if public_authority_path:
         _write_json(public_authority_path, authority)
-    _update_manifest(manifest_path, authority)
+    _update_manifest(manifest_path, authority, serving_available=True)
     return authority
 
 
@@ -303,5 +381,6 @@ def invalidate_authority(
     _write_json(authority_path, authority)
     if public_authority_path:
         _write_json(public_authority_path, authority)
-    _update_manifest(manifest_path, authority)
+    _update_manifest(manifest_path, authority, serving_available=False)
+    _write_unavailable_dashboard(manifest_path, authority)
     return authority
