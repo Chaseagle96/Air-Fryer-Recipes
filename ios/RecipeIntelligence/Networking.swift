@@ -4,12 +4,14 @@ enum RecipeIntelligenceClientError: LocalizedError {
     case badResponse
     case unsupportedSchema(Int)
     case pageOutOfRange
+    case inconsistentSnapshot
 
     var errorDescription: String? {
         switch self {
         case .badResponse: return "Recipe Intelligence returned an invalid response."
         case .unsupportedSchema(let version): return "This app does not support Recipe Intelligence schema version \(version)."
         case .pageOutOfRange: return "There are no more recipes in this vertical."
+        case .inconsistentSnapshot: return "Recipe Intelligence updated while this refresh was loading. The current recipes were kept and the app will retry."
         }
     }
 }
@@ -61,6 +63,9 @@ actor LiveRecipeIntelligenceClient: RecipeIntelligenceClient {
         guard manifest.schemaVersion == 1 else {
             throw RecipeIntelligenceClientError.unsupportedSchema(manifest.schemaVersion)
         }
+        guard manifest.vertical.id == vertical.id else {
+            throw RecipeIntelligenceClientError.badResponse
+        }
         manifestCache[vertical.id] = manifest
         return manifest
     }
@@ -82,6 +87,15 @@ actor LiveRecipeIntelligenceClient: RecipeIntelligenceClient {
         let page: RecipePageEnvelope = try await request(versionedPageURL, forceRefresh: false)
         guard page.schemaVersion == 1 else {
             throw RecipeIntelligenceClientError.unsupportedSchema(page.schemaVersion)
+        }
+        guard page.verticalID == vertical.id else {
+            throw RecipeIntelligenceClientError.badResponse
+        }
+        guard page.generatedAt == manifest.generatedAt else {
+            // `main` can advance between the manifest and page HTTP requests.
+            // Never mix two generations into one deck; keep the old snapshot and
+            // let the foreground/periodic/manual refresh path retry cleanly.
+            throw RecipeIntelligenceClientError.inconsistentSnapshot
         }
         return page
     }
