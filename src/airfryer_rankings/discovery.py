@@ -6,7 +6,7 @@ from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
 
-from .http import get_for_source, iter_sitemap_records, make_session, robots_and_sitemaps
+from .http import get, get_for_source, iter_sitemap_records, make_session, robots_and_sitemaps
 from .models import UA, SourceConfig
 
 
@@ -68,6 +68,12 @@ def _looks_recipe_link(
     return path.count("/") >= 2 and not path.endswith((".jpg", ".jpeg", ".png", ".webp", ".pdf"))
 
 
+def _discovery_get(session, url: str, cfg: SourceConfig, timeout: int = 25):
+    if cfg.origin == "discovered":
+        return get_for_source(session, url, cfg, timeout)
+    return get(session, url, timeout)
+
+
 def discover_source_urls(
     cfg: SourceConfig,
     state: dict,
@@ -116,7 +122,7 @@ def discover_source_urls(
         except Exception:
             pass
         try:
-            response = get_for_source(session, discovery_url, cfg, 25)
+            response = _discovery_get(session, discovery_url, cfg, 25)
             soup = BeautifulSoup(response.text, "lxml")
         except Exception:
             continue
