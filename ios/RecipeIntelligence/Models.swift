@@ -199,7 +199,7 @@ struct RemoteRecipe: Codable, Identifiable, Hashable {
     var id: String { recipeID }
     var sourceURL: URL? { URL(string: canonicalURL.isEmpty ? url : canonicalURL) }
     var photoURL: URL? { imageURL.isEmpty ? nil : URL(string: imageURL) }
-    var isGloballyRanked: Bool { isRanked ?? rank > 0 }
+    var isGloballyRanked: Bool { isRanked ?? (rank > 0) }
     var isDiscoverEligible: Bool { discoverEligible ?? isGloballyRanked }
     var isExploreEligible: Bool { exploreEligible ?? isDiscoverEligible }
 
