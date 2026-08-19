@@ -49,3 +49,15 @@ def test_production_ranking_workflow_certifies_before_commit(
     assert certify_index < commit_index
     commit_script = str(steps[commit_index].get("run") or "")
     assert authority_path in commit_script
+
+
+def test_slow_cooker_full_refresh_has_no_production_catalog_cap() -> None:
+    payload = yaml.safe_load(Path(".github/workflows/slow-cooker.yml").read_text(encoding="utf-8"))
+    steps = payload["jobs"]["refresh"]["steps"]
+    refresh = next(step for step in steps if step.get("name") == "Refresh Slow Cooker rankings")
+    script = str(refresh.get("run") or "")
+
+    assert "max_urls=250" not in script
+    assert "extra_args=(--hourly-limit 100)" in script
+    assert "extra_args=(--max-urls 2 --hourly-limit 6)" in script
+    assert '"${extra_args[@]}"' in script

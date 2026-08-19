@@ -27,6 +27,7 @@ def _fixture(tmp_path: Path) -> dict[str, Path]:
                     "source": "trusted.example",
                 }
             },
+            "effective_source_domains": ["trusted.example"],
             "source_history": [],
             "schema_version": 5,
         },
@@ -61,6 +62,7 @@ def _fixture(tmp_path: Path) -> dict[str, Path]:
             "mode": "daily",
             "configured_sources": 1,
             "catalog_urls": 1,
+            "targets_this_run": 1,
             "ranked_recipes": 1,
             "model_version": 5,
             "model_semver": "5.2.0",
@@ -105,9 +107,11 @@ def test_publish_authority_certifies_matching_generation(tmp_path: Path) -> None
     payload = _publish(paths)
 
     assert payload["authoritative"] is True
+    assert payload["authority_contract_version"] == 2
     assert payload["effective_source_count"] == 1
-    assert payload["catalog_url_count"] == 1
+    assert payload["effective_catalog_url_count"] == 1
     assert payload["ranking_mode"] == "daily"
+    assert payload["full_catalog_baseline"] is True
     assert len(payload["generation_fingerprint_sha256"]) == 64
     assert json.loads(paths["summary"].read_text(encoding="utf-8"))["authority"]["authoritative"] is True
     assert json.loads(paths["manifest"].read_text(encoding="utf-8"))["authority"]["authoritative"] is True
@@ -136,14 +140,65 @@ def test_publish_authority_rejects_catalog_count_drift(tmp_path: Path) -> None:
         _publish(paths)
 
 
-def test_new_generation_requires_full_refresh_before_certification(tmp_path: Path) -> None:
+def test_publish_authority_rejects_ranking_scope_drift(tmp_path: Path) -> None:
+    paths = _fixture(tmp_path)
+    state = json.loads(paths["state"].read_text(encoding="utf-8"))
+    state["effective_source_domains"] = ["retired.example"]
+    _write(paths["state"], state)
+
+    with pytest.raises(AuthorityError, match="ranking source scope"):
+        _publish(paths)
+
+
+@pytest.mark.parametrize("mode", ["hourly", "backfill"])
+def test_new_generation_requires_true_full_refresh_before_certification(tmp_path: Path, mode: str) -> None:
     paths = _fixture(tmp_path)
     summary = json.loads(paths["summary"].read_text(encoding="utf-8"))
-    summary["mode"] = "hourly"
+    summary["mode"] = mode
     _write(paths["summary"], summary)
 
-    with pytest.raises(AuthorityError, match="daily, deep, or backfill"):
+    with pytest.raises(AuthorityError, match="daily or deep"):
         _publish(paths)
+
+
+def test_new_generation_rejects_partial_daily_catalog_coverage(tmp_path: Path) -> None:
+    paths = _fixture(tmp_path)
+    state = json.loads(paths["state"].read_text(encoding="utf-8"))
+    state["url_catalog"]["https://trusted.example/air-fryer-potatoes"] = {
+        "url": "https://trusted.example/air-fryer-potatoes",
+        "source": "trusted.example",
+    }
+    _write(paths["state"], state)
+    metrics = json.loads(paths["metrics"].read_text(encoding="utf-8"))
+    metrics["catalog_url_count"] = 2
+    _write(paths["metrics"], metrics)
+    summary = json.loads(paths["summary"].read_text(encoding="utf-8"))
+    summary["catalog_urls"] = 2
+    summary["targets_this_run"] = 1
+    _write(paths["summary"], summary)
+
+    with pytest.raises(AuthorityError, match="complete effective catalog"):
+        _publish(paths)
+
+
+def test_non_effective_catalog_rows_do_not_expand_authority_universe(tmp_path: Path) -> None:
+    paths = _fixture(tmp_path)
+    state = json.loads(paths["state"].read_text(encoding="utf-8"))
+    state["url_catalog"]["https://suspended.example/air-fryer-old"] = {
+        "url": "https://suspended.example/air-fryer-old",
+        "source": "suspended.example",
+    }
+    _write(paths["state"], state)
+    metrics = json.loads(paths["metrics"].read_text(encoding="utf-8"))
+    metrics["catalog_url_count"] = 2
+    _write(paths["metrics"], metrics)
+    summary = json.loads(paths["summary"].read_text(encoding="utf-8"))
+    summary["catalog_urls"] = 2
+    _write(paths["summary"], summary)
+
+    payload = _publish(paths)
+    assert payload["effective_catalog_url_count"] == 1
+    assert payload["raw_catalog_url_count"] == 2
 
 
 def test_hourly_refresh_inherits_authority_when_inputs_are_unchanged(tmp_path: Path) -> None:
@@ -153,11 +208,13 @@ def test_hourly_refresh_inherits_authority_when_inputs_are_unchanged(tmp_path: P
     summary.pop("authority", None)
     summary["generated_at"] = "2026-08-19T11:10:00+00:00"
     summary["mode"] = "hourly"
+    summary["targets_this_run"] = 0
     _write(paths["summary"], summary)
     paths["leaderboard"].write_text("rank,title\n1,Air Fryer Potatoes\n", encoding="utf-8")
 
     hourly = _publish(paths)
     assert hourly["authoritative"] is True
+    assert hourly["full_catalog_baseline"] is False
     assert hourly["input_fingerprint_sha256"] == baseline["input_fingerprint_sha256"]
     assert hourly["leaderboard_fingerprint_sha256"] != baseline["leaderboard_fingerprint_sha256"]
 

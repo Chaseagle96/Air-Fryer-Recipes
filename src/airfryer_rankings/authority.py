@@ -11,8 +11,8 @@ from .models import SourceConfig, load_sources
 from .source_registry import load_source_registry
 from .storage import load_state
 
-AUTHORITY_CONTRACT_VERSION = 1
-FULL_REFRESH_MODES = {"daily", "deep", "backfill"}
+AUTHORITY_CONTRACT_VERSION = 2
+FULL_REFRESH_MODES = {"daily", "deep"}
 
 
 class AuthorityError(RuntimeError):
@@ -63,17 +63,23 @@ def _source_fingerprint(sources: list[SourceConfig]) -> tuple[str, list[str]]:
     return _canonical_hash(rows), [source.domain for source in sorted(sources, key=lambda item: item.domain)]
 
 
-def _catalog_fingerprint(state: dict[str, Any]) -> tuple[str, int]:
+def _catalog_fingerprint(
+    state: dict[str, Any],
+    allowed_sources: set[str],
+) -> tuple[str, int]:
     catalog = state.get("url_catalog", {}) or {}
     rows: list[dict[str, str]] = []
     if isinstance(catalog, dict):
         for key, raw in sorted(catalog.items(), key=lambda item: str(item[0])):
             entry = raw if isinstance(raw, dict) else {}
+            source = str(entry.get("source") or "")
+            if source not in allowed_sources:
+                continue
             rows.append(
                 {
                     "key": str(key),
                     "url": str(entry.get("url") or key),
-                    "source": str(entry.get("source") or ""),
+                    "source": source,
                 }
             )
     return _canonical_hash(rows), len(rows)
@@ -112,11 +118,11 @@ def publish_authority(
     public_authority_path: str | Path | None = None,
     manifest_path: str | Path | None = None,
 ) -> dict[str, Any]:
-    """Fail closed unless the serving leaderboard matches current production inputs.
+    """Certify only a ranking built from the current effective production universe.
 
-    A changed source/catalog/model generation must first receive a full refresh. Once
-    that baseline is certified, hourly incremental runs may inherit authority while
-    the input fingerprint remains unchanged.
+    New source/catalog/model generations require a measured full-catalog daily or deep
+    refresh. Hourly runs may inherit authority only when that exact input fingerprint
+    is unchanged from an already certified baseline.
     """
 
     summary = _read_json(summary_path)
@@ -130,14 +136,26 @@ def publish_authority(
     state = load_state(state_path)
     registry = load_source_registry(registry_path, vertical)
     source_hash, source_domains = _source_fingerprint(sources)
-    catalog_hash, catalog_count = _catalog_fingerprint(state)
+    allowed_sources = set(source_domains)
+    catalog_hash, effective_catalog_count = _catalog_fingerprint(state, allowed_sources)
+    raw_catalog_count = len(state.get("url_catalog", {}) or {})
 
     summary_source_count = int(summary.get("configured_sources") or 0)
     summary_catalog_count = int(summary.get("catalog_urls") or 0)
     if summary_source_count != len(sources):
         raise AuthorityError(f"source mismatch: summary={summary_source_count} current={len(sources)}")
-    if summary_catalog_count != catalog_count:
-        raise AuthorityError(f"catalog mismatch: summary={summary_catalog_count} current={catalog_count}")
+    if summary_catalog_count != raw_catalog_count:
+        raise AuthorityError(f"catalog mismatch: summary={summary_catalog_count} current={raw_catalog_count}")
+
+    ranking_scope = state.get("effective_source_domains")
+    persisted_source_domains = sorted(
+        {str(domain) for domain in ranking_scope if str(domain)}
+    ) if isinstance(ranking_scope, list) else []
+    if persisted_source_domains != source_domains:
+        raise AuthorityError(
+            "ranking source scope does not match current effective allowlist: "
+            f"ranking={persisted_source_domains} current={source_domains}"
+        )
 
     source_gate_version = int(registry.get("source_gate_version") or 0)
     metrics_gate_version = int(metrics.get("source_gate_version") or 0)
@@ -159,9 +177,9 @@ def publish_authority(
         raise AuthorityError("ranking generation predates the latest catalog synchronization")
 
     metrics_catalog_count = int(metrics.get("catalog_url_count") or 0)
-    if catalog_count < metrics_catalog_count:
+    if raw_catalog_count < metrics_catalog_count:
         raise AuthorityError(
-            f"current catalog regressed below synchronized catalog: current={catalog_count} synced={metrics_catalog_count}"
+            f"current catalog regressed below synchronized catalog: current={raw_catalog_count} synced={metrics_catalog_count}"
         )
 
     input_fingerprint = _canonical_hash(
@@ -177,14 +195,22 @@ def publish_authority(
     existing = _read_json(authority_path)
     inherited_input_authority = (
         existing.get("authoritative") is True
+        and existing.get("authority_contract_version") == AUTHORITY_CONTRACT_VERSION
         and existing.get("input_fingerprint_sha256") == input_fingerprint
         and existing.get("catalog_sync_generated_at") == metrics.get("catalog_sync_generated_at")
     )
     run_mode = str(summary.get("mode") or "")
-    if not inherited_input_authority and run_mode not in FULL_REFRESH_MODES:
-        raise AuthorityError(
-            "new source/catalog/model generation requires a daily, deep, or backfill refresh before certification"
-        )
+    targets_this_run = int(summary.get("targets_this_run") or 0)
+    if not inherited_input_authority:
+        if run_mode not in FULL_REFRESH_MODES:
+            raise AuthorityError(
+                "new source/catalog/model generation requires a daily or deep refresh before certification"
+            )
+        if targets_this_run < effective_catalog_count:
+            raise AuthorityError(
+                "new generation did not attempt the complete effective catalog: "
+                f"targets={targets_this_run} effective_catalog={effective_catalog_count}"
+            )
 
     leaderboard_hash = _leaderboard_fingerprint(leaderboard_path)
     generation_fingerprint = _canonical_hash(
@@ -203,7 +229,8 @@ def publish_authority(
         "source_gate_version": source_gate_version,
         "effective_source_count": len(sources),
         "effective_sources": source_domains,
-        "catalog_url_count": catalog_count,
+        "effective_catalog_url_count": effective_catalog_count,
+        "raw_catalog_url_count": raw_catalog_count,
         "source_fingerprint_sha256": source_hash,
         "catalog_fingerprint_sha256": catalog_hash,
         "input_fingerprint_sha256": input_fingerprint,
@@ -213,6 +240,8 @@ def publish_authority(
         "catalog_sync_generated_at": metrics.get("catalog_sync_generated_at"),
         "ranking_generated_at": summary.get("generated_at"),
         "ranking_mode": run_mode,
+        "targets_this_run": targets_this_run,
+        "full_catalog_baseline": not inherited_input_authority,
         "ranked_recipe_count": int(summary.get("ranked_recipes") or 0),
         "model_version": summary.get("model_version"),
         "model_semver": summary.get("model_semver"),
@@ -238,13 +267,6 @@ def invalidate_authority(
     reason: str = "source_or_catalog_generation_advanced",
     invalidated_at: str | None = None,
 ) -> dict[str, Any]:
-    """Mark serving artifacts non-authoritative when upstream source state advances.
-
-    A late invalidation is ignored when the current ranking is already newer than both
-    the latest source-expansion and catalog-sync timestamps, preventing workflow races
-    from incorrectly downgrading a freshly published generation.
-    """
-
     summary = _read_json(summary_path)
     metrics = _read_json(metrics_path)
     ranking_at = _parse_dt(summary.get("generated_at"))
@@ -257,7 +279,10 @@ def invalidate_authority(
 
     existing = _read_json(authority_path)
     if ranking_at is not None and newest_input_at is not None and ranking_at >= newest_input_at:
-        if existing.get("authoritative") is True:
+        if (
+            existing.get("authoritative") is True
+            and existing.get("authority_contract_version") == AUTHORITY_CONTRACT_VERSION
+        ):
             return existing
 
     timestamp = invalidated_at or datetime.now(timezone.utc).isoformat()
