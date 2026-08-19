@@ -166,7 +166,13 @@ def test_crawler_reuses_304_and_detects_structural_changes(monkeypatch):
         "extract_recipe_from_html",
         lambda html, url, domain, cfg, headers: (
             new_row,
-            {"page_hash": "new-page", "dom_fingerprint": "new-dom", "schema_signature": "new-schema", "issues": []},
+            {
+                "page_hash": "new-page",
+                "dom_fingerprint": "new-dom",
+                "schema_signature": "new-schema",
+                "recipe_recognized": True,
+                "issues": [],
+            },
         ),
     )
     targets = list(state["url_catalog"].values())
@@ -175,6 +181,7 @@ def test_crawler_reuses_304_and_detects_structural_changes(monkeypatch):
     )
     assert len(rows) == 2
     assert coverage[0]["not_modified"] == 1
+    assert coverage[0]["recognized_recipes"] == 2
     assert coverage[0]["dom_structure_changes"] == 1
     assert coverage[0]["schema_structure_changes"] == 1
     assert {event["type"] for event in events} >= {"dom_structure_changed", "schema_structure_changed"}
@@ -249,6 +256,7 @@ def test_observability_and_quality_gate_emit_actionable_failures():
             "targets": 2,
             "fetched": 2,
             "not_modified": 0,
+            "recognized_recipes": 2,
             "verified_recipes": 1,
             "errors": 1,
             "elapsed_seconds": 4.0,
@@ -277,8 +285,8 @@ def test_observability_and_quality_gate_emit_actionable_failures():
     )
     assert metrics["crawl_success_rate"] == 1.0
     assert metrics["fetch_success_rate"] == 1.0
+    assert metrics["extract_success_rate"] == 1.0
     assert metrics["recipe_verification_rate"] == 0.5
-    assert metrics["extract_success_rate"] == 0.5
     assert metrics["http_429"] == 1
     assert rows
     assert any(alert["type"] == "publisher_dom_contract_changes" for alert in alerts)
