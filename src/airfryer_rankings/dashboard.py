@@ -72,6 +72,11 @@ def write_dashboard(
     anomalies: list[dict],
     methodology: dict,
     source_count: int,
+    *,
+    corpus: list[dict] | None = None,
+    duplicate_groups: list[dict] | None = None,
+    stale_days: int = 14,
+    catalog_url_count: int | None = None,
 ) -> None:
     docs = Path(docs_dir)
     docs.mkdir(parents=True, exist_ok=True)
@@ -87,4 +92,13 @@ def write_dashboard(
     (docs / "data.json").write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     (docs / "index.html").write_text(_dashboard_html(), encoding="utf-8")
     (docs / ".nojekyll").write_text("", encoding="utf-8")
-    write_app_feed(docs, generated_at, ranked, source_count)
+    write_app_feed(
+        docs,
+        generated_at,
+        ranked,
+        source_count,
+        corpus=corpus,
+        duplicate_groups=duplicate_groups,
+        stale_days=stale_days,
+        catalog_url_count=catalog_url_count,
+    )
