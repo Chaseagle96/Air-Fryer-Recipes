@@ -62,8 +62,53 @@ jobs:
           echo "vertical=$vertical" >> "$GITHUB_OUTPUT"
           echo "Certifying vertical: $vertical"
 
+      - name: Check whether current main still matches completed ranking
+        id: freshness
+        if: github.event_name == 'workflow_run'
+        shell: bash
+        env:
+          VERTICAL: ${{ steps.vertical.outputs.vertical }}
+        run: |
+          PYTHONPATH=src python - <<'PY'
+          import json
+          import os
+          from datetime import datetime
+          from pathlib import Path
+
+          vertical = os.environ['VERTICAL']
+          if vertical == 'air_fryer':
+              state_path = Path('data/state.json')
+              summary_path = Path('output/summary.json')
+              metrics_path = Path('output/source_expansion.json')
+          else:
+              state_path = Path('verticals/slow_cooker/data/state.json')
+              summary_path = Path('verticals/slow_cooker/output/summary.json')
+              metrics_path = Path('verticals/slow_cooker/output/source_expansion.json')
+
+          state = json.loads(state_path.read_text(encoding='utf-8'))
+          summary = json.loads(summary_path.read_text(encoding='utf-8'))
+          metrics = json.loads(metrics_path.read_text(encoding='utf-8'))
+          current_catalog = len(state.get('url_catalog', {}) or {})
+          summary_catalog = int(summary.get('catalog_urls') or 0)
+
+          def dt(value):
+              return datetime.fromisoformat(str(value).replace('Z', '+00:00')) if value else None
+
+          ranking_at = dt(summary.get('generated_at'))
+          catalog_sync_at = dt(metrics.get('catalog_sync_generated_at'))
+          current = summary_catalog == current_catalog and ranking_at is not None and catalog_sync_at is not None and ranking_at >= catalog_sync_at
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
+              output.write(f"current={'true' if current else 'false'}\n")
+          if current:
+              print(f'Current main still matches completed {vertical} ranking generation.')
+          else:
+              print(f'::notice::Skipping stale postcheck for {vertical}: summary catalog={summary_catalog}, current catalog={current_catalog}, ranking_at={ranking_at}, catalog_sync_at={catalog_sync_at}. A newer source/catalog generation already advanced main.')
+          PY
+
       - name: Certify Air Fryer serving generation
-        if: steps.vertical.outputs.vertical == 'air_fryer'
+        if: >-
+          steps.vertical.outputs.vertical == 'air_fryer' &&
+          (github.event_name == 'workflow_dispatch' || steps.freshness.outputs.current == 'true')
         run: |
           PYTHONPATH=src python scripts/ranking_authority.py publish \
             --vertical air_fryer \
@@ -78,7 +123,9 @@ jobs:
             --manifest docs/api/manifest.json
 
       - name: Certify Slow Cooker serving generation
-        if: steps.vertical.outputs.vertical == 'slow_cooker'
+        if: >-
+          steps.vertical.outputs.vertical == 'slow_cooker' &&
+          (github.event_name == 'workflow_dispatch' || steps.freshness.outputs.current == 'true')
         run: |
           PYTHONPATH=src python scripts/ranking_authority.py publish \
             --vertical slow_cooker \
@@ -93,6 +140,8 @@ jobs:
             --manifest verticals/slow_cooker/docs/api/manifest.json
 
       - name: Commit certified serving generation
+        if: >-
+          github.event_name == 'workflow_dispatch' || steps.freshness.outputs.current == 'true'
         shell: bash
         run: |
           git config user.name 'github-actions[bot]'
