@@ -60,3 +60,5 @@ jobs:
           git add src/airfryer_rankings/source_expansion.py .github/workflows/source-expansion.yml SOURCE_DISCOVERY.md .github/workflows/source-expansion-state-isolation.yml
           git commit -m 'Isolate source expansion from ranking state writes'
           git push origin HEAD:agent/autonomous-source-expansion
+
+# retriggered after final type cleanup
