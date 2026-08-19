@@ -6,6 +6,7 @@ from pathlib import Path
 import yaml
 
 from airfryer_rankings.models import SourceConfig
+from airfryer_rankings.source_catalog_sync import sync_promoted_source_catalogs
 from airfryer_rankings.source_registry import (
     PROMOTED,
     empty_source_registry,
@@ -14,7 +15,6 @@ from airfryer_rankings.source_registry import (
     transition_source,
 )
 from airfryer_rankings.source_security import is_non_publisher_domain
-from scripts.sync_promoted_source_catalogs import sync_promoted_source_catalogs
 
 
 def test_non_publisher_filter_rejects_shorteners_retail_and_auth_hosts() -> None:
@@ -36,7 +36,7 @@ def test_non_publisher_filter_rejects_shorteners_retail_and_auth_hosts() -> None
 
 
 def test_promoted_source_is_seeded_into_persistent_catalog(tmp_path: Path, monkeypatch) -> None:
-    import scripts.sync_promoted_source_catalogs as sync
+    import airfryer_rankings.source_catalog_sync as sync
 
     sources_path = tmp_path / "sources.yaml"
     state_path = tmp_path / "state.json"
