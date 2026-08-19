@@ -23,7 +23,20 @@ def volume_bucket(count: int) -> str:
     return "2000+"
 
 
-def build_empirical_uncertainty(observations: list[dict], min_pairs: int = 30) -> dict[str, dict]:
+def build_empirical_uncertainty(
+    observations: list[dict],
+    min_pairs: int = 30,
+    min_unique_recipes: int = 10,
+    min_history_span_days: float = 21.0,
+    min_pair_gap_hours: float = 24.0,
+) -> dict[str, dict]:
+    """Estimate rating volatility only from temporally independent, informative pairs.
+
+    Hourly refreshes are useful for freshness, but they are not independent evidence
+    about rating volatility. A qualifying pair must be separated by at least one day
+    and must contain actual review-count growth. A bucket is considered empirically
+    ready only after it also spans several weeks and multiple distinct recipes.
+    """
     grouped: dict[str, list[dict]] = defaultdict(list)
     for row in observations:
         recipe_id = str(row.get("recipe_id") or "")
@@ -40,31 +53,67 @@ def build_empirical_uncertainty(observations: list[dict], min_pairs: int = 30) -
         grouped[recipe_id].append({"timestamp": timestamp, "rating": rating, "rating_count": count})
 
     deltas: dict[str, list[float]] = defaultdict(list)
-    for rows in grouped.values():
+    recipe_ids: dict[str, set[str]] = defaultdict(set)
+    pair_times: dict[str, list[datetime]] = defaultdict(list)
+    pair_gaps_hours: dict[str, list[float]] = defaultdict(list)
+
+    for recipe_id, rows in grouped.items():
         rows.sort(key=lambda item: item["timestamp"])
-        for previous, current in zip(rows, rows[1:], strict=False):
-            if current["timestamp"] <= previous["timestamp"]:
+        if len(rows) < 2:
+            continue
+        anchor = rows[0]
+        for current in rows[1:]:
+            if current["timestamp"] <= anchor["timestamp"]:
                 continue
-            bucket = volume_bucket(max(previous["rating_count"], current["rating_count"]))
-            deltas[bucket].append(current["rating"] - previous["rating"])
+            gap_hours = (current["timestamp"] - anchor["timestamp"]).total_seconds() / 3600.0
+            if gap_hours < min_pair_gap_hours:
+                continue
+            # Unchanged review populations do not tell us how an aggregate rating
+            # behaves as new evidence arrives, even if the page was fetched again.
+            if int(current["rating_count"]) <= int(anchor["rating_count"]):
+                continue
+            bucket = volume_bucket(max(anchor["rating_count"], current["rating_count"]))
+            deltas[bucket].append(current["rating"] - anchor["rating"])
+            recipe_ids[bucket].add(recipe_id)
+            pair_times[bucket].extend((anchor["timestamp"], current["timestamp"]))
+            pair_gaps_hours[bucket].append(gap_hours)
+            anchor = current
 
     result: dict[str, dict] = {}
     for _, _, label in VOLUME_BUCKETS:
         values = deltas.get(label, [])
+        times = pair_times.get(label, [])
+        gaps = pair_gaps_hours.get(label, [])
+        unique_recipes = len(recipe_ids.get(label, set()))
+        history_span_days = (
+            (max(times) - min(times)).total_seconds() / 86400.0 if len(times) >= 2 else 0.0
+        )
         if values:
             rmse = math.sqrt(sum(value * value for value in values) / len(values))
             sigma = pstdev(values) if len(values) > 1 else abs(values[0])
         else:
             rmse = None
             sigma = None
+        meets_pair_count = len(values) >= min_pairs
+        meets_unique_recipe_count = unique_recipes >= min_unique_recipes
+        meets_history_span = history_span_days >= min_history_span_days
         result[label] = {
             "bucket": label,
             "sample_pairs": len(values),
+            "unique_recipes": unique_recipes,
+            "history_span_days": history_span_days,
+            "minimum_pair_gap_hours_observed": min(gaps) if gaps else None,
             "rating_delta_rmse": rmse,
             "rating_delta_sigma": sigma,
             "empirical_95_penalty": min(0.25, 1.96 * rmse) if rmse is not None else None,
-            "ready": len(values) >= min_pairs,
+            "ready": meets_pair_count and meets_unique_recipe_count and meets_history_span,
+            "meets_pair_count": meets_pair_count,
+            "meets_unique_recipe_count": meets_unique_recipe_count,
+            "meets_history_span": meets_history_span,
             "min_pairs": min_pairs,
+            "min_unique_recipes": min_unique_recipes,
+            "min_history_span_days": min_history_span_days,
+            "min_pair_gap_hours": min_pair_gap_hours,
         }
     return result
 
