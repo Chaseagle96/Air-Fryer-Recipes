@@ -93,6 +93,30 @@ def _leaderboard_fingerprint(path: str | Path) -> str:
     return hashlib.sha256(target.read_bytes()).hexdigest()
 
 
+def _validate_public_manifest(
+    path: str | Path | None,
+    *,
+    summary: dict[str, Any],
+    source_count: int,
+    catalog_count: int,
+) -> None:
+    if not path:
+        return
+    target = Path(path)
+    manifest = _read_json(target)
+    if not manifest:
+        raise AuthorityError(f"public manifest missing or invalid: {target}")
+    if str(manifest.get("generated_at") or "") != str(summary.get("generated_at") or ""):
+        raise AuthorityError("public manifest generation does not match ranking generation")
+    if int(manifest.get("ranked_recipe_count") or 0) != int(summary.get("ranked_recipes") or 0):
+        raise AuthorityError("public manifest ranked count does not match ranking summary")
+    if int(manifest.get("catalog_url_count") or 0) != catalog_count:
+        raise AuthorityError("public manifest catalog count does not match current catalog")
+    vertical = manifest.get("vertical")
+    if not isinstance(vertical, dict) or int(vertical.get("source_count") or 0) != source_count:
+        raise AuthorityError("public manifest source count does not match effective sources")
+
+
 def _update_manifest(
     path: str | Path | None,
     authority: dict[str, Any],
@@ -228,6 +252,13 @@ def publish_authority(
         raise AuthorityError(
             f"current catalog regressed below synchronized catalog: current={raw_catalog_count} synced={metrics_catalog_count}"
         )
+
+    _validate_public_manifest(
+        manifest_path,
+        summary=summary,
+        source_count=len(sources),
+        catalog_count=raw_catalog_count,
+    )
 
     input_fingerprint = _canonical_hash(
         {
