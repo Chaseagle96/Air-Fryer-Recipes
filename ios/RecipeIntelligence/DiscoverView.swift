@@ -226,6 +226,7 @@ private struct RecipeCardView: View {
         .onTapGesture { onDetails() }
         .simultaneousGesture(dragGesture)
         .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("discover.card")
         .accessibilityLabel("\(recipe.title). Recipe Intelligence rank \(recipe.rank) in \(recipe.verticalName). Rating \(String(format: "%.1f", recipe.rating)) from \(recipe.ratingCount) ratings. \(recipe.confidenceLabel).")
         .accessibilityHint("Swipe right to save or left to skip. Activate the card for details.")
         .accessibilityAction(named: "Save") { onDecision(.save) }
