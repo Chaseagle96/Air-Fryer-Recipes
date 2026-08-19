@@ -37,10 +37,35 @@ def test_mobile_backfill_preserves_current_authority_certificate() -> None:
     assert module._authority({"authority": certificate}) == certificate
 
 
+def test_standalone_backfill_stays_fail_closed_after_invalidation() -> None:
+    module = _load_backfill_module()
+    certificate = {
+        "authority_contract_version": AUTHORITY_CONTRACT_VERSION,
+        "authoritative": False,
+        "status": "refresh_required",
+        "last_ranking_generated_at": "2026-08-19T10:00:00+00:00",
+    }
+    summary = {"generated_at": "2026-08-19T10:00:00+00:00"}
+    assert module._candidate_manifest_allowed(summary, certificate) is False
+
+
+def test_newer_ranking_job_can_stage_uncommitted_candidate_manifest() -> None:
+    module = _load_backfill_module()
+    certificate = {
+        "authority_contract_version": AUTHORITY_CONTRACT_VERSION,
+        "authoritative": False,
+        "status": "refresh_required",
+        "last_ranking_generated_at": "2026-08-19T10:00:00+00:00",
+    }
+    summary = {"generated_at": "2026-08-19T10:01:00+00:00"}
+    assert module._candidate_manifest_allowed(summary, certificate) is True
+
+
 def test_mobile_backfill_cannot_resurrect_ranked_manifest_pointers() -> None:
     source = Path("scripts/backfill_mobile_corpus.py").read_text(encoding="utf-8")
     assert 'serving_available = authority.get("authoritative") is True' in source
     assert 'manifest["ranked_serving_available"] = serving_available' in source
+    assert "if not serving_available and not candidate_allowed:" in source
     assert 'manifest["ranked_recipe_count"] = 0' in source
     assert 'manifest["pages"] = []' in source
 
