@@ -11,6 +11,15 @@ blocked_domain_suffixes:
   - medium.com
   - substack.com
   - wordpress.com
+  - amzn.to
+  - amzlink.to
+  - geni.us
+  - rstyle.me
+  - yummly.com
+  - flipboard.com
+  - walmart.com
+  - wayfair.com
+  - barnesandnoble.com
 
 budgets:
   daily:
@@ -102,7 +111,11 @@ verticals:
     allow_unmatched_discovery_links: false
     query_terms:
       - air fryer recipes
-      - air frying recipes
+      - air fryer chicken recipes
+      - air fryer dinner recipes
+      - air fryer vegetable recipes
+      - air fryer dessert recipes
+      - air fryer breakfast recipes
     proteins: [chicken, beef, pork, salmon, shrimp, tofu]
     cuisines: [mexican, italian, asian, mediterranean, indian]
     meal_types: [dinner, breakfast, appetizer, snack, dessert]
@@ -120,6 +133,10 @@ verticals:
     query_terms:
       - slow cooker recipes
       - crock pot recipes
+      - slow cooker chicken recipes
+      - slow cooker beef recipes
+      - slow cooker dinner recipes
+      - slow cooker soup recipes
     proteins: [chicken, beef, pork, turkey, beans]
     cuisines: [mexican, italian, asian, mediterranean, indian]
     meal_types: [dinner, breakfast, soup, appetizer, dessert]

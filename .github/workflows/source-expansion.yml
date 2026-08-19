@@ -21,6 +21,7 @@ on:
       - 'src/airfryer_rankings/source_expansion.py'
       - 'src/airfryer_rankings/source_registry.py'
       - 'src/airfryer_rankings/source_security.py'
+      - 'src/airfryer_rankings/source_hygiene.py'
       - 'src/airfryer_rankings/models.py'
       - 'src/airfryer_rankings/http.py'
       - 'src/airfryer_rankings/discovery.py'
@@ -28,6 +29,7 @@ on:
       - 'config/source_discovery.yaml'
       - 'config/source_discovery_bootstrap.yaml'
       - 'scripts/source_registry_admin.py'
+      - 'scripts/retire_nonpublisher_candidates.py'
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
@@ -37,6 +39,7 @@ on:
       - 'config/source_discovery.yaml'
       - 'config/source_discovery_bootstrap.yaml'
       - 'scripts/source_registry_admin.py'
+      - 'scripts/retire_nonpublisher_candidates.py'
 
 permissions:
   contents: write
@@ -74,7 +77,7 @@ jobs:
         run: pip-audit -r requirements.txt
 
       - name: Lint source and tests
-        run: ruff check src tests scripts/source_registry_admin.py
+        run: ruff check src tests scripts/source_registry_admin.py scripts/retire_nonpublisher_candidates.py
 
       - name: Static type analysis
         run: mypy src/airfryer_rankings
@@ -104,7 +107,13 @@ jobs:
 
       - name: Validate source-expansion configuration
         if: steps.mode.outputs.production != 'true'
-        run: PYTHONPATH=src python -m airfryer_rankings.source_expansion --mode smoke --dry-run
+        run: |
+          PYTHONPATH=src python -m airfryer_rankings.source_expansion --mode smoke --dry-run
+          PYTHONPATH=src python scripts/retire_nonpublisher_candidates.py --dry-run
+
+      - name: Retire non-publisher candidates
+        if: steps.mode.outputs.production == 'true'
+        run: PYTHONPATH=src python scripts/retire_nonpublisher_candidates.py
 
       - name: Discover and qualify recipe publishers
         if: steps.mode.outputs.production == 'true'
