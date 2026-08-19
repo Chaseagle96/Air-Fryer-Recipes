@@ -76,8 +76,6 @@ def select_refresh_targets(
         exploration_limit = 0
         if exploratory:
             exploration_limit = min(len(exploratory), max(1, hourly_limit // 10))
-            if validated and hourly_limit < 10:
-                exploration_limit = 0
         validated_limit = min(len(validated), max(0, hourly_limit - exploration_limit))
 
         def take_balanced(entries: list[dict], limit: int, *, allow_overflow: bool, cap: int | None = None) -> list[dict]:
