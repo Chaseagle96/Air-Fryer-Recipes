@@ -8,6 +8,8 @@ on:
   push:
     branches: [main]
     paths:
+      - '.github/workflows/hourly.yml'
+      - '.github/workflows/slow-cooker.yml'
       - '.github/workflows/authority-invalidate.yml'
       - '.github/workflows/authoritative-refresh.yml'
       - '.github/workflows/authority-postcheck.yml'
