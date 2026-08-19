@@ -1,5 +1,5 @@
 {
-  "catalog_sync_generated_at": "2026-08-19T09:11:05.586726+00:00",
+  "catalog_sync_generated_at": "2026-08-19T09:20:09.895971+00:00",
   "generated_at": "2026-08-19T08:48:22.552952+00:00",
   "mode": "deep",
   "source_gate_version": 1,
@@ -19,7 +19,7 @@
       "catalog_sync": [
         {
           "discovered_urls": 3603,
-          "elapsed_seconds": 58.27,
+          "elapsed_seconds": 50.97,
           "new_urls": 0,
           "robots_status": "ok",
           "sitemap_docs": 13,
@@ -28,7 +28,7 @@
         },
         {
           "discovered_urls": 268,
-          "elapsed_seconds": 3.94,
+          "elapsed_seconds": 3.25,
           "new_urls": 0,
           "robots_status": "ok",
           "sitemap_docs": 8,
@@ -37,7 +37,7 @@
         },
         {
           "discovered_urls": 477,
-          "elapsed_seconds": 1.69,
+          "elapsed_seconds": 0.75,
           "new_urls": 0,
           "robots_status": "ok",
           "sitemap_docs": 7,
@@ -45,7 +45,7 @@
           "status": "ok"
         }
       ],
-      "catalog_sync_generated_at": "2026-08-19T09:11:05.586726+00:00",
+      "catalog_sync_generated_at": "2026-08-19T09:20:09.895971+00:00",
       "catalog_url_count": 7494,
       "catalog_urls_added_after_promotion": 0,
       "catalog_urls_coalesced": 0,
@@ -300,7 +300,7 @@
       "catalog_sync": [
         {
           "discovered_urls": 175,
-          "elapsed_seconds": 3.56,
+          "elapsed_seconds": 2.11,
           "new_urls": 0,
           "robots_status": "ok",
           "sitemap_docs": 13,
@@ -309,7 +309,7 @@
         },
         {
           "discovered_urls": 126,
-          "elapsed_seconds": 3.61,
+          "elapsed_seconds": 2.52,
           "new_urls": 0,
           "robots_status": "ok",
           "sitemap_docs": 8,
@@ -317,7 +317,7 @@
           "status": "ok"
         }
       ],
-      "catalog_sync_generated_at": "2026-08-19T09:11:05.586726+00:00",
+      "catalog_sync_generated_at": "2026-08-19T09:20:09.895971+00:00",
       "catalog_url_count": 3803,
       "catalog_urls_added_after_promotion": 0,
       "catalog_urls_coalesced": 0,
