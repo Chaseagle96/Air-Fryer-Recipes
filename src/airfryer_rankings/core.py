@@ -5,12 +5,14 @@ storage, ranking, QA, calibration, backtesting, contracts, and benchmarking can
 evolve independently while existing imports remain stable.
 """
 
+from collections.abc import Iterable
+
 from .archive import history_storage_health, load_storage_policy, write_history_parquet
 from .backtesting import history_span_days, run_historical_backtest
 from .benchmarks import build_dedupe_label_queue, evaluate_dedupe_benchmark
 from .calibration import build_empirical_uncertainty, build_historical_metrics, evidence_grade, volume_bucket
 from .contracts import contract_manifest, write_contract_manifest
-from .crawler import crawl_targets, select_refresh_targets
+from .crawler import crawl_targets, select_refresh_targets as _select_refresh_targets
 from .dedupe import candidate_duplicate_pairs, dedupe_current, duplicate_similarity
 from .discovery import discover_source_urls
 from .evidence import jsonld_objects, visible_rating_evidence
@@ -45,6 +47,27 @@ from .ranking_components import bayesian_posterior, robustness_lab, score_curren
 from .schemas import validate_observation_record, validate_ranked_recipe, validate_records, validate_source_health
 from .storage import load_state, merge_observations, migrate_state, read_recent_records, save_state, write_run_records
 from .structure import dom_structure_fingerprint, rating_evidence_signature, schema_signature, structure_metadata
+
+
+def select_refresh_targets(
+    state: dict,
+    sources: Iterable[SourceConfig],
+    mode: str,
+    global_max_urls: int | None = None,
+    hourly_limit: int = 100,
+) -> list[dict]:
+    """Select crawl targets and persist the exact effective source scope for ranking."""
+
+    source_list = list(sources)
+    state["effective_source_domains"] = sorted({source.domain for source in source_list})
+    return _select_refresh_targets(
+        state,
+        source_list,
+        mode,
+        global_max_urls=global_max_urls,
+        hourly_limit=hourly_limit,
+    )
+
 
 __all__ = [
     "CATEGORY_RULES",
