@@ -1,5 +1,12 @@
 # Air Fryer Recipe Rankings
 
+[![Air Fryer Rankings](https://github.com/Chaseagle96/Air-Fryer-Recipes/actions/workflows/hourly.yml/badge.svg)](https://github.com/Chaseagle96/Air-Fryer-Recipes/actions/workflows/hourly.yml)
+[![CodeQL](https://github.com/Chaseagle96/Air-Fryer-Recipes/actions/workflows/codeql.yml/badge.svg)](https://github.com/Chaseagle96/Air-Fryer-Recipes/actions/workflows/codeql.yml)
+[![Release](https://img.shields.io/github/v/release/Chaseagle96/Air-Fryer-Recipes)](https://github.com/Chaseagle96/Air-Fryer-Recipes/releases/latest)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+**Current release: 5.2.0**
+
 An auditable, continuously refreshed leaderboard of highly rated air-fryer recipes from public recipe publishers.
 
 The project does not simply sort displayed star averages. It combines rating quality and volume, category-aware publisher normalization, Bayesian shrinkage, uncertainty, extraction evidence, duplicate detection, freshness, longitudinal behavior, source health, and ranking robustness.
