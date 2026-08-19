@@ -1,0 +1,181 @@
+name: Recipe Intelligence Source Expansion
+
+on:
+  schedule:
+    - cron: '23 10 * * *'      # bounded daily source discovery/qualification
+    - cron: '53 11 * * 0'      # broader weekly deep source expansion
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Source-expansion mode
+        required: true
+        default: deep
+        type: choice
+        options:
+          - daily
+          - deep
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source-expansion.yml'
+      - 'src/airfryer_rankings/source_expansion.py'
+      - 'src/airfryer_rankings/source_registry.py'
+      - 'src/airfryer_rankings/source_security.py'
+      - 'src/airfryer_rankings/models.py'
+      - 'src/airfryer_rankings/http.py'
+      - 'src/airfryer_rankings/discovery.py'
+      - 'src/airfryer_rankings/crawler.py'
+      - 'config/source_discovery.yaml'
+      - 'config/source_discovery_bootstrap.yaml'
+      - 'scripts/source_registry_admin.py'
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/source-expansion.yml'
+      - 'src/**'
+      - 'tests/**'
+      - 'config/source_discovery.yaml'
+      - 'config/source_discovery_bootstrap.yaml'
+      - 'scripts/source_registry_admin.py'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: recipe-intelligence-source-expansion-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'schedule' }}
+
+env:
+  RECIPE_INTELLIGENCE_BASE_SOURCES_ONLY: '1'
+  BRAVE_SEARCH_API_KEY: ${{ secrets.BRAVE_SEARCH_API_KEY }}
+  GOOGLE_CSE_API_KEY: ${{ secrets.GOOGLE_CSE_API_KEY }}
+  GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID }}
+
+jobs:
+  source-expansion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install dependencies and quality tooling
+        run: pip install -r requirements-dev.txt
+
+      - name: Audit dependencies
+        run: pip-audit -r requirements.txt
+
+      - name: Lint source and tests
+        run: ruff check src tests scripts/source_registry_admin.py
+
+      - name: Static type analysis
+        run: mypy src/airfryer_rankings
+
+      - name: Test with branch coverage
+        run: PYTHONPATH=src pytest --cov=airfryer_rankings --cov-report=term-missing
+
+      - name: Resolve source-expansion mode
+        id: mode
+        shell: bash
+        run: |
+          mode=daily
+          production=true
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            mode=smoke
+            production=false
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            mode="${{ inputs.mode }}"
+          elif [ "${{ github.event.schedule }}" = "53 11 * * 0" ]; then
+            mode=deep
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            mode=deep
+          fi
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          echo "production=$production" >> "$GITHUB_OUTPUT"
+          echo "Resolved source-expansion mode: $mode"
+
+      - name: Validate source-expansion configuration
+        if: steps.mode.outputs.production != 'true'
+        run: PYTHONPATH=src python -m airfryer_rankings.source_expansion --mode smoke --dry-run
+
+      - name: Discover and qualify recipe publishers
+        if: steps.mode.outputs.production == 'true'
+        shell: bash
+        run: |
+          seed_args=()
+          if [ "${{ github.event_name }}" = "push" ] && [ -f config/source_discovery_bootstrap.yaml ]; then
+            seed_args=(--seed-file config/source_discovery_bootstrap.yaml)
+          fi
+          PYTHONPATH=src python -m airfryer_rankings.source_expansion \
+            --mode "${{ steps.mode.outputs.mode }}" \
+            "${seed_args[@]}"
+
+      - name: Validate source registries and observability
+        if: steps.mode.outputs.production == 'true'
+        run: |
+          PYTHONPATH=src python - <<'PY'
+          import json
+          from pathlib import Path
+          from airfryer_rankings.models import load_sources
+          from airfryer_rankings.source_registry import effective_source_configs, load_source_registry
+
+          checks = [
+              ('air_fryer', Path('config/sources.yaml'), Path('data/source_registry.json'), Path('output/source_expansion.json')),
+              ('slow_cooker', Path('config/verticals/slow_cooker/sources.yaml'), Path('verticals/slow_cooker/data/source_registry.json'), Path('verticals/slow_cooker/output/source_expansion.json')),
+          ]
+          for vertical, sources_path, registry_path, metrics_path in checks:
+              registry = load_source_registry(registry_path, vertical)
+              base = load_sources(sources_path, include_discovered=False)
+              effective = effective_source_configs(base, registry)
+              metrics = json.loads(metrics_path.read_text(encoding='utf-8'))
+              assert len(effective) >= len(base)
+              assert int(metrics['manual_source_count']) == len(base)
+              assert int(metrics['effective_source_count']) == len(effective)
+              assert int(metrics['catalog_url_count']) >= 0
+              assert int(registry['source_gate_version']) == 1
+              print(vertical, 'manual=', len(base), 'effective=', len(effective), 'candidates=', len(registry['candidates']))
+          PY
+
+      - name: Upload source-expansion diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: recipe-intelligence-source-expansion-${{ github.run_number }}-${{ steps.mode.outputs.mode || 'validation' }}
+          retention-days: 30
+          if-no-files-found: ignore
+          path: |
+            output/source_expansion.json
+            output/source_expansion_all.json
+            verticals/slow_cooker/output/source_expansion.json
+            data/source_registry.json
+            verticals/slow_cooker/data/source_registry.json
+            data/source_events
+            verticals/slow_cooker/data/source_events
+
+      - name: Commit source registries and audit evidence
+        if: steps.mode.outputs.production == 'true'
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/source_registry.json verticals/slow_cooker/data/source_registry.json
+          [ ! -d data/source_events ] || git add data/source_events
+          [ ! -d verticals/slow_cooker/data/source_events ] || git add verticals/slow_cooker/data/source_events
+          [ ! -f output/source_expansion.json ] || git add output/source_expansion.json
+          [ ! -f output/source_expansion_all.json ] || git add output/source_expansion_all.json
+          [ ! -f verticals/slow_cooker/output/source_expansion.json ] || git add verticals/slow_cooker/output/source_expansion.json
+          if git diff --cached --quiet; then
+            echo 'No source-expansion changes to commit.'
+            exit 0
+          fi
+          git commit -m "Expand qualified recipe source network (${{ steps.mode.outputs.mode }})"
+          git pull --rebase origin main
+          git push origin HEAD:main

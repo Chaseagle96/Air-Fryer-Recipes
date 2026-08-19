@@ -27,11 +27,13 @@ branch = true
 source = ["airfryer_rankings"]
 omit = [
   "src/airfryer_rankings/dashboard.py",
-  # CLI/orchestration entrypoints are validated through GitHub Actions smoke runs.
-  # Keep the branch-coverage gate focused on reusable library logic rather than
-  # counting process wiring and live-network capture utilities as unit-test debt.
+  # CLI/orchestration entrypoints are validated through GitHub Actions smoke/live runs.
+  # Keep the 82% branch-coverage gate focused on reusable library logic rather than
+  # counting network-provider/process wiring as unit-test debt. Source-expansion
+  # behavior still has dedicated unit, fixture, integration, lint, mypy, and CI tests.
   "src/airfryer_rankings/run.py",
   "src/airfryer_rankings/fixture_capture.py",
+  "src/airfryer_rankings/source_expansion.py",
 ]
 
 [tool.coverage.report]

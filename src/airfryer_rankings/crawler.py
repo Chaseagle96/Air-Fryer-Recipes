@@ -9,7 +9,7 @@ from typing import Any, Iterable
 import requests
 
 from .extract import extract_recipe_from_html
-from .http import get, make_session, robots_and_sitemaps
+from .http import get, get_for_source, make_session, robots_and_sitemaps
 from .models import UA, RecipeRow, SourceConfig, parse_dt
 
 
@@ -92,6 +92,12 @@ def _row_from_existing(recipe: dict, retrieved_at: str, fetch_status: str = "not
         return None
 
 
+def _crawler_get(session, url: str, cfg: SourceConfig, timeout: int = 25, headers: dict | None = None):
+    if cfg.origin == "discovered":
+        return get_for_source(session, url, cfg, timeout, headers=headers)
+    return get(session, url, timeout, headers=headers)
+
+
 def crawl_targets(
     targets: Iterable[dict],
     sources: Iterable[SourceConfig],
@@ -157,7 +163,7 @@ def crawl_targets(
                 if entry.get("last_modified"):
                     conditional["If-Modified-Since"] = entry["last_modified"]
             try:
-                response = get(session, url, 25, headers=conditional)
+                response = _crawler_get(session, url, cfg, 25, headers=conditional)
                 if response.status_code == 304:
                     metrics["not_modified"] += 1
                     cached = recipes.get(entry.get("recipe_id", ""), {})

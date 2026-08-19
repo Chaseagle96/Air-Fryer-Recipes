@@ -1,0 +1,49 @@
+{
+  "strong_recipe_publisher": {
+    "expected": "qualify",
+    "recipe_structure_rate": 1.0,
+    "vertical_relevance_ratio": 0.9,
+    "substantive_recipe_ratio": 1.0,
+    "rating_conflict_ratio": 0.0
+  },
+  "mediocre_publisher": {
+    "expected": "quarantine",
+    "recipe_structure_rate": 0.7,
+    "vertical_relevance_ratio": 0.5,
+    "substantive_recipe_ratio": 0.7,
+    "rating_conflict_ratio": 0.0
+  },
+  "recipe_aggregator": {
+    "expected": "reject",
+    "external_canonical_ratio": 0.8
+  },
+  "duplicate_content_source": {
+    "expected": "reject",
+    "within_source_duplicate_ratio": 0.9
+  },
+  "malformed_recipe_jsonld": {
+    "expected": "reject",
+    "recipe_structure_rate": 0.2
+  },
+  "rating_mismatch": {
+    "expected": "reject",
+    "rating_conflict_ratio": 0.8
+  },
+  "non_recipe_website": {
+    "expected": "reject",
+    "recipe_structure_rate": 0.0,
+    "vertical_relevance_ratio": 0.0
+  },
+  "robots_denial": {
+    "expected": "quarantine",
+    "robots_status": "unavailable:HTTPError"
+  },
+  "crawler_trap": {
+    "expected": "reject",
+    "trap_url_ratio": 0.8
+  },
+  "temporarily_unavailable": {
+    "expected": "quarantine",
+    "fetch_success_rate": 0.2
+  }
+}

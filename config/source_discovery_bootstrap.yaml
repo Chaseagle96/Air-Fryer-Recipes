@@ -1,0 +1,57 @@
+candidates:
+  - vertical: air_fryer
+    url: https://forktospoon.com/method/air-fryer/
+    provider: chatgpt_web_search_bootstrap
+    query: best air fryer recipes independent recipe publisher
+    title: Fork To Spoon Air Fryer Recipes
+  - vertical: air_fryer
+    url: https://temeculablogs.com/air-fryer-chicken-and-vegetables/
+    provider: chatgpt_web_search_bootstrap
+    query: air fryer chicken recipes recipe blog
+    title: Easy Air Fryer Chicken and Vegetables
+  - vertical: air_fryer
+    url: https://www.eatwell101.com/air-fryer-chicken-recipe
+    provider: chatgpt_web_search_bootstrap
+    query: air fryer chicken vegetables recipe publisher
+    title: Air Fryer Chicken and Vegetables
+  - vertical: air_fryer
+    url: https://kelvinskitchen.com/recipe/air-fryer-recipes/
+    provider: chatgpt_web_search_bootstrap
+    query: air fryer recipes tested recipe publisher
+    title: Air Fryer Recipes - Kelvin's Kitchen
+  - vertical: air_fryer
+    url: https://thestayathomechef.com/air-fryer-chicken-recipes/
+    provider: chatgpt_web_search_bootstrap
+    query: air fryer chicken recipes recipe publisher
+    title: The Best Air Fryer Chicken Recipes
+  - vertical: air_fryer
+    url: https://theyummybowl.com/air-fryer-chicken-and-vegetables/
+    provider: chatgpt_web_search_bootstrap
+    query: air fryer chicken vegetables recipe publisher
+    title: Air Fryer Chicken and Vegetables
+
+  - vertical: slow_cooker
+    url: https://slowcookergourmet.net/slow-cooker-dinner-recipes-for-busy-weeknights/
+    provider: chatgpt_web_search_bootstrap
+    query: best slow cooker recipes independent recipe publisher
+    title: Slow Cooker Dinner Recipes for Busy Weeknights
+  - vertical: slow_cooker
+    url: https://www.themagicalslowcooker.com/recipes/
+    provider: chatgpt_web_search_bootstrap
+    query: slow cooker recipes dedicated recipe publisher
+    title: The Magical Slow Cooker Recipes
+  - vertical: slow_cooker
+    url: https://www.365daysofcrockpot.com/category/cooking-method/slow-cooker/
+    provider: chatgpt_web_search_bootstrap
+    query: slow cooker recipes dedicated recipe publisher
+    title: 365 Days of Slow Cooking - Slow Cooker Archives
+  - vertical: slow_cooker
+    url: https://www.marthastewart.com/274310/slow-cooker-recipes
+    provider: chatgpt_web_search_bootstrap
+    query: best slow cooker recipes editorial publisher
+    title: Martha Stewart Slow Cooker Recipes
+  - vertical: slow_cooker
+    url: https://www.epicurious.com/recipes-menus/crock-pot-slow-cooker-recipes
+    provider: chatgpt_web_search_bootstrap
+    query: best slow cooker recipes editorial publisher
+    title: Epicurious Slow Cooker Recipes

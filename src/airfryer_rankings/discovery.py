@@ -6,7 +6,7 @@ from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
 
-from .http import get, iter_sitemap_records, make_session, robots_and_sitemaps
+from .http import get, get_for_source, iter_sitemap_records, make_session, robots_and_sitemaps
 from .models import UA, SourceConfig
 
 
@@ -68,6 +68,31 @@ def _looks_recipe_link(
     return path.count("/") >= 2 and not path.endswith((".jpg", ".jpeg", ".png", ".webp", ".pdf"))
 
 
+def _discovery_get(session, url: str, cfg: SourceConfig, timeout: int = 25):
+    if cfg.origin == "discovered":
+        return get_for_source(session, url, cfg, timeout)
+    return get(session, url, timeout)
+
+
+def _sitemap_records(session, sitemap: str, cfg: SourceConfig, seen_sitemaps: set[str], max_docs: int):
+    if cfg.origin == "discovered":
+        return iter_sitemap_records(
+            session,
+            sitemap,
+            seen=seen_sitemaps,
+            max_docs=max_docs,
+            safe=True,
+        )
+    # Keep the pinned/manual adapter call signature unchanged. The additional
+    # safety keyword is only required for dynamically discovered publishers.
+    return iter_sitemap_records(
+        session,
+        sitemap,
+        seen=seen_sitemaps,
+        max_docs=max_docs,
+    )
+
+
 def discover_source_urls(
     cfg: SourceConfig,
     state: dict,
@@ -87,7 +112,7 @@ def discover_source_urls(
     match_cap = 20000 if mode == "deep" and global_max_urls is None else max(2000, (global_max_urls or cfg.max_urls) * (12 if mode == "deep" else 6))
 
     for sitemap in sitemaps:
-        for record in iter_sitemap_records(session, sitemap, seen=seen_sitemaps, max_docs=max_docs):
+        for record in _sitemap_records(session, sitemap, cfg, seen_sitemaps, max_docs):
             url = record["url"]
             if not _same_domain(url, cfg.domain) or not include_re.search(url):
                 continue
@@ -110,7 +135,7 @@ def discover_source_urls(
         except Exception:
             pass
         try:
-            response = get(session, discovery_url, 25)
+            response = _discovery_get(session, discovery_url, cfg, 25)
             soup = BeautifulSoup(response.text, "lxml")
         except Exception:
             continue
