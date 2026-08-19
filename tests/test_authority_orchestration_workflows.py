@@ -20,6 +20,14 @@ def test_authority_invalidation_serializes_full_refresh_dispatch() -> None:
     assert commit_index < dispatch_index
 
 
+def test_authority_invalidation_stages_fail_closed_dashboards() -> None:
+    workflow = (REPO_ROOT / ".github/workflows/authority-invalidate.yml").read_text(encoding="utf-8")
+
+    assert "docs/index.html" in workflow
+    assert "verticals/slow_cooker/docs/index.html" in workflow
+    assert "Unexpected unstaged tracked changes remain after authority invalidation staging" in workflow
+
+
 def test_source_expansion_does_not_dispatch_full_ranking_early() -> None:
     workflow = (REPO_ROOT / ".github/workflows/authority-invalidate.yml").read_text(encoding="utf-8")
 
@@ -28,6 +36,32 @@ def test_source_expansion_does_not_dispatch_full_ranking_early() -> None:
     dispatch_condition = dispatch_block.split("env:", 1)[0]
     assert "Recipe Intelligence Source Catalog Sync" in dispatch_condition
     assert "Recipe Intelligence Source Expansion" not in dispatch_condition
+
+
+def test_hourly_authority_defers_only_expected_full_refresh_requirement() -> None:
+    air_fryer = (REPO_ROOT / ".github/workflows/hourly.yml").read_text(encoding="utf-8")
+    slow_cooker = (REPO_ROOT / ".github/workflows/slow-cooker.yml").read_text(encoding="utf-8")
+    expected = "new source/catalog/model generation requires a daily or deep refresh before certification"
+
+    for workflow in (air_fryer, slow_cooker):
+        assert "id: authority" in workflow
+        assert expected in workflow
+        assert "steps.mode.outputs.mode }}\" = \"hourly" in workflow
+        assert "publishable=false" in workflow
+        assert "exit \"$status\"" in workflow
+        assert "steps.authority.outputs.publishable == 'true'" in workflow
+
+    assert "publishable: ${{ steps.authority.outputs.publishable }}" in air_fryer
+    assert "needs.refresh.outputs.publishable == 'true'" in air_fryer
+
+
+def test_slow_cooker_manual_source_assertion_is_smoke_only() -> None:
+    workflow = (REPO_ROOT / ".github/workflows/slow-cooker.yml").read_text(encoding="utf-8")
+
+    assertion = 'expected_sources = {"skinnytaste.com", "budgetbytes.com", "wellplated.com"}'
+    assert assertion in workflow
+    prefix = workflow[: workflow.index(assertion)]
+    assert 'if "${{ steps.mode.outputs.mode }}" == "smoke":' in prefix[-250:]
 
 
 def test_authoritative_refresh_is_manual_fallback_only() -> None:
