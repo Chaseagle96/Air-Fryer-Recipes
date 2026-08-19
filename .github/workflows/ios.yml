@@ -8,6 +8,7 @@ on:
       - 'src/airfryer_rankings/app_feed.py'
       - 'src/airfryer_rankings/dashboard.py'
       - 'src/airfryer_rankings/ranking.py'
+      - '.github/workflows/ios.yml'
   push:
     branches: [main]
     paths:
@@ -16,6 +17,7 @@ on:
       - 'src/airfryer_rankings/app_feed.py'
       - 'src/airfryer_rankings/dashboard.py'
       - 'src/airfryer_rankings/ranking.py'
+      - '.github/workflows/ios.yml'
   workflow_dispatch:
 
 permissions:
@@ -74,3 +76,44 @@ jobs:
             -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.udid }}" \
             CODE_SIGNING_ALLOWED=NO \
             test
+
+      - name: Build unsigned iPhone app
+        run: |
+          set -o pipefail
+          rm -rf ios/build-device
+          xcodebuild \
+            -project ios/RecipeIntelligence.xcodeproj \
+            -scheme RecipeIntelligence \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath ios/build-device \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY='' \
+            build
+
+      - name: Package unsigned IPA
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP_PATH='ios/build-device/Build/Products/Release-iphoneos/RecipeIntelligence.app'
+          test -d "$APP_PATH"
+          rm -rf ios/ipa-staging ios/RecipeIntelligence.ipa
+          mkdir -p ios/ipa-staging/Payload
+          ditto "$APP_PATH" ios/ipa-staging/Payload/RecipeIntelligence.app
+          (
+            cd ios/ipa-staging
+            /usr/bin/zip -qry ../RecipeIntelligence.ipa Payload
+          )
+          test -s ios/RecipeIntelligence.ipa
+          /usr/bin/unzip -l ios/RecipeIntelligence.ipa | grep 'Payload/RecipeIntelligence.app/Info.plist'
+          echo "IPA size: $(du -h ios/RecipeIntelligence.ipa | cut -f1)"
+
+      - name: Upload unsigned IPA
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: RecipeIntelligence-unsigned-ipa
+          retention-days: 30
+          if-no-files-found: error
+          path: ios/RecipeIntelligence.ipa
