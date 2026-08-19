@@ -4,9 +4,21 @@ from airfryer_rankings.models import SourceConfig
 from airfryer_rankings.observability import build_pipeline_metrics
 
 
-def test_hourly_selector_balances_new_urls_across_sources():
+def test_hourly_selector_balances_validated_urls_and_caps_exploration():
     state = {"recipes": {}, "url_catalog": {}}
     sources = [SourceConfig(f"source{i}.com") for i in range(12)]
+
+    for source_index in range(12):
+        for index in range(20):
+            url = f"https://source{source_index}.com/recipe-{index}"
+            recipe_id = f"recipe-{source_index}-{index}"
+            state["recipes"][recipe_id] = {"recipe_id": recipe_id}
+            state["url_catalog"][url] = {
+                "url": url,
+                "source": f"source{source_index}.com",
+                "recipe_id": recipe_id,
+                "last_checked": "2026-08-18T18:00:00+00:00",
+            }
 
     for index in range(80):
         url = f"https://source0.com/new-{index}"
@@ -16,23 +28,33 @@ def test_hourly_selector_balances_new_urls_across_sources():
             "first_discovered": "2026-08-19T18:00:00+00:00",
         }
 
-    for source_index in range(1, 12):
-        for index in range(20):
-            url = f"https://source{source_index}.com/recipe-{index}"
-            state["url_catalog"][url] = {
-                "url": url,
-                "source": f"source{source_index}.com",
-                "last_checked": "2026-08-18T18:00:00+00:00",
-            }
-
     targets = select_refresh_targets(state, sources, "hourly", hourly_limit=100)
+    exploratory = [target for target in targets if not target.get("recipe_id") and not target.get("recipe_recognized")]
     counts = {}
     for target in targets:
         counts[target["source"]] = counts.get(target["source"], 0) + 1
 
-    assert len(targets) == 100
+    assert len(targets) == 92
+    assert len(exploratory) == 2
+    assert all(target["source"] == "source0.com" for target in exploratory)
     assert counts["source0.com"] <= 10
     assert len(counts) >= 10
+
+
+def test_hourly_unvalidated_catalog_cannot_fill_production_budget():
+    state = {"recipes": {}, "url_catalog": {}}
+    for index in range(100):
+        url = f"https://newsource.com/candidate-{index}"
+        state["url_catalog"][url] = {
+            "url": url,
+            "source": "newsource.com",
+            "first_discovered": "2026-08-19T18:00:00+00:00",
+        }
+
+    targets = select_refresh_targets(state, [SourceConfig("newsource.com")], "hourly", hourly_limit=100)
+
+    assert len(targets) == 2
+    assert all(not target.get("recipe_id") for target in targets)
 
 
 def test_recent_unverified_urls_are_deprioritized():
