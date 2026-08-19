@@ -180,7 +180,7 @@ final class AppModel: ObservableObject {
             feedStatusMessage = "Rankings updated from Recipe Intelligence."
         } catch {
             if deck.isEmpty { errorMessage = error.localizedDescription }
-            feedStatusMessage = "Couldn’t check for new rankings. Showing current recipes."
+            feedStatusMessage = FeedRefreshMessaging.message(for: error)
         }
     }
 
