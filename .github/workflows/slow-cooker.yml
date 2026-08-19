@@ -181,6 +181,26 @@ jobs:
           )
           PY
 
+      - name: Rebuild complete Slow Cooker mobile corpus from saved state
+        shell: bash
+        working-directory: verticals/slow_cooker
+        run: |
+          PYTHONPATH=../../src python ../../scripts/backfill_mobile_corpus.py \
+            --sources ../../config/verticals/slow_cooker/sources.yaml
+          PYTHONPATH=../../src python - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(Path('docs/api/manifest.json').read_text(encoding='utf-8'))
+          ranked = int(manifest['ranked_recipe_count'])
+          corpus = int(manifest['corpus_recipe_count'])
+          assert corpus >= ranked, (ranked, corpus)
+          assert sum(int(page['count']) for page in manifest['pages']) == ranked
+          assert sum(int(page['count']) for page in manifest['corpus_pages']) == corpus
+          assert int(manifest['corpus_status_counts'].get('discover', 0)) == ranked
+          print('Slow Cooker mobile corpus:', 'ranked=', ranked, 'corpus=', corpus, 'statuses=', manifest['corpus_status_counts'])
+          PY
+
       - name: Upload Slow Cooker Excel workbook
         if: always() && hashFiles('verticals/slow_cooker/output/slow_cooker_rankings.xlsx') != ''
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
