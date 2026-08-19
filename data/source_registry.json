@@ -1149,6 +1149,710 @@
       },
       "timestamp": "2026-08-19T06:26:48.638461+00:00",
       "vertical": "air_fryer"
+    },
+    {
+      "domain": "amzlink.to",
+      "event": "SOURCE_REJECTED",
+      "metrics": {
+        "classification": "non_publisher_domain"
+      },
+      "new_state": "REJECTED",
+      "previous_state": "REJECTED",
+      "reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T08:48:22.353295+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "amzn.to",
+      "event": "SOURCE_REJECTED",
+      "metrics": {
+        "classification": "non_publisher_domain"
+      },
+      "new_state": "REJECTED",
+      "previous_state": "REJECTED",
+      "reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T08:48:22.353295+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "auth.tasteofhome.com",
+      "event": "SOURCE_REJECTED",
+      "metrics": {
+        "classification": "non_publisher_domain"
+      },
+      "new_state": "REJECTED",
+      "previous_state": "QUARANTINED",
+      "reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T08:48:22.353295+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "barnesandnoble.com",
+      "event": "SOURCE_REJECTED",
+      "metrics": {
+        "classification": "non_publisher_domain"
+      },
+      "new_state": "REJECTED",
+      "previous_state": "QUARANTINED",
+      "reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T08:48:22.353295+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "geni.us",
+      "event": "SOURCE_REJECTED",
+      "metrics": {
+        "classification": "non_publisher_domain"
+      },
+      "new_state": "REJECTED",
+      "previous_state": "REJECTED",
+      "reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T08:48:22.353295+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "rstyle.me",
+      "event": "SOURCE_REJECTED",
+      "metrics": {
+        "classification": "non_publisher_domain"
+      },
+      "new_state": "REJECTED",
+      "previous_state": "CANDIDATE",
+      "reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T08:48:22.353295+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "share.flipboard.com",
+      "event": "SOURCE_REJECTED",
+      "metrics": {
+        "classification": "non_publisher_domain"
+      },
+      "new_state": "REJECTED",
+      "previous_state": "CANDIDATE",
+      "reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T08:48:22.353295+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "walmart.com",
+      "event": "SOURCE_REJECTED",
+      "metrics": {
+        "classification": "non_publisher_domain"
+      },
+      "new_state": "REJECTED",
+      "previous_state": "CANDIDATE",
+      "reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T08:48:22.353295+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "wayfair.com",
+      "event": "SOURCE_REJECTED",
+      "metrics": {
+        "classification": "non_publisher_domain"
+      },
+      "new_state": "REJECTED",
+      "previous_state": "CANDIDATE",
+      "reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T08:48:22.353295+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "yummly.com",
+      "event": "SOURCE_REJECTED",
+      "metrics": {
+        "classification": "non_publisher_domain"
+      },
+      "new_state": "REJECTED",
+      "previous_state": "QUARANTINED",
+      "reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T08:48:22.353295+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "forktospoon.com",
+      "event": "SOURCE_EVALUATED",
+      "metrics": {
+        "domain": "forktospoon.com",
+        "editorial_provenance_ratio": 1.0,
+        "external_canonical_ratio": 0.0,
+        "extraction_success_rate": 1.0,
+        "fetch_success_rate": 1.0,
+        "field_completeness": 0.8055555555555556,
+        "freshness_score": 40.0,
+        "hard_failures": [],
+        "mean_rating_evidence_confidence": 0.65,
+        "novelty_ratio": 1.0,
+        "pages_fetched": 10,
+        "pages_sampled": 10,
+        "qualifying_vertical_recipe_count": 239,
+        "quality_components": {
+          "crawl_stability": 100.0,
+          "editorial_provenance": 100.0,
+          "extraction_reliability": 70.833,
+          "freshness": 40.0,
+          "general_quality": 95.0,
+          "rating_integrity": 75.0,
+          "unique_contribution": 100.0,
+          "vertical_relevance": 100.0
+        },
+        "quality_score": 88.417,
+        "rating_conflict_ratio": 0.0,
+        "rating_coverage_ratio": 1.0,
+        "recipe_structure_rate": 0.6,
+        "recipes_extracted": 6,
+        "recipes_recognized": 6,
+        "robots_status": "ok",
+        "sample_recipe_yield": 0.6,
+        "substantive_recipe_ratio": 0.8333333333333334,
+        "suspicious_uniform_rating_evidence": true,
+        "temporary_failures": [],
+        "trap_url_ratio": 0.0,
+        "vertical_relevance_ratio": 1.0,
+        "within_source_duplicate_ratio": 0.0
+      },
+      "new_state": "QUALIFIED",
+      "previous_state": "QUARANTINED",
+      "reason": "source quality gate passed at 88.4",
+      "source_gate_version": 1,
+      "thresholds": {
+        "deep_fast_track_min_pages": 10,
+        "deep_fast_track_score": 88.0,
+        "promotion_min_qualifying_attempts": 2,
+        "qualification_score": 74.0,
+        "source_gate_version": 1
+      },
+      "timestamp": "2026-08-19T08:48:22.552952+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "forktospoon.com",
+      "event": "SOURCE_PROMOTED",
+      "metrics": {
+        "domain": "forktospoon.com",
+        "editorial_provenance_ratio": 1.0,
+        "external_canonical_ratio": 0.0,
+        "extraction_success_rate": 1.0,
+        "fetch_success_rate": 1.0,
+        "field_completeness": 0.8055555555555556,
+        "freshness_score": 40.0,
+        "hard_failures": [],
+        "mean_rating_evidence_confidence": 0.65,
+        "novelty_ratio": 1.0,
+        "pages_fetched": 10,
+        "pages_sampled": 10,
+        "qualifying_vertical_recipe_count": 239,
+        "quality_components": {
+          "crawl_stability": 100.0,
+          "editorial_provenance": 100.0,
+          "extraction_reliability": 70.833,
+          "freshness": 40.0,
+          "general_quality": 95.0,
+          "rating_integrity": 75.0,
+          "unique_contribution": 100.0,
+          "vertical_relevance": 100.0
+        },
+        "quality_score": 88.417,
+        "rating_conflict_ratio": 0.0,
+        "rating_coverage_ratio": 1.0,
+        "recipe_structure_rate": 0.6,
+        "recipes_extracted": 6,
+        "recipes_recognized": 6,
+        "robots_status": "ok",
+        "sample_recipe_yield": 0.6,
+        "substantive_recipe_ratio": 0.8333333333333334,
+        "suspicious_uniform_rating_evidence": true,
+        "temporary_failures": [],
+        "trap_url_ratio": 0.0,
+        "vertical_relevance_ratio": 1.0,
+        "within_source_duplicate_ratio": 0.0
+      },
+      "new_state": "PROMOTED",
+      "previous_state": "QUALIFIED",
+      "reason": "passed 2 independent qualification runs",
+      "source_gate_version": 1,
+      "thresholds": {
+        "deep_fast_track_min_pages": 10,
+        "deep_fast_track_score": 88.0,
+        "promotion_min_qualifying_attempts": 2,
+        "qualification_score": 74.0,
+        "source_gate_version": 1
+      },
+      "timestamp": "2026-08-19T08:48:22.552952+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "eatwell101.com",
+      "event": "SOURCE_QUARANTINED",
+      "metrics": {
+        "domain": "eatwell101.com",
+        "hard_failures": [],
+        "pages_fetched": 0,
+        "pages_sampled": 0,
+        "qualifying_vertical_recipe_count": 0,
+        "quality_score": 0.0,
+        "robots_status": "unavailable:TooManyRedirects",
+        "temporary_failures": [
+          "robots_unavailable"
+        ]
+      },
+      "new_state": "QUARANTINED",
+      "previous_state": "CANDIDATE",
+      "reason": "qualification incomplete: robots_unavailable",
+      "source_gate_version": 1,
+      "thresholds": {
+        "deep_fast_track_min_pages": 10,
+        "deep_fast_track_score": 88.0,
+        "promotion_min_qualifying_attempts": 2,
+        "qualification_score": 74.0,
+        "source_gate_version": 1
+      },
+      "timestamp": "2026-08-19T08:48:22.552952+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "kelvinskitchen.com",
+      "event": "SOURCE_EVALUATED",
+      "metrics": {
+        "domain": "kelvinskitchen.com",
+        "editorial_provenance_ratio": 1.0,
+        "external_canonical_ratio": 0.0,
+        "extraction_success_rate": 0.1111111111111111,
+        "fetch_success_rate": 1.0,
+        "field_completeness": 0.9814814814814815,
+        "freshness_score": 100.0,
+        "hard_failures": [],
+        "mean_rating_evidence_confidence": 0.65,
+        "novelty_ratio": 1.0,
+        "pages_fetched": 10,
+        "pages_sampled": 10,
+        "qualifying_vertical_recipe_count": 48,
+        "quality_components": {
+          "crawl_stability": 100.0,
+          "editorial_provenance": 100.0,
+          "extraction_reliability": 94.444,
+          "freshness": 100.0,
+          "general_quality": 100.0,
+          "rating_integrity": 100.0,
+          "unique_contribution": 100.0,
+          "vertical_relevance": 100.0
+        },
+        "quality_score": 98.889,
+        "rating_conflict_ratio": 0.0,
+        "rating_coverage_ratio": 0.1111111111111111,
+        "recipe_structure_rate": 0.9,
+        "recipes_extracted": 1,
+        "recipes_recognized": 9,
+        "robots_status": "ok",
+        "sample_recipe_yield": 0.9,
+        "substantive_recipe_ratio": 1.0,
+        "suspicious_uniform_rating_evidence": false,
+        "temporary_failures": [],
+        "trap_url_ratio": 0.0,
+        "vertical_relevance_ratio": 1.0,
+        "within_source_duplicate_ratio": 0.0
+      },
+      "new_state": "QUALIFIED",
+      "previous_state": "CANDIDATE",
+      "reason": "source quality gate passed at 98.9",
+      "source_gate_version": 1,
+      "thresholds": {
+        "deep_fast_track_min_pages": 10,
+        "deep_fast_track_score": 88.0,
+        "promotion_min_qualifying_attempts": 2,
+        "qualification_score": 74.0,
+        "source_gate_version": 1
+      },
+      "timestamp": "2026-08-19T08:48:22.552952+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "kelvinskitchen.com",
+      "event": "SOURCE_PROMOTED",
+      "metrics": {
+        "domain": "kelvinskitchen.com",
+        "editorial_provenance_ratio": 1.0,
+        "external_canonical_ratio": 0.0,
+        "extraction_success_rate": 0.1111111111111111,
+        "fetch_success_rate": 1.0,
+        "field_completeness": 0.9814814814814815,
+        "freshness_score": 100.0,
+        "hard_failures": [],
+        "mean_rating_evidence_confidence": 0.65,
+        "novelty_ratio": 1.0,
+        "pages_fetched": 10,
+        "pages_sampled": 10,
+        "qualifying_vertical_recipe_count": 48,
+        "quality_components": {
+          "crawl_stability": 100.0,
+          "editorial_provenance": 100.0,
+          "extraction_reliability": 94.444,
+          "freshness": 100.0,
+          "general_quality": 100.0,
+          "rating_integrity": 100.0,
+          "unique_contribution": 100.0,
+          "vertical_relevance": 100.0
+        },
+        "quality_score": 98.889,
+        "rating_conflict_ratio": 0.0,
+        "rating_coverage_ratio": 0.1111111111111111,
+        "recipe_structure_rate": 0.9,
+        "recipes_extracted": 1,
+        "recipes_recognized": 9,
+        "robots_status": "ok",
+        "sample_recipe_yield": 0.9,
+        "substantive_recipe_ratio": 1.0,
+        "suspicious_uniform_rating_evidence": false,
+        "temporary_failures": [],
+        "trap_url_ratio": 0.0,
+        "vertical_relevance_ratio": 1.0,
+        "within_source_duplicate_ratio": 0.0
+      },
+      "new_state": "PROMOTED",
+      "previous_state": "QUALIFIED",
+      "reason": "deep high-confidence fast-track",
+      "source_gate_version": 1,
+      "thresholds": {
+        "deep_fast_track_min_pages": 10,
+        "deep_fast_track_score": 88.0,
+        "promotion_min_qualifying_attempts": 2,
+        "qualification_score": 74.0,
+        "source_gate_version": 1
+      },
+      "timestamp": "2026-08-19T08:48:22.552952+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "thestayathomechef.com",
+      "event": "SOURCE_EVALUATED",
+      "metrics": {
+        "domain": "thestayathomechef.com",
+        "editorial_provenance_ratio": 1.0,
+        "external_canonical_ratio": 0.0,
+        "extraction_success_rate": 0.8571428571428571,
+        "fetch_success_rate": 1.0,
+        "field_completeness": 0.8333333333333334,
+        "freshness_score": 57.14285714285714,
+        "hard_failures": [],
+        "mean_rating_evidence_confidence": 0.65,
+        "novelty_ratio": 1.0,
+        "pages_fetched": 10,
+        "pages_sampled": 10,
+        "qualifying_vertical_recipe_count": 39,
+        "quality_components": {
+          "crawl_stability": 100.0,
+          "editorial_provenance": 100.0,
+          "extraction_reliability": 80.0,
+          "freshness": 57.143,
+          "general_quality": 100.0,
+          "rating_integrity": 75.0,
+          "unique_contribution": 100.0,
+          "vertical_relevance": 100.0
+        },
+        "quality_score": 91.357,
+        "rating_conflict_ratio": 0.0,
+        "rating_coverage_ratio": 0.8571428571428571,
+        "recipe_structure_rate": 0.7,
+        "recipes_extracted": 6,
+        "recipes_recognized": 7,
+        "robots_status": "ok",
+        "sample_recipe_yield": 0.7,
+        "substantive_recipe_ratio": 1.0,
+        "suspicious_uniform_rating_evidence": true,
+        "temporary_failures": [],
+        "trap_url_ratio": 0.0,
+        "vertical_relevance_ratio": 1.0,
+        "within_source_duplicate_ratio": 0.0
+      },
+      "new_state": "QUALIFIED",
+      "previous_state": "CANDIDATE",
+      "reason": "source quality gate passed at 91.4",
+      "source_gate_version": 1,
+      "thresholds": {
+        "deep_fast_track_min_pages": 10,
+        "deep_fast_track_score": 88.0,
+        "promotion_min_qualifying_attempts": 2,
+        "qualification_score": 74.0,
+        "source_gate_version": 1
+      },
+      "timestamp": "2026-08-19T08:48:22.552952+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "thestayathomechef.com",
+      "event": "SOURCE_QUARANTINED",
+      "metrics": {
+        "domain": "thestayathomechef.com",
+        "editorial_provenance_ratio": 1.0,
+        "external_canonical_ratio": 0.0,
+        "extraction_success_rate": 0.8571428571428571,
+        "fetch_success_rate": 1.0,
+        "field_completeness": 0.8333333333333334,
+        "freshness_score": 57.14285714285714,
+        "hard_failures": [],
+        "mean_rating_evidence_confidence": 0.65,
+        "novelty_ratio": 1.0,
+        "pages_fetched": 10,
+        "pages_sampled": 10,
+        "qualifying_vertical_recipe_count": 39,
+        "quality_components": {
+          "crawl_stability": 100.0,
+          "editorial_provenance": 100.0,
+          "extraction_reliability": 80.0,
+          "freshness": 57.143,
+          "general_quality": 100.0,
+          "rating_integrity": 75.0,
+          "unique_contribution": 100.0,
+          "vertical_relevance": 100.0
+        },
+        "quality_score": 91.357,
+        "rating_conflict_ratio": 0.0,
+        "rating_coverage_ratio": 0.8571428571428571,
+        "recipe_structure_rate": 0.7,
+        "recipes_extracted": 6,
+        "recipes_recognized": 7,
+        "robots_status": "ok",
+        "sample_recipe_yield": 0.7,
+        "substantive_recipe_ratio": 1.0,
+        "suspicious_uniform_rating_evidence": true,
+        "temporary_failures": [],
+        "trap_url_ratio": 0.0,
+        "vertical_relevance_ratio": 1.0,
+        "within_source_duplicate_ratio": 0.0
+      },
+      "new_state": "QUARANTINED",
+      "previous_state": "QUALIFIED",
+      "reason": "qualified once; awaiting confirmation (1/2)",
+      "source_gate_version": 1,
+      "thresholds": {
+        "deep_fast_track_min_pages": 10,
+        "deep_fast_track_score": 88.0,
+        "promotion_min_qualifying_attempts": 2,
+        "qualification_score": 74.0,
+        "source_gate_version": 1
+      },
+      "timestamp": "2026-08-19T08:48:22.552952+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "theyummybowl.com",
+      "event": "SOURCE_EVALUATED",
+      "metrics": {
+        "domain": "theyummybowl.com",
+        "editorial_provenance_ratio": 1.0,
+        "external_canonical_ratio": 0.0,
+        "extraction_success_rate": 0.6666666666666666,
+        "fetch_success_rate": 1.0,
+        "field_completeness": 0.8333333333333334,
+        "freshness_score": 60.0,
+        "hard_failures": [],
+        "mean_rating_evidence_confidence": 0.65,
+        "novelty_ratio": 1.0,
+        "pages_fetched": 10,
+        "pages_sampled": 10,
+        "qualifying_vertical_recipe_count": 107,
+        "quality_components": {
+          "crawl_stability": 100.0,
+          "editorial_provenance": 100.0,
+          "extraction_reliability": 75.0,
+          "freshness": 60.0,
+          "general_quality": 100.0,
+          "rating_integrity": 100.0,
+          "unique_contribution": 100.0,
+          "vertical_relevance": 100.0
+        },
+        "quality_score": 93.0,
+        "rating_conflict_ratio": 0.0,
+        "rating_coverage_ratio": 0.6666666666666666,
+        "recipe_structure_rate": 0.6,
+        "recipes_extracted": 4,
+        "recipes_recognized": 6,
+        "robots_status": "ok",
+        "sample_recipe_yield": 0.6,
+        "substantive_recipe_ratio": 1.0,
+        "suspicious_uniform_rating_evidence": false,
+        "temporary_failures": [],
+        "trap_url_ratio": 0.0,
+        "vertical_relevance_ratio": 1.0,
+        "within_source_duplicate_ratio": 0.0
+      },
+      "new_state": "QUALIFIED",
+      "previous_state": "CANDIDATE",
+      "reason": "source quality gate passed at 93.0",
+      "source_gate_version": 1,
+      "thresholds": {
+        "deep_fast_track_min_pages": 10,
+        "deep_fast_track_score": 88.0,
+        "promotion_min_qualifying_attempts": 2,
+        "qualification_score": 74.0,
+        "source_gate_version": 1
+      },
+      "timestamp": "2026-08-19T08:48:22.552952+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "theyummybowl.com",
+      "event": "SOURCE_QUARANTINED",
+      "metrics": {
+        "domain": "theyummybowl.com",
+        "editorial_provenance_ratio": 1.0,
+        "external_canonical_ratio": 0.0,
+        "extraction_success_rate": 0.6666666666666666,
+        "fetch_success_rate": 1.0,
+        "field_completeness": 0.8333333333333334,
+        "freshness_score": 60.0,
+        "hard_failures": [],
+        "mean_rating_evidence_confidence": 0.65,
+        "novelty_ratio": 1.0,
+        "pages_fetched": 10,
+        "pages_sampled": 10,
+        "qualifying_vertical_recipe_count": 107,
+        "quality_components": {
+          "crawl_stability": 100.0,
+          "editorial_provenance": 100.0,
+          "extraction_reliability": 75.0,
+          "freshness": 60.0,
+          "general_quality": 100.0,
+          "rating_integrity": 100.0,
+          "unique_contribution": 100.0,
+          "vertical_relevance": 100.0
+        },
+        "quality_score": 93.0,
+        "rating_conflict_ratio": 0.0,
+        "rating_coverage_ratio": 0.6666666666666666,
+        "recipe_structure_rate": 0.6,
+        "recipes_extracted": 4,
+        "recipes_recognized": 6,
+        "robots_status": "ok",
+        "sample_recipe_yield": 0.6,
+        "substantive_recipe_ratio": 1.0,
+        "suspicious_uniform_rating_evidence": false,
+        "temporary_failures": [],
+        "trap_url_ratio": 0.0,
+        "vertical_relevance_ratio": 1.0,
+        "within_source_duplicate_ratio": 0.0
+      },
+      "new_state": "QUARANTINED",
+      "previous_state": "QUALIFIED",
+      "reason": "qualified once; awaiting confirmation (1/2)",
+      "source_gate_version": 1,
+      "thresholds": {
+        "deep_fast_track_min_pages": 10,
+        "deep_fast_track_score": 88.0,
+        "promotion_min_qualifying_attempts": 2,
+        "qualification_score": 74.0,
+        "source_gate_version": 1
+      },
+      "timestamp": "2026-08-19T08:48:22.552952+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "365daysofcrockpot.com",
+      "event": "SOURCE_QUARANTINED",
+      "metrics": {
+        "domain": "365daysofcrockpot.com",
+        "hard_failures": [],
+        "pages_fetched": 0,
+        "pages_sampled": 0,
+        "qualifying_vertical_recipe_count": 0,
+        "quality_score": 0.0,
+        "robots_status": "unavailable:TooManyRedirects",
+        "temporary_failures": [
+          "robots_unavailable"
+        ]
+      },
+      "new_state": "QUARANTINED",
+      "previous_state": "CANDIDATE",
+      "reason": "qualification incomplete: robots_unavailable",
+      "source_gate_version": 1,
+      "thresholds": {
+        "deep_fast_track_min_pages": 10,
+        "deep_fast_track_score": 88.0,
+        "promotion_min_qualifying_attempts": 2,
+        "qualification_score": 74.0,
+        "source_gate_version": 1
+      },
+      "timestamp": "2026-08-19T08:48:22.552952+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "crock-pot.com",
+      "event": "SOURCE_QUARANTINED",
+      "metrics": {
+        "domain": "crock-pot.com",
+        "hard_failures": [],
+        "pages_fetched": 0,
+        "pages_sampled": 0,
+        "qualifying_vertical_recipe_count": 0,
+        "quality_score": 0.0,
+        "robots_status": "unavailable:TooManyRedirects",
+        "temporary_failures": [
+          "robots_unavailable"
+        ]
+      },
+      "new_state": "QUARANTINED",
+      "previous_state": "CANDIDATE",
+      "reason": "qualification incomplete: robots_unavailable",
+      "source_gate_version": 1,
+      "thresholds": {
+        "deep_fast_track_min_pages": 10,
+        "deep_fast_track_score": 88.0,
+        "promotion_min_qualifying_attempts": 2,
+        "qualification_score": 74.0,
+        "source_gate_version": 1
+      },
+      "timestamp": "2026-08-19T08:48:22.552952+00:00",
+      "vertical": "air_fryer"
+    },
+    {
+      "domain": "epicurious.com",
+      "event": "SOURCE_QUARANTINED",
+      "metrics": {
+        "domain": "epicurious.com",
+        "hard_failures": [],
+        "pages_fetched": 0,
+        "pages_sampled": 0,
+        "qualifying_vertical_recipe_count": 0,
+        "quality_score": 0.0,
+        "robots_status": "unavailable:HTTPError",
+        "temporary_failures": [
+          "robots_unavailable"
+        ]
+      },
+      "new_state": "QUARANTINED",
+      "previous_state": "CANDIDATE",
+      "reason": "qualification incomplete: robots_unavailable",
+      "source_gate_version": 1,
+      "thresholds": {
+        "deep_fast_track_min_pages": 10,
+        "deep_fast_track_score": 88.0,
+        "promotion_min_qualifying_attempts": 2,
+        "qualification_score": 74.0,
+        "source_gate_version": 1
+      },
+      "timestamp": "2026-08-19T08:48:22.552952+00:00",
+      "vertical": "air_fryer"
     }
   ],
   "candidates": {
@@ -1157,7 +1861,7 @@
       "consecutive_healthy_runs": 0,
       "consecutive_qualifying_attempts": 0,
       "crawl_config": {},
-      "discovery_count": 1,
+      "discovery_count": 2,
       "discovery_evidence": [
         {
           "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
@@ -1168,16 +1872,29 @@
       ],
       "domain": "365daysofcrockpot.com",
       "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
-      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T08:48:22.552952+00:00",
+      "last_evaluated_at": "2026-08-19T08:48:22.552952+00:00",
+      "last_qualification_metrics": {
+        "domain": "365daysofcrockpot.com",
+        "hard_failures": [],
+        "pages_fetched": 0,
+        "pages_sampled": 0,
+        "qualifying_vertical_recipe_count": 0,
+        "quality_score": 0.0,
+        "robots_status": "unavailable:TooManyRedirects",
+        "temporary_failures": [
+          "robots_unavailable"
+        ]
+      },
       "origin": "discovered",
       "pinned": false,
       "promotion_eligible": false,
-      "qualification_attempts": 0,
-      "quality_score": null,
+      "qualification_attempts": 1,
+      "quality_score": 0.0,
       "rediscovery_blocked": false,
-      "status": "CANDIDATE",
-      "status_reason": "normalized and queued for source qualification",
-      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "status": "QUARANTINED",
+      "status_reason": "qualification incomplete: robots_unavailable",
+      "updated_at": "2026-08-19T08:48:22.552952+00:00",
       "vertical": "air_fryer"
     },
     "amzlink.to": {
@@ -1214,64 +1931,19 @@
       "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
       "last_evaluated_at": "2026-08-19T06:26:48.638461+00:00",
       "last_qualification_metrics": {
-        "domain": "amzlink.to",
-        "editorial_provenance_ratio": 0.0,
-        "external_canonical_ratio": 0.0,
-        "extraction_success_rate": 0.0,
-        "fetch_success_rate": 0.0,
-        "field_completeness": 0.0,
-        "freshness_score": 50.0,
-        "hard_failures": [
-          "low_recipe_structure_yield",
-          "low_vertical_relevance",
-          "thin_recipe_content"
-        ],
-        "mean_rating_evidence_confidence": null,
-        "novelty_ratio": 0.0,
-        "pages_fetched": 0,
-        "pages_sampled": 0,
-        "qualifying_vertical_recipe_count": 0,
-        "quality_components": {
-          "crawl_stability": 0.0,
-          "editorial_provenance": 0.0,
-          "extraction_reliability": 0.0,
-          "freshness": 50.0,
-          "general_quality": 70.0,
-          "rating_integrity": 70.0,
-          "unique_contribution": 0.0,
-          "vertical_relevance": 0.0
-        },
-        "quality_score": 13.0,
-        "rating_conflict_ratio": 0.0,
-        "rating_coverage_ratio": 0.0,
-        "recipe_structure_rate": 0.0,
-        "recipes_extracted": 0,
-        "recipes_recognized": 0,
-        "robots_status": "ok",
-        "sample_recipe_yield": 0.0,
-        "substantive_recipe_ratio": 0.0,
-        "suspicious_uniform_rating_evidence": false,
-        "temporary_failures": [
-          "insufficient_sample",
-          "insufficient_fetches",
-          "insufficient_vertical_recipe_body",
-          "low_fetch_success"
-        ],
-        "trap_url_ratio": 0.0,
-        "vertical_relevance_ratio": 0.0,
-        "within_source_duplicate_ratio": 0.0
+        "classification": "non_publisher_domain"
       },
       "origin": "discovered",
       "pinned": false,
       "promotion_eligible": false,
       "qualification_attempts": 1,
       "quality_score": 13.0,
-      "rediscovery_blocked": false,
+      "rediscovery_blocked": true,
       "rejection_cooldown_until": "2026-09-18T06:26:48.638461+00:00",
-      "rejection_reason": "hard source gate failed: low_recipe_structure_yield, low_vertical_relevance, thin_recipe_content",
+      "rejection_reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
       "status": "REJECTED",
-      "status_reason": "hard source gate failed: low_recipe_structure_yield, low_vertical_relevance, thin_recipe_content",
-      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "status_reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "updated_at": "2026-08-19T08:48:22.353295+00:00",
       "vertical": "air_fryer"
     },
     "amzn.to": {
@@ -1338,64 +2010,19 @@
       "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
       "last_evaluated_at": "2026-08-19T06:26:48.638461+00:00",
       "last_qualification_metrics": {
-        "domain": "amzn.to",
-        "editorial_provenance_ratio": 0.0,
-        "external_canonical_ratio": 0.0,
-        "extraction_success_rate": 0.0,
-        "fetch_success_rate": 0.0,
-        "field_completeness": 0.0,
-        "freshness_score": 50.0,
-        "hard_failures": [
-          "low_recipe_structure_yield",
-          "low_vertical_relevance",
-          "thin_recipe_content"
-        ],
-        "mean_rating_evidence_confidence": null,
-        "novelty_ratio": 0.0,
-        "pages_fetched": 0,
-        "pages_sampled": 0,
-        "qualifying_vertical_recipe_count": 0,
-        "quality_components": {
-          "crawl_stability": 0.0,
-          "editorial_provenance": 0.0,
-          "extraction_reliability": 0.0,
-          "freshness": 50.0,
-          "general_quality": 70.0,
-          "rating_integrity": 70.0,
-          "unique_contribution": 0.0,
-          "vertical_relevance": 0.0
-        },
-        "quality_score": 13.0,
-        "rating_conflict_ratio": 0.0,
-        "rating_coverage_ratio": 0.0,
-        "recipe_structure_rate": 0.0,
-        "recipes_extracted": 0,
-        "recipes_recognized": 0,
-        "robots_status": "ok",
-        "sample_recipe_yield": 0.0,
-        "substantive_recipe_ratio": 0.0,
-        "suspicious_uniform_rating_evidence": false,
-        "temporary_failures": [
-          "insufficient_sample",
-          "insufficient_fetches",
-          "insufficient_vertical_recipe_body",
-          "low_fetch_success"
-        ],
-        "trap_url_ratio": 0.0,
-        "vertical_relevance_ratio": 0.0,
-        "within_source_duplicate_ratio": 0.0
+        "classification": "non_publisher_domain"
       },
       "origin": "discovered",
       "pinned": false,
       "promotion_eligible": false,
       "qualification_attempts": 1,
       "quality_score": 13.0,
-      "rediscovery_blocked": false,
+      "rediscovery_blocked": true,
       "rejection_cooldown_until": "2026-09-18T06:26:48.638461+00:00",
-      "rejection_reason": "hard source gate failed: low_recipe_structure_yield, low_vertical_relevance, thin_recipe_content",
+      "rejection_reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
       "status": "REJECTED",
-      "status_reason": "hard source gate failed: low_recipe_structure_yield, low_vertical_relevance, thin_recipe_content",
-      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "status_reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "updated_at": "2026-08-19T08:48:22.353295+00:00",
       "vertical": "air_fryer"
     },
     "auth.tasteofhome.com": {
@@ -1429,26 +2056,18 @@
       "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
       "last_evaluated_at": "2026-08-19T06:26:48.638461+00:00",
       "last_qualification_metrics": {
-        "domain": "auth.tasteofhome.com",
-        "hard_failures": [],
-        "pages_fetched": 0,
-        "pages_sampled": 0,
-        "qualifying_vertical_recipe_count": 0,
-        "quality_score": 0.0,
-        "robots_status": "unavailable:HTTPError",
-        "temporary_failures": [
-          "robots_unavailable"
-        ]
+        "classification": "non_publisher_domain"
       },
       "origin": "discovered",
       "pinned": false,
       "promotion_eligible": false,
       "qualification_attempts": 1,
       "quality_score": 0.0,
-      "rediscovery_blocked": false,
-      "status": "QUARANTINED",
-      "status_reason": "qualification incomplete: robots_unavailable",
-      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "rediscovery_blocked": true,
+      "rejection_reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "status": "REJECTED",
+      "status_reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "updated_at": "2026-08-19T08:48:22.353295+00:00",
       "vertical": "air_fryer"
     },
     "barnesandnoble.com": {
@@ -1476,7 +2095,40 @@
       "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
       "last_evaluated_at": "2026-08-19T06:26:48.638461+00:00",
       "last_qualification_metrics": {
-        "domain": "barnesandnoble.com",
+        "classification": "non_publisher_domain"
+      },
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 1,
+      "quality_score": 0.0,
+      "rediscovery_blocked": true,
+      "rejection_reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "status": "REJECTED",
+      "status_reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "updated_at": "2026-08-19T08:48:22.353295+00:00",
+      "vertical": "air_fryer"
+    },
+    "crock-pot.com": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {},
+      "discovery_count": 2,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in slow_cooker",
+          "url": "https://www.crock-pot.com/hook-up-connectable-entertaining-system/crock-pot-hook-up-connectable-entertaining-system-3-piece-set-metallic-charcoal/SCCPMDKIT-CH.html?gclid=CMzQw5bi5cgCFQaOaQodyH8JzA&amp%3Bkwid=productads-plaid%5E76248164530-sku%5ESCCPMDKIT%40ADL4CH-adType%5EPLA-device%5Ec-adid%5E55532499130"
+        }
+      ],
+      "domain": "crock-pot.com",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T08:48:22.552952+00:00",
+      "last_evaluated_at": "2026-08-19T08:48:22.552952+00:00",
+      "last_qualification_metrics": {
+        "domain": "crock-pot.com",
         "hard_failures": [],
         "pages_fetched": 0,
         "pages_sampled": 0,
@@ -1495,35 +2147,7 @@
       "rediscovery_blocked": false,
       "status": "QUARANTINED",
       "status_reason": "qualification incomplete: robots_unavailable",
-      "updated_at": "2026-08-19T06:26:48.638461+00:00",
-      "vertical": "air_fryer"
-    },
-    "crock-pot.com": {
-      "consecutive_degraded_runs": 0,
-      "consecutive_healthy_runs": 0,
-      "consecutive_qualifying_attempts": 0,
-      "crawl_config": {},
-      "discovery_count": 1,
-      "discovery_evidence": [
-        {
-          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
-          "provider": "cross_vertical",
-          "query": "candidate observed in slow_cooker",
-          "url": "https://www.crock-pot.com/hook-up-connectable-entertaining-system/crock-pot-hook-up-connectable-entertaining-system-3-piece-set-metallic-charcoal/SCCPMDKIT-CH.html?gclid=CMzQw5bi5cgCFQaOaQodyH8JzA&amp%3Bkwid=productads-plaid%5E76248164530-sku%5ESCCPMDKIT%40ADL4CH-adType%5EPLA-device%5Ec-adid%5E55532499130"
-        }
-      ],
-      "domain": "crock-pot.com",
-      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
-      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
-      "origin": "discovered",
-      "pinned": false,
-      "promotion_eligible": false,
-      "qualification_attempts": 0,
-      "quality_score": null,
-      "rediscovery_blocked": false,
-      "status": "CANDIDATE",
-      "status_reason": "normalized and queued for source qualification",
-      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "updated_at": "2026-08-19T08:48:22.552952+00:00",
       "vertical": "air_fryer"
     },
     "eatwell101.com": {
@@ -1531,27 +2155,46 @@
       "consecutive_healthy_runs": 0,
       "consecutive_qualifying_attempts": 0,
       "crawl_config": {},
-      "discovery_count": 1,
+      "discovery_count": 3,
       "discovery_evidence": [
         {
           "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
           "provider": "chatgpt_web_search_bootstrap",
           "query": "air fryer chicken vegetables recipe publisher",
           "url": "https://www.eatwell101.com/air-fryer-chicken-recipe"
+        },
+        {
+          "first_seen_at": "2026-08-19T08:48:22.552952+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in slow_cooker",
+          "url": "https://www.eatwell101.com/air-fryer-chicken-recipe"
         }
       ],
       "domain": "eatwell101.com",
       "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
-      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T08:48:22.552952+00:00",
+      "last_evaluated_at": "2026-08-19T08:48:22.552952+00:00",
+      "last_qualification_metrics": {
+        "domain": "eatwell101.com",
+        "hard_failures": [],
+        "pages_fetched": 0,
+        "pages_sampled": 0,
+        "qualifying_vertical_recipe_count": 0,
+        "quality_score": 0.0,
+        "robots_status": "unavailable:TooManyRedirects",
+        "temporary_failures": [
+          "robots_unavailable"
+        ]
+      },
       "origin": "discovered",
       "pinned": false,
       "promotion_eligible": false,
-      "qualification_attempts": 0,
-      "quality_score": null,
+      "qualification_attempts": 1,
+      "quality_score": 0.0,
       "rediscovery_blocked": false,
-      "status": "CANDIDATE",
-      "status_reason": "normalized and queued for source qualification",
-      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "status": "QUARANTINED",
+      "status_reason": "qualification incomplete: robots_unavailable",
+      "updated_at": "2026-08-19T08:48:22.552952+00:00",
       "vertical": "air_fryer"
     },
     "epicurious.com": {
@@ -1559,7 +2202,7 @@
       "consecutive_healthy_runs": 0,
       "consecutive_qualifying_attempts": 0,
       "crawl_config": {},
-      "discovery_count": 1,
+      "discovery_count": 2,
       "discovery_evidence": [
         {
           "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
@@ -1570,30 +2213,43 @@
       ],
       "domain": "epicurious.com",
       "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
-      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T08:48:22.552952+00:00",
+      "last_evaluated_at": "2026-08-19T08:48:22.552952+00:00",
+      "last_qualification_metrics": {
+        "domain": "epicurious.com",
+        "hard_failures": [],
+        "pages_fetched": 0,
+        "pages_sampled": 0,
+        "qualifying_vertical_recipe_count": 0,
+        "quality_score": 0.0,
+        "robots_status": "unavailable:HTTPError",
+        "temporary_failures": [
+          "robots_unavailable"
+        ]
+      },
       "origin": "discovered",
       "pinned": false,
       "promotion_eligible": false,
-      "qualification_attempts": 0,
-      "quality_score": null,
+      "qualification_attempts": 1,
+      "quality_score": 0.0,
       "rediscovery_blocked": false,
-      "status": "CANDIDATE",
-      "status_reason": "normalized and queued for source qualification",
-      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "status": "QUARANTINED",
+      "status_reason": "qualification incomplete: robots_unavailable",
+      "updated_at": "2026-08-19T08:48:22.552952+00:00",
       "vertical": "air_fryer"
     },
     "forktospoon.com": {
       "consecutive_degraded_runs": 0,
       "consecutive_healthy_runs": 0,
-      "consecutive_qualifying_attempts": 1,
+      "consecutive_qualifying_attempts": 2,
       "crawl_config": {
         "allow_unmatched_discovery_links": false,
         "delay": 0.25,
         "discovery_urls": [
           "https://forktospoon.com/method/air-fryer/",
-          "https://forktospoon.com/air-fryer-eggwich-breadless-breakfast-sandwich/",
+          "https://forktospoon.com/air-fryer-parmesan-kale-chips/",
           "https://forktospoon.com/do-air-fryers-use-radiation/",
-          "https://forktospoon.com/air-fryer-sour-cream-pound-cake/",
+          "https://forktospoon.com/air-fryer-cranberry-orange-nut-bread/",
           "https://forktospoon.com/what-to-put-under-your-air-fryer/"
         ],
         "include_pattern": "(?:air[-_ ]?fry(?:er|ing|ed)|airfry(?:er|ing|ed))",
@@ -1602,52 +2258,58 @@
           "https://forktospoon.com/sitemap_index.xml"
         ]
       },
-      "discovery_count": 1,
+      "discovery_count": 3,
       "discovery_evidence": [
         {
           "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
           "provider": "chatgpt_web_search_bootstrap",
           "query": "best air fryer recipes independent recipe publisher",
           "url": "https://forktospoon.com/method/air-fryer/"
+        },
+        {
+          "first_seen_at": "2026-08-19T08:48:22.552952+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in slow_cooker",
+          "url": "https://forktospoon.com/method/air-fryer/"
         }
       ],
       "domain": "forktospoon.com",
       "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
-      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
-      "last_evaluated_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T08:48:22.552952+00:00",
+      "last_evaluated_at": "2026-08-19T08:48:22.552952+00:00",
       "last_qualification_metrics": {
         "domain": "forktospoon.com",
         "editorial_provenance_ratio": 1.0,
         "external_canonical_ratio": 0.0,
         "extraction_success_rate": 1.0,
         "fetch_success_rate": 1.0,
-        "field_completeness": 0.7857142857142857,
+        "field_completeness": 0.8055555555555556,
         "freshness_score": 40.0,
         "hard_failures": [],
         "mean_rating_evidence_confidence": 0.65,
         "novelty_ratio": 1.0,
         "pages_fetched": 10,
         "pages_sampled": 10,
-        "qualifying_vertical_recipe_count": 240,
+        "qualifying_vertical_recipe_count": 239,
         "quality_components": {
           "crawl_stability": 100.0,
           "editorial_provenance": 100.0,
-          "extraction_reliability": 72.857,
+          "extraction_reliability": 70.833,
           "freshness": 40.0,
-          "general_quality": 91.429,
+          "general_quality": 95.0,
           "rating_integrity": 75.0,
           "unique_contribution": 100.0,
           "vertical_relevance": 100.0
         },
-        "quality_score": 88.643,
+        "quality_score": 88.417,
         "rating_conflict_ratio": 0.0,
         "rating_coverage_ratio": 1.0,
-        "recipe_structure_rate": 0.7,
-        "recipes_extracted": 7,
-        "recipes_recognized": 7,
+        "recipe_structure_rate": 0.6,
+        "recipes_extracted": 6,
+        "recipes_recognized": 6,
         "robots_status": "ok",
-        "sample_recipe_yield": 0.7,
-        "substantive_recipe_ratio": 0.7142857142857143,
+        "sample_recipe_yield": 0.6,
+        "substantive_recipe_ratio": 0.8333333333333334,
         "suspicious_uniform_rating_evidence": true,
         "temporary_failures": [],
         "trap_url_ratio": 0.0,
@@ -1656,13 +2318,15 @@
       },
       "origin": "discovered",
       "pinned": false,
-      "promotion_eligible": false,
-      "qualification_attempts": 1,
-      "quality_score": 88.643,
+      "promoted_at": "2026-08-19T08:48:22.552952+00:00",
+      "promotion_eligible": true,
+      "promotion_reason": "passed 2 independent qualification runs",
+      "qualification_attempts": 2,
+      "quality_score": 88.417,
       "rediscovery_blocked": false,
-      "status": "QUARANTINED",
-      "status_reason": "qualified once; awaiting confirmation (1/2)",
-      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "status": "PROMOTED",
+      "status_reason": "passed 2 independent qualification runs",
+      "updated_at": "2026-08-19T08:48:22.552952+00:00",
       "vertical": "air_fryer"
     },
     "geni.us": {
@@ -1707,92 +2371,110 @@
       "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
       "last_evaluated_at": "2026-08-19T06:26:48.638461+00:00",
       "last_qualification_metrics": {
-        "domain": "geni.us",
-        "editorial_provenance_ratio": 0.0,
-        "external_canonical_ratio": 0.0,
-        "extraction_success_rate": 0.0,
-        "fetch_success_rate": 0.0,
-        "field_completeness": 0.0,
-        "freshness_score": 50.0,
-        "hard_failures": [
-          "low_recipe_structure_yield",
-          "low_vertical_relevance",
-          "thin_recipe_content"
-        ],
-        "mean_rating_evidence_confidence": null,
-        "novelty_ratio": 0.0,
-        "pages_fetched": 0,
-        "pages_sampled": 1,
-        "qualifying_vertical_recipe_count": 1,
-        "quality_components": {
-          "crawl_stability": 0.0,
-          "editorial_provenance": 0.0,
-          "extraction_reliability": 0.0,
-          "freshness": 50.0,
-          "general_quality": 70.0,
-          "rating_integrity": 70.0,
-          "unique_contribution": 0.0,
-          "vertical_relevance": 1.75
-        },
-        "quality_score": 13.35,
-        "rating_conflict_ratio": 0.0,
-        "rating_coverage_ratio": 0.0,
-        "recipe_structure_rate": 0.0,
-        "recipes_extracted": 0,
-        "recipes_recognized": 0,
-        "robots_status": "ok",
-        "sample_recipe_yield": 0.0,
-        "substantive_recipe_ratio": 0.0,
-        "suspicious_uniform_rating_evidence": false,
-        "temporary_failures": [
-          "insufficient_sample",
-          "insufficient_fetches",
-          "insufficient_vertical_recipe_body",
-          "low_fetch_success"
-        ],
-        "trap_url_ratio": 0.0,
-        "vertical_relevance_ratio": 0.0,
-        "within_source_duplicate_ratio": 0.0
+        "classification": "non_publisher_domain"
       },
       "origin": "discovered",
       "pinned": false,
       "promotion_eligible": false,
       "qualification_attempts": 1,
       "quality_score": 13.35,
-      "rediscovery_blocked": false,
+      "rediscovery_blocked": true,
       "rejection_cooldown_until": "2026-09-18T06:26:48.638461+00:00",
-      "rejection_reason": "hard source gate failed: low_recipe_structure_yield, low_vertical_relevance, thin_recipe_content",
+      "rejection_reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
       "status": "REJECTED",
-      "status_reason": "hard source gate failed: low_recipe_structure_yield, low_vertical_relevance, thin_recipe_content",
-      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "status_reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "updated_at": "2026-08-19T08:48:22.353295+00:00",
       "vertical": "air_fryer"
     },
     "kelvinskitchen.com": {
       "consecutive_degraded_runs": 0,
       "consecutive_healthy_runs": 0,
-      "consecutive_qualifying_attempts": 0,
-      "crawl_config": {},
-      "discovery_count": 1,
+      "consecutive_qualifying_attempts": 1,
+      "crawl_config": {
+        "allow_unmatched_discovery_links": false,
+        "delay": 0.25,
+        "discovery_urls": [
+          "https://kelvinskitchen.com/recipe/air-fryer-recipes/",
+          "https://kelvinskitchen.com/recipe/air-fryer-shrimp-boil-single/",
+          "https://kelvinskitchen.com/recipe/air-fryer-birria-quesa-rellenos-recipe/",
+          "https://kelvinskitchen.com/recipe/air-fryer-country-style-pork-ribs/",
+          "https://kelvinskitchen.com/recipe/air-fryer-potato-trick-recipe/"
+        ],
+        "include_pattern": "(?:air[-_ ]?fry(?:er|ing|ed)|airfry(?:er|ing|ed))",
+        "max_urls": 300,
+        "sitemap_urls": [
+          "https://kelvinskitchen.com/sitemap_index.xml"
+        ]
+      },
+      "discovery_count": 3,
       "discovery_evidence": [
         {
           "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
           "provider": "chatgpt_web_search_bootstrap",
           "query": "air fryer recipes tested recipe publisher",
           "url": "https://kelvinskitchen.com/recipe/air-fryer-recipes/"
+        },
+        {
+          "first_seen_at": "2026-08-19T08:48:22.552952+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in slow_cooker",
+          "url": "https://kelvinskitchen.com/recipe/air-fryer-recipes/"
         }
       ],
       "domain": "kelvinskitchen.com",
       "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
-      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T08:48:22.552952+00:00",
+      "last_evaluated_at": "2026-08-19T08:48:22.552952+00:00",
+      "last_qualification_metrics": {
+        "domain": "kelvinskitchen.com",
+        "editorial_provenance_ratio": 1.0,
+        "external_canonical_ratio": 0.0,
+        "extraction_success_rate": 0.1111111111111111,
+        "fetch_success_rate": 1.0,
+        "field_completeness": 0.9814814814814815,
+        "freshness_score": 100.0,
+        "hard_failures": [],
+        "mean_rating_evidence_confidence": 0.65,
+        "novelty_ratio": 1.0,
+        "pages_fetched": 10,
+        "pages_sampled": 10,
+        "qualifying_vertical_recipe_count": 48,
+        "quality_components": {
+          "crawl_stability": 100.0,
+          "editorial_provenance": 100.0,
+          "extraction_reliability": 94.444,
+          "freshness": 100.0,
+          "general_quality": 100.0,
+          "rating_integrity": 100.0,
+          "unique_contribution": 100.0,
+          "vertical_relevance": 100.0
+        },
+        "quality_score": 98.889,
+        "rating_conflict_ratio": 0.0,
+        "rating_coverage_ratio": 0.1111111111111111,
+        "recipe_structure_rate": 0.9,
+        "recipes_extracted": 1,
+        "recipes_recognized": 9,
+        "robots_status": "ok",
+        "sample_recipe_yield": 0.9,
+        "substantive_recipe_ratio": 1.0,
+        "suspicious_uniform_rating_evidence": false,
+        "temporary_failures": [],
+        "trap_url_ratio": 0.0,
+        "vertical_relevance_ratio": 1.0,
+        "within_source_duplicate_ratio": 0.0
+      },
       "origin": "discovered",
       "pinned": false,
-      "promotion_eligible": false,
-      "qualification_attempts": 0,
-      "quality_score": null,
+      "promoted_at": "2026-08-19T08:48:22.552952+00:00",
+      "promotion_eligible": true,
+      "promotion_reason": "deep high-confidence fast-track",
+      "qualification_attempts": 1,
+      "quality_score": 98.889,
       "rediscovery_blocked": false,
-      "status": "CANDIDATE",
-      "status_reason": "normalized and queued for source qualification",
-      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "status": "PROMOTED",
+      "status_reason": "deep high-confidence fast-track",
+      "updated_at": "2026-08-19T08:48:22.552952+00:00",
       "vertical": "air_fryer"
     },
     "marthastewart.com": {
@@ -1800,7 +2482,7 @@
       "consecutive_healthy_runs": 0,
       "consecutive_qualifying_attempts": 0,
       "crawl_config": {},
-      "discovery_count": 1,
+      "discovery_count": 2,
       "discovery_evidence": [
         {
           "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
@@ -1811,7 +2493,7 @@
       ],
       "domain": "marthastewart.com",
       "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
-      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T08:48:22.552952+00:00",
       "origin": "discovered",
       "pinned": false,
       "promotion_eligible": false,
@@ -1840,15 +2522,19 @@
       "domain": "rstyle.me",
       "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
       "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_qualification_metrics": {
+        "classification": "non_publisher_domain"
+      },
       "origin": "discovered",
       "pinned": false,
       "promotion_eligible": false,
       "qualification_attempts": 0,
       "quality_score": null,
-      "rediscovery_blocked": false,
-      "status": "CANDIDATE",
-      "status_reason": "normalized and queued for source qualification",
-      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "rediscovery_blocked": true,
+      "rejection_reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "status": "REJECTED",
+      "status_reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "updated_at": "2026-08-19T08:48:22.353295+00:00",
       "vertical": "air_fryer"
     },
     "share.flipboard.com": {
@@ -1868,15 +2554,19 @@
       "domain": "share.flipboard.com",
       "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
       "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_qualification_metrics": {
+        "classification": "non_publisher_domain"
+      },
       "origin": "discovered",
       "pinned": false,
       "promotion_eligible": false,
       "qualification_attempts": 0,
       "quality_score": null,
-      "rediscovery_blocked": false,
-      "status": "CANDIDATE",
-      "status_reason": "normalized and queued for source qualification",
-      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "rediscovery_blocked": true,
+      "rejection_reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "status": "REJECTED",
+      "status_reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "updated_at": "2026-08-19T08:48:22.353295+00:00",
       "vertical": "air_fryer"
     },
     "slowcookergourmet.net": {
@@ -1884,7 +2574,7 @@
       "consecutive_healthy_runs": 0,
       "consecutive_qualifying_attempts": 0,
       "crawl_config": {},
-      "discovery_count": 1,
+      "discovery_count": 2,
       "discovery_evidence": [
         {
           "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
@@ -1895,7 +2585,7 @@
       ],
       "domain": "slowcookergourmet.net",
       "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
-      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T08:48:22.552952+00:00",
       "origin": "discovered",
       "pinned": false,
       "promotion_eligible": false,
@@ -1927,18 +2617,24 @@
           "https://temeculablogs.com/sitemap_index.xml"
         ]
       },
-      "discovery_count": 1,
+      "discovery_count": 3,
       "discovery_evidence": [
         {
           "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
           "provider": "chatgpt_web_search_bootstrap",
           "query": "air fryer chicken recipes recipe blog",
           "url": "https://temeculablogs.com/air-fryer-chicken-and-vegetables/"
+        },
+        {
+          "first_seen_at": "2026-08-19T08:48:22.552952+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in slow_cooker",
+          "url": "https://temeculablogs.com/air-fryer-chicken-and-vegetables/"
         }
       ],
       "domain": "temeculablogs.com",
       "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
-      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T08:48:22.552952+00:00",
       "last_evaluated_at": "2026-08-19T06:26:48.638461+00:00",
       "last_qualification_metrics": {
         "domain": "temeculablogs.com",
@@ -1997,7 +2693,7 @@
       "consecutive_healthy_runs": 0,
       "consecutive_qualifying_attempts": 0,
       "crawl_config": {},
-      "discovery_count": 1,
+      "discovery_count": 2,
       "discovery_evidence": [
         {
           "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
@@ -2008,7 +2704,7 @@
       ],
       "domain": "thelittlekitchen.net",
       "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
-      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T08:48:22.552952+00:00",
       "origin": "discovered",
       "pinned": false,
       "promotion_eligible": false,
@@ -2025,7 +2721,7 @@
       "consecutive_healthy_runs": 0,
       "consecutive_qualifying_attempts": 0,
       "crawl_config": {},
-      "discovery_count": 1,
+      "discovery_count": 2,
       "discovery_evidence": [
         {
           "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
@@ -2036,7 +2732,7 @@
       ],
       "domain": "themagicalslowcooker.com",
       "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
-      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T08:48:22.552952+00:00",
       "origin": "discovered",
       "pinned": false,
       "promotion_eligible": false,
@@ -2051,57 +2747,179 @@
     "thestayathomechef.com": {
       "consecutive_degraded_runs": 0,
       "consecutive_healthy_runs": 0,
-      "consecutive_qualifying_attempts": 0,
-      "crawl_config": {},
-      "discovery_count": 1,
+      "consecutive_qualifying_attempts": 1,
+      "crawl_config": {
+        "allow_unmatched_discovery_links": false,
+        "delay": 0.25,
+        "discovery_urls": [
+          "https://thestayathomechef.com/air-fryer-chicken-recipes/",
+          "https://thestayathomechef.com/air-fryer-steak/",
+          "https://thestayathomechef.com/lemon-garlic-air-fryer-salmon-bites/",
+          "https://thestayathomechef.com/air-fryer-steak-bites-and-potatoes/",
+          "https://thestayathomechef.com/air-fryer-fish/"
+        ],
+        "include_pattern": "(?:air[-_ ]?fry(?:er|ing|ed)|airfry(?:er|ing|ed))",
+        "max_urls": 300,
+        "sitemap_urls": [
+          "https://thestayathomechef.com/sitemap_index.xml"
+        ]
+      },
+      "discovery_count": 3,
       "discovery_evidence": [
         {
           "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
           "provider": "chatgpt_web_search_bootstrap",
           "query": "air fryer chicken recipes recipe publisher",
           "url": "https://thestayathomechef.com/air-fryer-chicken-recipes/"
+        },
+        {
+          "first_seen_at": "2026-08-19T08:48:22.552952+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in slow_cooker",
+          "url": "https://thestayathomechef.com/air-fryer-chicken-recipes/"
         }
       ],
       "domain": "thestayathomechef.com",
       "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
-      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T08:48:22.552952+00:00",
+      "last_evaluated_at": "2026-08-19T08:48:22.552952+00:00",
+      "last_qualification_metrics": {
+        "domain": "thestayathomechef.com",
+        "editorial_provenance_ratio": 1.0,
+        "external_canonical_ratio": 0.0,
+        "extraction_success_rate": 0.8571428571428571,
+        "fetch_success_rate": 1.0,
+        "field_completeness": 0.8333333333333334,
+        "freshness_score": 57.14285714285714,
+        "hard_failures": [],
+        "mean_rating_evidence_confidence": 0.65,
+        "novelty_ratio": 1.0,
+        "pages_fetched": 10,
+        "pages_sampled": 10,
+        "qualifying_vertical_recipe_count": 39,
+        "quality_components": {
+          "crawl_stability": 100.0,
+          "editorial_provenance": 100.0,
+          "extraction_reliability": 80.0,
+          "freshness": 57.143,
+          "general_quality": 100.0,
+          "rating_integrity": 75.0,
+          "unique_contribution": 100.0,
+          "vertical_relevance": 100.0
+        },
+        "quality_score": 91.357,
+        "rating_conflict_ratio": 0.0,
+        "rating_coverage_ratio": 0.8571428571428571,
+        "recipe_structure_rate": 0.7,
+        "recipes_extracted": 6,
+        "recipes_recognized": 7,
+        "robots_status": "ok",
+        "sample_recipe_yield": 0.7,
+        "substantive_recipe_ratio": 1.0,
+        "suspicious_uniform_rating_evidence": true,
+        "temporary_failures": [],
+        "trap_url_ratio": 0.0,
+        "vertical_relevance_ratio": 1.0,
+        "within_source_duplicate_ratio": 0.0
+      },
       "origin": "discovered",
       "pinned": false,
       "promotion_eligible": false,
-      "qualification_attempts": 0,
-      "quality_score": null,
+      "qualification_attempts": 1,
+      "quality_score": 91.357,
       "rediscovery_blocked": false,
-      "status": "CANDIDATE",
-      "status_reason": "normalized and queued for source qualification",
-      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "status": "QUARANTINED",
+      "status_reason": "qualified once; awaiting confirmation (1/2)",
+      "updated_at": "2026-08-19T08:48:22.552952+00:00",
       "vertical": "air_fryer"
     },
     "theyummybowl.com": {
       "consecutive_degraded_runs": 0,
       "consecutive_healthy_runs": 0,
-      "consecutive_qualifying_attempts": 0,
-      "crawl_config": {},
-      "discovery_count": 1,
+      "consecutive_qualifying_attempts": 1,
+      "crawl_config": {
+        "allow_unmatched_discovery_links": false,
+        "delay": 0.25,
+        "discovery_urls": [
+          "https://theyummybowl.com/air-fryer-chicken-and-vegetables/",
+          "https://theyummybowl.com/crispy-air-fryer-honey-bbq-chicken-tenders/",
+          "https://theyummybowl.com/2-minute-air-fryer-ahi-tuna-steak/",
+          "https://theyummybowl.com/air-fryer-chicken-wings/",
+          "https://theyummybowl.com/easy-air-fryer-cabbage/"
+        ],
+        "include_pattern": "(?:air[-_ ]?fry(?:er|ing|ed)|airfry(?:er|ing|ed))",
+        "max_urls": 300,
+        "sitemap_urls": [
+          "https://theyummybowl.com/sitemap_index.xml"
+        ]
+      },
+      "discovery_count": 3,
       "discovery_evidence": [
         {
           "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
           "provider": "chatgpt_web_search_bootstrap",
           "query": "air fryer chicken vegetables recipe publisher",
           "url": "https://theyummybowl.com/air-fryer-chicken-and-vegetables/"
+        },
+        {
+          "first_seen_at": "2026-08-19T08:48:22.552952+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in slow_cooker",
+          "url": "https://theyummybowl.com/air-fryer-chicken-and-vegetables/"
         }
       ],
       "domain": "theyummybowl.com",
       "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
-      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T08:48:22.552952+00:00",
+      "last_evaluated_at": "2026-08-19T08:48:22.552952+00:00",
+      "last_qualification_metrics": {
+        "domain": "theyummybowl.com",
+        "editorial_provenance_ratio": 1.0,
+        "external_canonical_ratio": 0.0,
+        "extraction_success_rate": 0.6666666666666666,
+        "fetch_success_rate": 1.0,
+        "field_completeness": 0.8333333333333334,
+        "freshness_score": 60.0,
+        "hard_failures": [],
+        "mean_rating_evidence_confidence": 0.65,
+        "novelty_ratio": 1.0,
+        "pages_fetched": 10,
+        "pages_sampled": 10,
+        "qualifying_vertical_recipe_count": 107,
+        "quality_components": {
+          "crawl_stability": 100.0,
+          "editorial_provenance": 100.0,
+          "extraction_reliability": 75.0,
+          "freshness": 60.0,
+          "general_quality": 100.0,
+          "rating_integrity": 100.0,
+          "unique_contribution": 100.0,
+          "vertical_relevance": 100.0
+        },
+        "quality_score": 93.0,
+        "rating_conflict_ratio": 0.0,
+        "rating_coverage_ratio": 0.6666666666666666,
+        "recipe_structure_rate": 0.6,
+        "recipes_extracted": 4,
+        "recipes_recognized": 6,
+        "robots_status": "ok",
+        "sample_recipe_yield": 0.6,
+        "substantive_recipe_ratio": 1.0,
+        "suspicious_uniform_rating_evidence": false,
+        "temporary_failures": [],
+        "trap_url_ratio": 0.0,
+        "vertical_relevance_ratio": 1.0,
+        "within_source_duplicate_ratio": 0.0
+      },
       "origin": "discovered",
       "pinned": false,
       "promotion_eligible": false,
-      "qualification_attempts": 0,
-      "quality_score": null,
+      "qualification_attempts": 1,
+      "quality_score": 93.0,
       "rediscovery_blocked": false,
-      "status": "CANDIDATE",
-      "status_reason": "normalized and queued for source qualification",
-      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "status": "QUARANTINED",
+      "status_reason": "qualified once; awaiting confirmation (1/2)",
+      "updated_at": "2026-08-19T08:48:22.552952+00:00",
       "vertical": "air_fryer"
     },
     "walmart.com": {
@@ -2121,15 +2939,19 @@
       "domain": "walmart.com",
       "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
       "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_qualification_metrics": {
+        "classification": "non_publisher_domain"
+      },
       "origin": "discovered",
       "pinned": false,
       "promotion_eligible": false,
       "qualification_attempts": 0,
       "quality_score": null,
-      "rediscovery_blocked": false,
-      "status": "CANDIDATE",
-      "status_reason": "normalized and queued for source qualification",
-      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "rediscovery_blocked": true,
+      "rejection_reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "status": "REJECTED",
+      "status_reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "updated_at": "2026-08-19T08:48:22.353295+00:00",
       "vertical": "air_fryer"
     },
     "wayfair.com": {
@@ -2149,15 +2971,19 @@
       "domain": "wayfair.com",
       "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
       "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_qualification_metrics": {
+        "classification": "non_publisher_domain"
+      },
       "origin": "discovered",
       "pinned": false,
       "promotion_eligible": false,
       "qualification_attempts": 0,
       "quality_score": null,
-      "rediscovery_blocked": false,
-      "status": "CANDIDATE",
-      "status_reason": "normalized and queued for source qualification",
-      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "rediscovery_blocked": true,
+      "rejection_reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "status": "REJECTED",
+      "status_reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "updated_at": "2026-08-19T08:48:22.353295+00:00",
       "vertical": "air_fryer"
     },
     "yummly.com": {
@@ -2191,26 +3017,18 @@
       "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
       "last_evaluated_at": "2026-08-19T06:26:48.638461+00:00",
       "last_qualification_metrics": {
-        "domain": "yummly.com",
-        "hard_failures": [],
-        "pages_fetched": 0,
-        "pages_sampled": 0,
-        "qualifying_vertical_recipe_count": 0,
-        "quality_score": 0.0,
-        "robots_status": "unavailable:TooManyRedirects",
-        "temporary_failures": [
-          "robots_unavailable"
-        ]
+        "classification": "non_publisher_domain"
       },
       "origin": "discovered",
       "pinned": false,
       "promotion_eligible": false,
       "qualification_attempts": 1,
       "quality_score": 0.0,
-      "rediscovery_blocked": false,
-      "status": "QUARANTINED",
-      "status_reason": "qualification incomplete: robots_unavailable",
-      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "rediscovery_blocked": true,
+      "rejection_reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "status": "REJECTED",
+      "status_reason": "automatic non-publisher rejection: retail, affiliate, aggregator, auth, or infrastructure domain",
+      "updated_at": "2026-08-19T08:48:22.353295+00:00",
       "vertical": "air_fryer"
     }
   },
