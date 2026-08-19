@@ -58,6 +58,7 @@ def _fixture(tmp_path: Path) -> dict[str, Path]:
         summary,
         {
             "generated_at": "2026-08-19T10:10:00+00:00",
+            "mode": "daily",
             "configured_sources": 1,
             "catalog_urls": 1,
             "ranked_recipes": 1,
@@ -84,9 +85,8 @@ def _fixture(tmp_path: Path) -> dict[str, Path]:
     }
 
 
-def test_publish_authority_certifies_matching_generation(tmp_path: Path) -> None:
-    paths = _fixture(tmp_path)
-    payload = publish_authority(
+def _publish(paths: dict[str, Path]) -> dict:
+    return publish_authority(
         vertical="air_fryer",
         sources_path=paths["sources"],
         state_path=paths["state"],
@@ -99,9 +99,15 @@ def test_publish_authority_certifies_matching_generation(tmp_path: Path) -> None
         manifest_path=paths["manifest"],
     )
 
+
+def test_publish_authority_certifies_matching_generation(tmp_path: Path) -> None:
+    paths = _fixture(tmp_path)
+    payload = _publish(paths)
+
     assert payload["authoritative"] is True
     assert payload["effective_source_count"] == 1
     assert payload["catalog_url_count"] == 1
+    assert payload["ranking_mode"] == "daily"
     assert len(payload["generation_fingerprint_sha256"]) == 64
     assert json.loads(paths["summary"].read_text(encoding="utf-8"))["authority"]["authoritative"] is True
     assert json.loads(paths["manifest"].read_text(encoding="utf-8"))["authority"]["authoritative"] is True
@@ -114,16 +120,7 @@ def test_publish_authority_rejects_ranking_older_than_catalog_sync(tmp_path: Pat
     _write(paths["summary"], summary)
 
     with pytest.raises(AuthorityError, match="predates"):
-        publish_authority(
-            vertical="air_fryer",
-            sources_path=paths["sources"],
-            state_path=paths["state"],
-            registry_path=paths["registry"],
-            metrics_path=paths["metrics"],
-            summary_path=paths["summary"],
-            leaderboard_path=paths["leaderboard"],
-            authority_path=paths["authority"],
-        )
+        _publish(paths)
 
 
 def test_publish_authority_rejects_catalog_count_drift(tmp_path: Path) -> None:
@@ -136,16 +133,33 @@ def test_publish_authority_rejects_catalog_count_drift(tmp_path: Path) -> None:
     _write(paths["state"], state)
 
     with pytest.raises(AuthorityError, match="catalog mismatch"):
-        publish_authority(
-            vertical="air_fryer",
-            sources_path=paths["sources"],
-            state_path=paths["state"],
-            registry_path=paths["registry"],
-            metrics_path=paths["metrics"],
-            summary_path=paths["summary"],
-            leaderboard_path=paths["leaderboard"],
-            authority_path=paths["authority"],
-        )
+        _publish(paths)
+
+
+def test_new_generation_requires_full_refresh_before_certification(tmp_path: Path) -> None:
+    paths = _fixture(tmp_path)
+    summary = json.loads(paths["summary"].read_text(encoding="utf-8"))
+    summary["mode"] = "hourly"
+    _write(paths["summary"], summary)
+
+    with pytest.raises(AuthorityError, match="daily, deep, or backfill"):
+        _publish(paths)
+
+
+def test_hourly_refresh_inherits_authority_when_inputs_are_unchanged(tmp_path: Path) -> None:
+    paths = _fixture(tmp_path)
+    baseline = _publish(paths)
+    summary = json.loads(paths["summary"].read_text(encoding="utf-8"))
+    summary.pop("authority", None)
+    summary["generated_at"] = "2026-08-19T11:10:00+00:00"
+    summary["mode"] = "hourly"
+    _write(paths["summary"], summary)
+    paths["leaderboard"].write_text("rank,title\n1,Air Fryer Potatoes\n", encoding="utf-8")
+
+    hourly = _publish(paths)
+    assert hourly["authoritative"] is True
+    assert hourly["input_fingerprint_sha256"] == baseline["input_fingerprint_sha256"]
+    assert hourly["leaderboard_fingerprint_sha256"] != baseline["leaderboard_fingerprint_sha256"]
 
 
 def test_invalidation_is_fail_closed_but_ignores_late_race(tmp_path: Path) -> None:
@@ -161,18 +175,7 @@ def test_invalidation_is_fail_closed_but_ignores_late_race(tmp_path: Path) -> No
     )
     assert first["authoritative"] is False
 
-    publish_authority(
-        vertical="air_fryer",
-        sources_path=paths["sources"],
-        state_path=paths["state"],
-        registry_path=paths["registry"],
-        metrics_path=paths["metrics"],
-        summary_path=paths["summary"],
-        leaderboard_path=paths["leaderboard"],
-        authority_path=paths["authority"],
-        public_authority_path=paths["public_authority"],
-        manifest_path=paths["manifest"],
-    )
+    _publish(paths)
     late = invalidate_authority(
         vertical="air_fryer",
         metrics_path=paths["metrics"],
