@@ -1,0 +1,39 @@
+name: One-time Source Registry Type Fix
+
+on:
+  push:
+    branches: [agent/autonomous-source-expansion]
+    paths:
+      - '.github/workflows/source-expansion-typefix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: agent/autonomous-source-expansion
+          fetch-depth: 0
+      - name: Narrow dynamic crawl delay type
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/airfryer_rankings/source_registry.py')
+          text = path.read_text(encoding='utf-8')
+          old = '''def _source_config_from_record(record: dict, defaults: SourceConfig) -> SourceConfig:\n    crawl = record.get("crawl_config") or {}\n    return SourceConfig(\n        domain=str(record["domain"]),\n        enabled=True,\n        max_urls=int(crawl.get("max_urls") or defaults.max_urls),\n        delay=float(crawl.get("delay") if crawl.get("delay") is not None else max(defaults.delay, 0.20)),\n'''
+          new = '''def _source_config_from_record(record: dict, defaults: SourceConfig) -> SourceConfig:\n    crawl = record.get("crawl_config") or {}\n    delay_value = crawl.get("delay")\n    if not isinstance(delay_value, (int, float, str)):\n        delay_value = max(defaults.delay, 0.20)\n    return SourceConfig(\n        domain=str(record["domain"]),\n        enabled=True,\n        max_urls=int(crawl.get("max_urls") or defaults.max_urls),\n        delay=float(delay_value),\n'''
+          assert old in text
+          path.write_text(text.replace(old, new), encoding='utf-8')
+          PY
+      - name: Commit fix and remove temporary workflow
+        run: |
+          rm .github/workflows/source-expansion-typefix.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/airfryer_rankings/source_registry.py .github/workflows/source-expansion-typefix.yml
+          git commit -m 'Narrow discovered-source crawl config types'
+          git push origin HEAD:agent/autonomous-source-expansion
