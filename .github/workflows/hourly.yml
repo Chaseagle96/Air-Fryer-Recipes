@@ -1,4 +1,4 @@
-name: Air Fryer Rankings
+name: Recipe Intelligence
 
 on:
   push:
@@ -37,7 +37,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: air-fryer-rankings-${{ github.ref }}
+  group: recipe-intelligence-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -125,7 +125,7 @@ jobs:
                 - https://www.skinnytaste.com/recipes/air-fryer/
           EOF
 
-      - name: Refresh rankings
+      - name: Refresh Air Fryer rankings
         shell: bash
         run: |
           if [ "${{ steps.mode.outputs.mode }}" = "smoke" ]; then
@@ -138,19 +138,19 @@ jobs:
         if: steps.mode.outputs.mode == 'deep' && steps.mode.outputs.production == 'true'
         run: PYTHONPATH=src python -m airfryer_rankings.fixture_capture --output output/fixture_candidates
 
-      - name: Upload Excel workbook
+      - name: Upload Air Fryer Excel workbook
         if: always() && hashFiles('output/air_fryer_rankings.xlsx') != ''
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: air-fryer-rankings-${{ github.run_number }}-${{ steps.mode.outputs.mode || 'validation' }}
+          name: recipe-intelligence-air-fryer-rankings-${{ github.run_number }}-${{ steps.mode.outputs.mode || 'validation' }}
           retention-days: 30
           path: output/air_fryer_rankings.xlsx
 
-      - name: Upload DuckDB analytical cache
+      - name: Upload Air Fryer DuckDB analytical cache
         if: always() && hashFiles('output/air_fryer_analytics.duckdb') != ''
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: air-fryer-analytics-${{ github.run_number }}-${{ steps.mode.outputs.mode || 'validation' }}
+          name: recipe-intelligence-air-fryer-analytics-${{ github.run_number }}-${{ steps.mode.outputs.mode || 'validation' }}
           retention-days: 30
           path: output/air_fryer_analytics.duckdb
 
@@ -158,7 +158,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: air-fryer-diagnostics-${{ github.run_number }}-${{ steps.mode.outputs.mode || 'validation' }}
+          name: recipe-intelligence-diagnostics-${{ github.run_number }}-${{ steps.mode.outputs.mode || 'validation' }}
           retention-days: 30
           if-no-files-found: ignore
           path: |
@@ -176,11 +176,11 @@ jobs:
             output/storage_health.json
             coverage.xml
 
-      - name: Upload history Parquet archive
+      - name: Upload Air Fryer history Parquet archive
         if: always() && hashFiles('output/history_archive.parquet') != ''
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: air-fryer-history-${{ github.run_number }}
+          name: recipe-intelligence-air-fryer-history-${{ github.run_number }}
           retention-days: 30
           path: output/history_archive.parquet
 
@@ -188,7 +188,7 @@ jobs:
         if: always() && hashFiles('output/fixture_candidates/manifest.json') != ''
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: fixture-candidates-${{ github.run_number }}
+          name: recipe-intelligence-fixture-candidates-${{ github.run_number }}
           retention-days: 30
           path: output/fixture_candidates
 
@@ -233,7 +233,7 @@ jobs:
             echo 'No ranking changes to commit.'
             exit 0
           fi
-          git commit -m "Refresh air fryer rankings (${{ steps.mode.outputs.mode }})"
+          git commit -m "Refresh Air Fryer rankings (${{ steps.mode.outputs.mode }})"
           git pull --rebase origin main
           git push origin HEAD:main
 
