@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 from typing import Any
 
@@ -173,14 +174,33 @@ def install_gate_v2() -> None:
     _legacy._load_contexts = _load_contexts
 
 
-install_gate_v2()
-
 DiscoveryHit = _legacy.DiscoveryHit
 SampledPage = _legacy.SampledPage
 VerticalContext = _legacy.VerticalContext
 build_query_family = _legacy.build_query_family
-load_source_discovery_config = _legacy.load_source_discovery_config
-run_source_expansion = _legacy.run_source_expansion
+
+
+def load_source_discovery_config(path: str | Path) -> dict[str, Any]:
+    install_gate_v2()
+    return _legacy.load_source_discovery_config(path)
+
+
+def run_source_expansion(
+    config_path: str | Path,
+    *,
+    mode: str,
+    seed_file: str | Path | None = None,
+    dry_run: bool = False,
+    run_at: str | None = None,
+) -> dict[str, Any]:
+    install_gate_v2()
+    return _legacy.run_source_expansion(
+        config_path,
+        mode=mode,
+        seed_file=seed_file,
+        dry_run=dry_run,
+        run_at=run_at,
+    )
 
 
 def main() -> None:
@@ -198,8 +218,6 @@ def main() -> None:
         seed_file=args.seed_file,
         dry_run=args.dry_run,
     )
-    import json
-
     print(json.dumps(result, indent=2, sort_keys=True, default=str))
 
 
