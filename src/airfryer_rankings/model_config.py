@@ -6,6 +6,15 @@ from typing import Any
 
 import yaml
 
+DEFAULT_MODEL_VERSION = 5
+DEFAULT_MODEL_SEMVER = "5.2.0"
+DEFAULT_COMPONENT_VERSIONS = {
+    "ranking_schema": 5,
+    "evidence_model": 2,
+    "dedupe_model": 2,
+    "uncertainty_calibration": 2,
+}
+
 
 @dataclass(frozen=True)
 class ModelParameters:
@@ -34,11 +43,16 @@ def load_model_config(path: str | Path = "config/model.yaml") -> tuple[ModelPara
     target = Path(path)
     if not target.exists():
         return DEFAULT_MODEL_PARAMETERS, {
-            "model_version": 5,
+            "model_version": DEFAULT_MODEL_VERSION,
+            "model_semver": DEFAULT_MODEL_SEMVER,
+            "component_versions": dict(DEFAULT_COMPONENT_VERSIONS),
             "active_parameters": DEFAULT_MODEL_PARAMETERS.to_dict(),
         }
 
     payload = yaml.safe_load(target.read_text(encoding="utf-8")) or {}
+    payload.setdefault("model_version", DEFAULT_MODEL_VERSION)
+    payload.setdefault("model_semver", f"{int(payload['model_version'])}.0.0")
+    payload.setdefault("component_versions", dict(DEFAULT_COMPONENT_VERSIONS))
     # V5's canonical key is active_parameters. Accept the short-lived `active`
     # spelling as a backward-compatible alias so experimental configs and older
     # test fixtures remain readable without changing the frozen production config.

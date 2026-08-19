@@ -1,0 +1,15 @@
+# Repository ownership
+* @Chaseagle96
+
+# Ranking and statistical methodology
+/config/model.yaml @Chaseagle96
+/config/slo.yaml @Chaseagle96
+/src/airfryer_rankings/ranking.py @Chaseagle96
+/src/airfryer_rankings/ranking_components/ @Chaseagle96
+/src/airfryer_rankings/calibration.py @Chaseagle96
+/src/airfryer_rankings/quality_gate.py @Chaseagle96
+
+# CI and supply-chain controls
+/.github/workflows/ @Chaseagle96
+/requirements*.txt @Chaseagle96
+/pyproject.toml @Chaseagle96

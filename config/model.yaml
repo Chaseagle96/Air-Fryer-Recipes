@@ -1,4 +1,10 @@
 model_version: 5
+model_semver: "5.2.0"
+component_versions:
+  ranking_schema: 5
+  evidence_model: 2
+  dedupe_model: 2
+  uncertainty_calibration: 2
 active_parameters:
   max_source_bias: 0.15
   evidence_confidence_target: 0.80
