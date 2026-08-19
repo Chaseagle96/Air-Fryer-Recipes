@@ -74,6 +74,16 @@ def bayesian_rank(
         row["previous_rank"] = previous.get(recipe_id)
         row["movement"] = previous[recipe_id] - row["rank"] if recipe_id in previous else None
         row["rank_provenance"] = rank_provenance(row)
+
+        # Mobile-serving enrichment comes from the already validated clean state.
+        # Instruction prose remains internal; the public app feed exposes only
+        # availability/count and sends clients to the canonical publisher URL.
+        row["canonical_url"] = str(item.get("canonical_url") or item.get("url") or row.get("url") or "")
+        row["image_url"] = str(item.get("image_url") or "")
+        row["ingredients"] = list(item.get("ingredients") or [])
+        row["has_instructions"] = bool(item.get("instructions"))
+        row["instruction_count"] = len(item.get("instructions") or [])
+
         if recipe_id in state.get("recipes", {}):
             state["recipes"][recipe_id]["last_rank"] = row["rank"]
 

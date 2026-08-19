@@ -7,7 +7,7 @@ from pathlib import Path
 RAW_OBSERVATION_SCHEMA_VERSION = 2
 CLEAN_RECIPE_SCHEMA_VERSION = 5
 RANKING_SCHEMA_VERSION = 5
-SERVING_SCHEMA_VERSION = 3
+SERVING_SCHEMA_VERSION = 4
 CONTRACT_MANIFEST_VERSION = 1
 
 
@@ -46,8 +46,8 @@ CONTRACTS = (
         "serving",
         SERVING_SCHEMA_VERSION,
         False,
-        "output/ and docs/",
-        "Human- and machine-facing CSV, Excel, DuckDB, JSON, and web presentation artifacts.",
+        "output/, docs/, and docs/api/",
+        "Human- and machine-facing CSV, Excel, DuckDB, JSON, web presentation, and paged mobile-feed artifacts.",
     ),
 )
 

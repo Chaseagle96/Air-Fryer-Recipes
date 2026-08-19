@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from .app_feed import write_app_feed
 from .runtime import vertical_name
 
 
@@ -86,3 +87,4 @@ def write_dashboard(
     (docs / "data.json").write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     (docs / "index.html").write_text(_dashboard_html(), encoding="utf-8")
     (docs / ".nojekyll").write_text("", encoding="utf-8")
+    write_app_feed(docs, generated_at, ranked, source_count)
