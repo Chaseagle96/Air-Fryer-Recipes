@@ -17,30 +17,45 @@ _METADATA_IPS = {
     "100.100.100.200",
 }
 
-# These hosts are useful infrastructure, social/search/shopping services, or generic
-# publication platforms rather than independent recipe publishers. They are rejected
-# during *candidate discovery* but are not part of the lower-level SSRF policy.
+# These hosts are useful infrastructure, social/search/shopping services, affiliate
+# redirectors, or generic publication platforms rather than independent recipe
+# publishers. Rejecting them before qualification keeps the bounded evaluation budget
+# focused on actual publisher candidates. Historical registry evidence is retained.
 NON_PUBLISHER_SUFFIXES = (
     "amazon.com",
     "amazonaws.com",
+    "amzn.to",
+    "amzlink.to",
     "apple.com",
+    "barnesandnoble.com",
+    "bestbuy.com",
     "bing.com",
+    "bit.ly",
     "cloudfront.net",
     "doubleclick.net",
     "duckduckgo.com",
+    "ebay.com",
     "facebook.com",
     "fb.com",
+    "geni.us",
     "google.com",
     "googleapis.com",
     "googlesyndication.com",
     "instagram.com",
-    "linkedin.com",
     "linktr.ee",
+    "linkedin.com",
+    "lnk.to",
     "pinterest.com",
     "reddit.com",
+    "rstyle.me",
     "shopify.com",
+    "t.co",
+    "target.com",
     "tiktok.com",
+    "tinyurl.com",
     "twitter.com",
+    "walmart.com",
+    "wayfair.com",
     "x.com",
     "youtube.com",
 )
@@ -112,7 +127,23 @@ def is_non_publisher_domain(domain: str, extra_blocked: Iterable[str] = ()) -> b
         if normalized == suffix or normalized.endswith("." + suffix):
             return True
     labels = normalized.split(".")
-    infrastructure_tokens = {"cdn", "img", "images", "static", "media", "assets", "ads", "analytics"}
+    infrastructure_tokens = {
+        "account",
+        "accounts",
+        "ads",
+        "analytics",
+        "assets",
+        "auth",
+        "cdn",
+        "id",
+        "img",
+        "images",
+        "login",
+        "media",
+        "oauth",
+        "sso",
+        "static",
+    }
     return bool(labels and labels[0] in infrastructure_tokens)
 
 
