@@ -12,7 +12,8 @@ from .backtesting import history_span_days, run_historical_backtest
 from .benchmarks import build_dedupe_label_queue, evaluate_dedupe_benchmark
 from .calibration import build_empirical_uncertainty, build_historical_metrics, evidence_grade, volume_bucket
 from .contracts import contract_manifest, write_contract_manifest
-from .crawler import crawl_targets, select_refresh_targets as _select_refresh_targets
+from .crawler import crawl_targets
+from .crawler import select_refresh_targets as _select_refresh_targets
 from .dedupe import candidate_duplicate_pairs, dedupe_current, duplicate_similarity
 from .discovery import discover_source_urls
 from .evidence import jsonld_objects, visible_rating_evidence
