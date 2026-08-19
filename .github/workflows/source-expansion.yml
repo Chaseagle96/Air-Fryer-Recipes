@@ -19,6 +19,7 @@ on:
     paths:
       - '.github/workflows/source-expansion.yml'
       - 'src/airfryer_rankings/source_expansion.py'
+      - 'src/airfryer_rankings/source_expansion_v2.py'
       - 'src/airfryer_rankings/source_registry.py'
       - 'src/airfryer_rankings/source_security.py'
       - 'src/airfryer_rankings/source_hygiene.py'
@@ -108,7 +109,7 @@ jobs:
       - name: Validate source-expansion configuration
         if: steps.mode.outputs.production != 'true'
         run: |
-          PYTHONPATH=src python -m airfryer_rankings.source_expansion --mode smoke --dry-run
+          PYTHONPATH=src python -m airfryer_rankings.source_expansion_v2 --mode smoke --dry-run
           PYTHONPATH=src python scripts/retire_nonpublisher_candidates.py --dry-run
 
       - name: Retire non-publisher candidates
@@ -123,7 +124,7 @@ jobs:
           if [ "${{ github.event_name }}" = "push" ] && [ -f config/source_discovery_bootstrap.yaml ]; then
             seed_args=(--seed-file config/source_discovery_bootstrap.yaml)
           fi
-          PYTHONPATH=src python -m airfryer_rankings.source_expansion \
+          PYTHONPATH=src python -m airfryer_rankings.source_expansion_v2 \
             --mode "${{ steps.mode.outputs.mode }}" \
             "${seed_args[@]}"
 
@@ -149,7 +150,8 @@ jobs:
               assert int(metrics['manual_source_count']) == len(base)
               assert int(metrics['effective_source_count']) == len(effective)
               assert int(metrics['catalog_url_count']) >= 0
-              assert int(registry['source_gate_version']) == 1
+              assert int(metrics['source_gate_version']) == 2
+              assert int(registry['source_gate_version']) == 2
               print(vertical, 'manual=', len(base), 'effective=', len(effective), 'candidates=', len(registry['candidates']))
           PY
 
