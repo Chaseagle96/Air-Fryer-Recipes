@@ -162,6 +162,7 @@ def crawl_targets(
             "targets": len(source_targets),
             "fetched": 0,
             "not_modified": 0,
+            "recognized_recipes": 0,
             "verified_recipes": 0,
             "conflicts": 0,
             "missing": 0,
@@ -205,11 +206,14 @@ def crawl_targets(
                     row = _row_from_existing(cached, run_at, "not_modified")
                     if row:
                         rows.append(row)
+                        metrics["recognized_recipes"] += 1
                         metrics["verified_recipes"] += 1
                     entry.update({"last_checked": run_at, "last_status": "not_modified", "priority": "stable"})
                     continue
                 metrics["fetched"] += 1
                 row, parse_meta = extract_recipe_from_html(response.text, url, domain, cfg, dict(response.headers))
+                if parse_meta.get("recipe_recognized"):
+                    metrics["recognized_recipes"] += 1
                 page_hash = parse_meta.get("page_hash", "")
                 dom_fingerprint = parse_meta.get("dom_fingerprint", "")
                 schema_signature = parse_meta.get("schema_signature", "")
