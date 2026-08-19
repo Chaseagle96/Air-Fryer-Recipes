@@ -9,7 +9,59 @@
   "candidate_domains_quarantined": 5,
   "candidate_domains_rejected": 1,
   "candidate_domains_suspended": 0,
-  "catalog_url_count": 7494,
+  "catalog_net_change": 163,
+  "catalog_sync": [
+    {
+      "discovered_urls": 3603,
+      "elapsed_seconds": 50.18,
+      "new_urls": 0,
+      "robots_status": "ok",
+      "sitemap_docs": 13,
+      "source": "forktospoon.com",
+      "status": "ok"
+    },
+    {
+      "discovered_urls": 268,
+      "elapsed_seconds": 3.81,
+      "new_urls": 0,
+      "robots_status": "ok",
+      "sitemap_docs": 8,
+      "source": "kelvinskitchen.com",
+      "status": "ok"
+    },
+    {
+      "discovered_urls": 477,
+      "elapsed_seconds": 1.0,
+      "new_urls": 0,
+      "robots_status": "ok",
+      "sitemap_docs": 7,
+      "source": "temeculablogs.com",
+      "status": "ok"
+    },
+    {
+      "discovered_urls": 225,
+      "elapsed_seconds": 8.93,
+      "new_urls": 48,
+      "robots_status": "ok",
+      "sitemap_docs": 6,
+      "source": "thestayathomechef.com",
+      "status": "ok"
+    },
+    {
+      "discovered_urls": 318,
+      "elapsed_seconds": 9.66,
+      "new_urls": 115,
+      "robots_status": "ok",
+      "sitemap_docs": 8,
+      "source": "theyummybowl.com",
+      "status": "ok"
+    }
+  ],
+  "catalog_sync_generated_at": "2026-08-19T10:42:24.230121+00:00",
+  "catalog_url_count": 7657,
+  "catalog_urls_added_after_promotion": 163,
+  "catalog_urls_coalesced": 0,
+  "catalog_urls_rewritten": 0,
   "effective_source_count": 45,
   "evaluations": [
     {
@@ -37,7 +89,7 @@
       "novelty_ratio": 1.0,
       "pages_fetched": 10,
       "pages_sampled": 10,
-      "production_activation": "effective allowlist immediately; URL catalog expansion on the next vertical daily/deep discovery run",
+      "production_activation": "effective allowlist immediately; persistent URL catalog synchronized after successful source expansion",
       "qualifying_vertical_recipe_count": 39,
       "quality_components": {
         "crawl_stability": 100.0,
@@ -80,7 +132,7 @@
       "novelty_ratio": 1.0,
       "pages_fetched": 10,
       "pages_sampled": 10,
-      "production_activation": "effective allowlist immediately; URL catalog expansion on the next vertical daily/deep discovery run",
+      "production_activation": "effective allowlist immediately; persistent URL catalog synchronized after successful source expansion",
       "qualifying_vertical_recipe_count": 107,
       "quality_components": {
         "crawl_stability": 100.0,
