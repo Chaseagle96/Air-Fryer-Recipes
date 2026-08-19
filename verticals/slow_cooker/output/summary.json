@@ -89,7 +89,7 @@
     "authoritative": false,
     "authority_contract_version": 1,
     "catalog_sync_generated_at": "2026-08-19T10:51:24.661463+00:00",
-    "invalidated_at": "2026-08-19T14:00:07.404233+00:00",
+    "invalidated_at": "2026-08-19T14:17:33.160886+00:00",
     "last_ranking_generated_at": "2026-08-19T05:02:49.320697+00:00",
     "reason": "source_or_catalog_generation_advanced",
     "source_expansion_generated_at": "2026-08-19T10:50:14.279021+00:00",
