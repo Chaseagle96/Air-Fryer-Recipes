@@ -9,6 +9,7 @@ on:
     paths:
       - '.github/workflows/source-catalog-sync.yml'
       - 'scripts/sync_promoted_source_catalogs.py'
+      - 'src/airfryer_rankings/source_catalog_sync.py'
       - 'src/airfryer_rankings/source_security.py'
       - 'config/source_discovery.yaml'
   pull_request:
@@ -16,6 +17,7 @@ on:
     paths:
       - '.github/workflows/source-catalog-sync.yml'
       - 'scripts/sync_promoted_source_catalogs.py'
+      - 'src/airfryer_rankings/source_catalog_sync.py'
       - 'src/airfryer_rankings/source_security.py'
       - 'tests/test_source_catalog_sync.py'
       - 'config/source_discovery.yaml'
@@ -52,19 +54,27 @@ jobs:
         run: pip install -r requirements-dev.txt
 
       - name: Lint catalog sync
-        run: ruff check scripts/sync_promoted_source_catalogs.py tests/test_source_catalog_sync.py src/airfryer_rankings/source_security.py
+        run: >-
+          ruff check
+          scripts/sync_promoted_source_catalogs.py
+          src/airfryer_rankings/source_catalog_sync.py
+          src/airfryer_rankings/source_security.py
+          tests/test_source_catalog_sync.py
+
+      - name: Static type analysis
+        run: mypy src/airfryer_rankings
 
       - name: Run catalog sync regression tests
-        run: PYTHONPATH=src:. pytest tests/test_source_catalog_sync.py
+        run: PYTHONPATH=src pytest tests/test_source_catalog_sync.py
 
       - name: Sync promoted publishers into URL catalogs
         if: github.event_name != 'pull_request'
-        run: PYTHONPATH=src:. python scripts/sync_promoted_source_catalogs.py --mode auto
+        run: PYTHONPATH=src python scripts/sync_promoted_source_catalogs.py --mode auto
 
       - name: Validate persistent catalogs
         if: github.event_name != 'pull_request'
         run: |
-          PYTHONPATH=src:. python - <<'PY'
+          PYTHONPATH=src python - <<'PY'
           import json
           from pathlib import Path
           from airfryer_rankings.models import load_sources
