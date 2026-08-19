@@ -1,7 +1,13 @@
 from __future__ import annotations
 
 from airfryer_rankings.source_hygiene import retire_nonpublisher_candidates
-from airfryer_rankings.source_registry import ACTIVE, CANDIDATE, REJECTED, empty_source_registry, record_candidate_discovery
+from airfryer_rankings.source_registry import (
+    ACTIVE,
+    CANDIDATE,
+    REJECTED,
+    empty_source_registry,
+    record_candidate_discovery,
+)
 from airfryer_rankings.source_security import is_non_publisher_domain
 
 
