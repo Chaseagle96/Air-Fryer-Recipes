@@ -21,7 +21,7 @@ enum RecipeIntelligenceClientError: LocalizedError {
 private struct FeedAuthorityEnvelope: Decodable {
     let authoritative: Bool
     let status: String
-    let rankingGeneratedAt: String
+    let rankingGeneratedAt: String?
 
     enum CodingKeys: String, CodingKey {
         case authoritative, status
@@ -124,7 +124,8 @@ actor LiveRecipeIntelligenceClient: RecipeIntelligenceClient {
         guard authority.authoritative else {
             throw RecipeIntelligenceClientError.nonAuthoritativeFeed(authority.status)
         }
-        guard authority.rankingGeneratedAt == manifest.generatedAt else {
+        guard let rankingGeneratedAt = authority.rankingGeneratedAt,
+              rankingGeneratedAt == manifest.generatedAt else {
             throw RecipeIntelligenceClientError.inconsistentSnapshot
         }
     }
