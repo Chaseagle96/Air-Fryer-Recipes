@@ -15,8 +15,19 @@ enum RecipeIntelligenceClientError: LocalizedError {
 }
 
 protocol RecipeIntelligenceClient: Sendable {
-    func fetchVerticals() async throws -> [RecipeVertical]
+    func fetchVerticals(forceRefresh: Bool) async throws -> [RecipeVertical]
+    func fetchFeedManifest(vertical: RecipeVertical, forceRefresh: Bool) async throws -> FeedManifest
     func fetchRecipePage(vertical: RecipeVertical, pageIndex: Int) async throws -> RecipePageEnvelope
+}
+
+extension RecipeIntelligenceClient {
+    func fetchVerticals() async throws -> [RecipeVertical] {
+        try await fetchVerticals(forceRefresh: false)
+    }
+
+    func fetchFeedManifest(vertical: RecipeVertical) async throws -> FeedManifest {
+        try await fetchFeedManifest(vertical: vertical, forceRefresh: false)
+    }
 }
 
 actor LiveRecipeIntelligenceClient: RecipeIntelligenceClient {
@@ -31,33 +42,22 @@ actor LiveRecipeIntelligenceClient: RecipeIntelligenceClient {
         self.catalogURL = catalogURL
     }
 
-    func fetchVerticals() async throws -> [RecipeVertical] {
-        let catalog: VerticalCatalog = try await request(catalogURL)
+    func fetchVerticals(forceRefresh: Bool) async throws -> [RecipeVertical] {
+        let requestURL = forceRefresh ? cacheBustedURL(catalogURL, token: UUID().uuidString) : catalogURL
+        let catalog: VerticalCatalog = try await request(requestURL, forceRefresh: forceRefresh)
         guard catalog.schemaVersion == 1 else {
             throw RecipeIntelligenceClientError.unsupportedSchema(catalog.schemaVersion)
         }
         return catalog.verticals.filter(\.available)
     }
 
-    func fetchRecipePage(vertical: RecipeVertical, pageIndex: Int) async throws -> RecipePageEnvelope {
-        let manifest = try await manifest(for: vertical)
-        guard pageIndex >= 0, pageIndex < manifest.pages.count else {
-            throw RecipeIntelligenceClientError.pageOutOfRange
-        }
-        let pageReference = manifest.pages[pageIndex]
-        guard let pageURL = URL(string: pageReference.path, relativeTo: vertical.manifestURL)?.absoluteURL else {
-            throw RecipeIntelligenceClientError.badResponse
-        }
-        let page: RecipePageEnvelope = try await request(pageURL)
-        guard page.schemaVersion == 1 else {
-            throw RecipeIntelligenceClientError.unsupportedSchema(page.schemaVersion)
-        }
-        return page
-    }
+    func fetchFeedManifest(vertical: RecipeVertical, forceRefresh: Bool) async throws -> FeedManifest {
+        if !forceRefresh, let cached = manifestCache[vertical.id] { return cached }
 
-    private func manifest(for vertical: RecipeVertical) async throws -> FeedManifest {
-        if let cached = manifestCache[vertical.id] { return cached }
-        let manifest: FeedManifest = try await request(vertical.manifestURL)
+        let requestURL = forceRefresh
+            ? cacheBustedURL(vertical.manifestURL, token: UUID().uuidString)
+            : vertical.manifestURL
+        let manifest: FeedManifest = try await request(requestURL, forceRefresh: forceRefresh)
         guard manifest.schemaVersion == 1 else {
             throw RecipeIntelligenceClientError.unsupportedSchema(manifest.schemaVersion)
         }
@@ -65,9 +65,30 @@ actor LiveRecipeIntelligenceClient: RecipeIntelligenceClient {
         return manifest
     }
 
-    private func request<T: Decodable>(_ url: URL) async throws -> T {
+    func fetchRecipePage(vertical: RecipeVertical, pageIndex: Int) async throws -> RecipePageEnvelope {
+        let manifest = try await fetchFeedManifest(vertical: vertical, forceRefresh: false)
+        guard pageIndex >= 0, pageIndex < manifest.pages.count else {
+            throw RecipeIntelligenceClientError.pageOutOfRange
+        }
+        let pageReference = manifest.pages[pageIndex]
+        guard let pageURL = URL(string: pageReference.path, relativeTo: vertical.manifestURL)?.absoluteURL else {
+            throw RecipeIntelligenceClientError.badResponse
+        }
+
+        // Page filenames are intentionally stable. Key the HTTP request by the
+        // manifest generation so a newly published ranking snapshot cannot be
+        // masked by URLCache or an upstream raw-content cache entry.
+        let versionedPageURL = cacheBustedURL(pageURL, token: manifest.generatedAt)
+        let page: RecipePageEnvelope = try await request(versionedPageURL, forceRefresh: false)
+        guard page.schemaVersion == 1 else {
+            throw RecipeIntelligenceClientError.unsupportedSchema(page.schemaVersion)
+        }
+        return page
+    }
+
+    private func request<T: Decodable>(_ url: URL, forceRefresh: Bool) async throws -> T {
         var request = URLRequest(url: url)
-        request.cachePolicy = .reloadRevalidatingCacheData
+        request.cachePolicy = forceRefresh ? .reloadIgnoringLocalCacheData : .reloadRevalidatingCacheData
         request.timeoutInterval = 25
         let (data, response) = try await session.data(for: request)
         guard let http = response as? HTTPURLResponse, 200..<300 ~= http.statusCode else {
@@ -75,10 +96,31 @@ actor LiveRecipeIntelligenceClient: RecipeIntelligenceClient {
         }
         return try JSONDecoder().decode(T.self, from: data)
     }
+
+    private func cacheBustedURL(_ url: URL, token: String) -> URL {
+        guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return url }
+        var items = components.queryItems ?? []
+        items.removeAll { $0.name == "ri_version" }
+        items.append(URLQueryItem(name: "ri_version", value: token))
+        components.queryItems = items
+        return components.url ?? url
+    }
 }
 
 actor PreviewRecipeIntelligenceClient: RecipeIntelligenceClient {
-    func fetchVerticals() async throws -> [RecipeVertical] { RecipeVertical.fallbacks }
+    func fetchVerticals(forceRefresh: Bool) async throws -> [RecipeVertical] { RecipeVertical.fallbacks }
+
+    func fetchFeedManifest(vertical: RecipeVertical, forceRefresh: Bool) async throws -> FeedManifest {
+        let recipes = SampleData.recipes.filter { $0.verticalID == vertical.id }
+        return FeedManifest(
+            schemaVersion: 1,
+            generatedAt: "preview",
+            vertical: FeedVerticalDescriptor(id: vertical.id, name: vertical.name, sourceCount: 1),
+            recipeCount: recipes.count,
+            pageSize: max(recipes.count, 1),
+            pages: recipes.isEmpty ? [] : [FeedPageReference(index: 1, path: "recipes/0001.json", count: recipes.count)]
+        )
+    }
 
     func fetchRecipePage(vertical: RecipeVertical, pageIndex: Int) async throws -> RecipePageEnvelope {
         guard pageIndex == 0 else { throw RecipeIntelligenceClientError.pageOutOfRange }
