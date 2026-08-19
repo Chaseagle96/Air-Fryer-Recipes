@@ -11,9 +11,12 @@ final class RecipeIntelligenceUITests: XCTestCase {
         app.launch()
 
         XCTAssertTrue(app.navigationBars["Discover"].waitForExistence(timeout: 8))
-        let card = app.otherElements["discover.card"]
+        let card = app.descendants(matching: .any)["discover.card"]
         XCTAssertTrue(card.waitForExistence(timeout: 5))
         card.swipeRight()
+
+        let undo = app.buttons["discover.undo"]
+        XCTAssertTrue(undo.waitForExistence(timeout: 5), "A completed save swipe should expose Undo.")
 
         app.tabBars.buttons["Saved"].tap()
         XCTAssertTrue(app.navigationBars["Saved"].waitForExistence(timeout: 5))
@@ -29,12 +32,17 @@ final class RecipeIntelligenceUITests: XCTestCase {
         XCTAssertTrue(slowCooker.waitForExistence(timeout: 5))
         slowCooker.tap()
 
-        let card = app.otherElements["discover.card"]
+        let card = app.descendants(matching: .any)["discover.card"]
         XCTAssertTrue(card.waitForExistence(timeout: 5))
+        let beforeLabel = card.label
         card.swipeLeft()
 
-        XCTAssertTrue(app.otherElements["discover.card"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons["discover.undo"].exists)
+        let undo = app.buttons["discover.undo"]
+        XCTAssertTrue(undo.waitForExistence(timeout: 5), "A completed skip swipe should expose Undo.")
+
+        let nextCard = app.descendants(matching: .any)["discover.card"]
+        XCTAssertTrue(nextCard.waitForExistence(timeout: 5))
+        XCTAssertNotEqual(nextCard.label, beforeLabel)
     }
 
     func testAccessibleManualRefreshReportsCurrentFeed() {
