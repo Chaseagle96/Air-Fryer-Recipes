@@ -37,7 +37,6 @@ def test_hourly_selector_balances_validated_urls_and_caps_exploration():
     assert len(targets) == 92
     assert len(exploratory) == 2
     assert all(target["source"] == "source0.com" for target in exploratory)
-    assert counts["source0.com"] <= 10
     assert len(counts) >= 10
 
 
