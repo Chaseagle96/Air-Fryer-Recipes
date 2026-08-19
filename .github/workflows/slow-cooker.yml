@@ -165,20 +165,21 @@ jobs:
           assert Path("output/slow_cooker_analytics.duckdb").exists()
           assert Path("docs/index.html").exists()
           assert payload["vertical"] == "slow_cooker"
-          assert int(payload.get("ranked_recipes") or 0) > 0, "Slow Cooker smoke run produced no ranked recipes"
+          assert int(payload.get("ranked_recipes") or 0) > 0, "Slow Cooker run produced no ranked recipes"
           assert str(payload.get("analytics_cache_file", "")).endswith("slow_cooker_analytics.duckdb")
           assert "Slow Cooker" in Path("docs/index.html").read_text(encoding="utf-8")
 
           state = json.loads(Path("data/state.json").read_text(encoding="utf-8"))
           effective_sources = set(state.get("effective_source_domains") or [])
-          expected_sources = {"skinnytaste.com", "budgetbytes.com", "wellplated.com"}
-          assert effective_sources == expected_sources, (effective_sources, expected_sources)
+          if "${{ steps.mode.outputs.mode }}" == "smoke":
+              expected_sources = {"skinnytaste.com", "budgetbytes.com", "wellplated.com"}
+              assert effective_sources == expected_sources, (effective_sources, expected_sources)
 
           top = payload.get("top10") or []
-          assert top, "Slow Cooker smoke run produced no Top recipes"
+          assert top, "Slow Cooker run produced no Top recipes"
           ranked_sources = {str(row.get("source") or "") for row in top}
           assert ranked_sources <= effective_sources, (
-              "Slow Cooker smoke leaderboard contains a source outside the effective smoke allowlist",
+              "Slow Cooker leaderboard contains a source outside the effective allowlist",
               ranked_sources,
               effective_sources,
           )
@@ -205,10 +206,13 @@ jobs:
           PY
 
       - name: Certify Slow Cooker authority before publication
+        id: authority
         if: steps.mode.outputs.production == 'true'
+        shell: bash
         working-directory: verticals/slow_cooker
         run: |
-          PYTHONPATH=../../src python ../../scripts/ranking_authority.py publish \
+          set +e
+          output=$(PYTHONPATH=../../src python ../../scripts/ranking_authority.py publish \
             --vertical slow_cooker \
             --sources ../../config/verticals/slow_cooker/sources.yaml \
             --state data/state.json \
@@ -218,7 +222,22 @@ jobs:
             --leaderboard output/leaderboard.csv \
             --authority output/authority.json \
             --public-authority docs/api/authority.json \
-            --manifest docs/api/manifest.json
+            --manifest docs/api/manifest.json 2>&1)
+          status=$?
+          set -e
+          printf '%s\n' "$output"
+          if [ "$status" -eq 0 ]; then
+            echo 'publishable=true' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "${{ steps.mode.outputs.mode }}" = "hourly" ] && \
+             grep -Fq 'new source/catalog/model generation requires a daily or deep refresh before certification' <<<"$output"; then
+            echo 'publishable=false' >> "$GITHUB_OUTPUT"
+            echo '::notice::Slow Cooker publication deferred until the authority invalidation flow completes a daily/deep refresh.'
+            exit 0
+          fi
+          echo 'publishable=false' >> "$GITHUB_OUTPUT"
+          exit "$status"
 
       - name: Upload Slow Cooker Excel workbook
         if: always() && hashFiles('verticals/slow_cooker/output/slow_cooker_rankings.xlsx') != ''
@@ -265,7 +284,7 @@ jobs:
           path: verticals/slow_cooker/output/history_archive.parquet
 
       - name: Commit Slow Cooker state, evidence, reports, and dashboard
-        if: steps.mode.outputs.production == 'true'
+        if: steps.mode.outputs.production == 'true' && steps.authority.outputs.publishable == 'true'
         shell: bash
         run: |
           git config user.name 'github-actions[bot]'
