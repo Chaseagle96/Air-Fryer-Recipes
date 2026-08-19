@@ -5,6 +5,7 @@ enum RecipeIntelligenceClientError: LocalizedError {
     case unsupportedSchema(Int)
     case pageOutOfRange
     case inconsistentSnapshot
+    case nonAuthoritativeFeed(String)
 
     var errorDescription: String? {
         switch self {
@@ -12,7 +13,21 @@ enum RecipeIntelligenceClientError: LocalizedError {
         case .unsupportedSchema(let version): return "This app does not support Recipe Intelligence schema version \(version)."
         case .pageOutOfRange: return "There are no more recipes in this vertical."
         case .inconsistentSnapshot: return "Recipe Intelligence updated while this refresh was loading. The current recipes were kept and the app will retry."
+        case .nonAuthoritativeFeed(let status): return "Recipe Intelligence is refreshing this ranking and has not certified the current generation yet (\(status))."
         }
+    }
+}
+
+private struct FeedAuthorityEnvelope: Decodable {
+    let authorityContractVersion: Int
+    let authoritative: Bool
+    let status: String
+    let rankingGeneratedAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case authoritative, status
+        case authorityContractVersion = "authority_contract_version"
+        case rankingGeneratedAt = "ranking_generated_at"
     }
 }
 
@@ -61,7 +76,10 @@ actor LiveRecipeIntelligenceClient: RecipeIntelligenceClient {
     }
 
     func fetchFeedManifest(vertical: RecipeVertical, forceRefresh: Bool) async throws -> FeedManifest {
-        if !forceRefresh, let cached = manifestCache[vertical.id] { return cached }
+        if !forceRefresh, let cached = manifestCache[vertical.id] {
+            try await assertAuthoritative(vertical: vertical, manifest: cached)
+            return cached
+        }
 
         let requestURL = forceRefresh
             ? cacheBustedURL(vertical.manifestURL, token: UUID().uuidString)
@@ -73,6 +91,8 @@ actor LiveRecipeIntelligenceClient: RecipeIntelligenceClient {
         guard manifest.vertical.id == vertical.id else {
             throw RecipeIntelligenceClientError.badResponse
         }
+        try await assertAuthoritative(vertical: vertical, manifest: manifest)
+
         manifestCache[vertical.id] = manifest
         return manifest
     }
@@ -95,6 +115,24 @@ actor LiveRecipeIntelligenceClient: RecipeIntelligenceClient {
             references: manifest.effectiveCorpusPages,
             manifest: manifest
         )
+    }
+
+    private func assertAuthoritative(vertical: RecipeVertical, manifest: FeedManifest) async throws {
+        guard let authorityURL = URL(string: "authority.json", relativeTo: vertical.manifestURL)?.absoluteURL else {
+            throw RecipeIntelligenceClientError.badResponse
+        }
+        let versionedAuthorityURL = cacheBustedURL(authorityURL, token: UUID().uuidString)
+        let authority: FeedAuthorityEnvelope = try await request(versionedAuthorityURL, forceRefresh: true)
+        guard authority.authorityContractVersion >= 2 else {
+            throw RecipeIntelligenceClientError.nonAuthoritativeFeed("unsupported_authority_contract")
+        }
+        guard authority.authoritative else {
+            throw RecipeIntelligenceClientError.nonAuthoritativeFeed(authority.status)
+        }
+        guard let rankingGeneratedAt = authority.rankingGeneratedAt,
+              rankingGeneratedAt == manifest.generatedAt else {
+            throw RecipeIntelligenceClientError.inconsistentSnapshot
+        }
     }
 
     private func fetchPage(
