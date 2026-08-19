@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from .http import get, iter_sitemap_records, make_session, robots_and_sitemaps
 from .models import KEY_RE, UA, SourceConfig
 
+
 def _catalog_update(state: dict, cfg: SourceConfig, url: str, run_at: str, *, lastmod: str = "", method: str = "sitemap") -> bool:
     catalog = state.setdefault("url_catalog", {})
     existing = catalog.get(url, {})

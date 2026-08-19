@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import asdict
 from io import BytesIO
-from typing import Iterable
+from typing import Iterable, cast
 
 from PIL import Image, UnidentifiedImageError
 
@@ -12,9 +12,11 @@ from .models import HEADERS, RecipeRow
 
 
 def perceptual_hash_bytes(payload: bytes, size: int = 8) -> str:
-    with Image.open(BytesIO(payload)) as image:
-        image = image.convert("L").resize((size, size))
-        pixels = list(image.getdata())
+    with Image.open(BytesIO(payload)) as opened:
+        grayscale = opened.convert("L").resize((size, size))
+        # Pillow's generic pixel typing includes RGB tuples/floats, but mode L
+        # guarantees scalar 8-bit grayscale values at runtime.
+        pixels = list(cast(Iterable[int], grayscale.get_flattened_data()))
     average = sum(pixels) / max(1, len(pixels))
     value = 0
     for idx, pixel in enumerate(pixels):

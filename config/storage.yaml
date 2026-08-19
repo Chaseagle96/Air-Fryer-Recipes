@@ -1,0 +1,20 @@
+history:
+  authoritative_backend: git_ndjson
+  raw_observations_path: data/observations
+  ranking_history_path: data/rankings
+  coverage_history_path: data/coverage
+  anomaly_history_path: data/anomalies
+  analytical_cache: output/air_fryer_analytics.duckdb
+  parquet_archive_artifact: output/history_archive.parquet
+  archive_policy:
+    enabled: true
+    recommendation_record_threshold: 750000
+    recommendation_bytes_threshold: 536870912
+    keep_git_days: 180
+    object_storage_uri_env: AIRFRYER_HISTORY_ARCHIVE_URI
+    upload_enabled: false
+contracts:
+  raw_observation: 2
+  clean_recipe: 5
+  ranking: 5
+  serving: 3

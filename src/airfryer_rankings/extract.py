@@ -25,6 +25,7 @@ from .models import (
     instruction_simhash,
     now_iso,
 )
+from .structure import structure_metadata
 
 
 def extract_recipe_from_html(
@@ -40,20 +41,21 @@ def extract_recipe_from_html(
     canonical = _canonical_url(soup, url)
     visible_rating, visible_count = visible_rating_evidence(soup, cfg)
     page_hash = hashlib.sha256(html.encode("utf-8", errors="ignore")).hexdigest()[:24]
-    parse_meta = {"issues": [], "page_hash": page_hash}
+    structural = structure_metadata(html)
+    parse_meta = {"issues": [], "page_hash": page_hash, **structural}
     candidates: list[RecipeRow] = []
 
     for obj in jsonld_objects(soup):
         typ = obj.get("@type")
         types = typ if isinstance(typ, list) else [typ]
-        if not any(str(x).lower() == "recipe" for x in types if x is not None):
+        if not any(str(value).lower() == "recipe" for value in types if value is not None):
             continue
-        agg = obj.get("aggregateRating") or {}
-        if not isinstance(agg, dict):
+        aggregate = obj.get("aggregateRating") or {}
+        if not isinstance(aggregate, dict):
             continue
-        rating = _parse_number(agg.get("ratingValue"))
-        count_value = _parse_number(agg.get("ratingCount") or agg.get("reviewCount"))
-        best = _parse_number(agg.get("bestRating")) or 5.0
+        rating = _parse_number(aggregate.get("ratingValue"))
+        count_value = _parse_number(aggregate.get("ratingCount") or aggregate.get("reviewCount"))
+        best = _parse_number(aggregate.get("bestRating")) or 5.0
         if rating is None or count_value is None:
             continue
         count = int(count_value)
@@ -61,31 +63,31 @@ def extract_recipe_from_html(
             parse_meta["issues"].append("malformed_rating_scale")
             continue
 
-        norm = max(0.0, min(5.0, rating / best * 5.0))
-        visible_norm = None
+        normalized = max(0.0, min(5.0, rating / best * 5.0))
+        visible_normalized = None
         if visible_rating is not None:
-            visible_norm = visible_rating if visible_rating <= 5.05 else visible_rating / best * 5.0
-        confidence, evidence_status, method = _evidence_score(norm, count, visible_norm, visible_count)
-        histogram = _parse_histogram(agg)
+            visible_normalized = visible_rating if visible_rating <= 5.05 else visible_rating / best * 5.0
+        confidence, evidence_status, method = _evidence_score(normalized, count, visible_normalized, visible_count)
+        histogram = _parse_histogram(aggregate)
         if evidence_status == "conflict":
             parse_meta["issues"].append("rating_evidence_conflict")
 
         ingredients_raw = obj.get("recipeIngredient") or []
-        ingredients = tuple(str(x).strip() for x in ingredients_raw) if isinstance(ingredients_raw, list) else ()
+        ingredients = tuple(str(value).strip() for value in ingredients_raw) if isinstance(ingredients_raw, list) else ()
         instructions = _instruction_texts(obj)
         image = _image_url(obj)
         title = str(obj.get("name") or (soup.title.string if soup.title else "") or url).strip()
-        rid = hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:24]
+        recipe_id = hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:24]
         candidates.append(
             RecipeRow(
-                recipe_id=rid,
+                recipe_id=recipe_id,
                 title=title,
                 source=domain,
                 url=url,
                 rating=float(rating),
                 rating_count=count,
                 best_rating=float(best),
-                normalized_rating=norm,
+                normalized_rating=normalized,
                 retrieved_at=now_iso(),
                 author=_author_name(obj),
                 ingredient_signature=ingredient_signature(ingredients),
@@ -100,11 +102,14 @@ def extract_recipe_from_html(
                 evidence_confidence=confidence,
                 evidence_status=evidence_status,
                 page_hash=page_hash,
+                dom_fingerprint=str(structural["dom_fingerprint"]),
+                schema_signature=str(structural["schema_signature"]),
+                rating_evidence_signature=dict(structural["rating_evidence_signature"]),
                 etag=str(response_headers.get("ETag") or response_headers.get("etag") or ""),
                 last_modified=str(response_headers.get("Last-Modified") or response_headers.get("last-modified") or ""),
-                schema_rating=norm,
+                schema_rating=normalized,
                 schema_rating_count=count,
-                visible_rating=visible_norm,
+                visible_rating=visible_normalized,
                 visible_rating_count=visible_count,
                 rating_histogram=histogram,
                 categories=categorize_recipe(title, ingredients),
@@ -112,14 +117,14 @@ def extract_recipe_from_html(
         )
 
     if candidates:
-        return max(candidates, key=lambda r: (r.evidence_confidence, r.rating_count)), parse_meta
+        return max(candidates, key=lambda row: (row.evidence_confidence, row.rating_count)), parse_meta
 
     if visible_rating is not None and visible_count and 0 <= visible_rating <= 5.05:
         title = str((soup.title.string if soup.title else "") or url).strip()
-        rid = hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:24]
+        recipe_id = hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:24]
         return (
             RecipeRow(
-                recipe_id=rid,
+                recipe_id=recipe_id,
                 title=title,
                 source=domain,
                 url=url,
@@ -133,6 +138,9 @@ def extract_recipe_from_html(
                 evidence_confidence=0.65,
                 evidence_status="visible_only",
                 page_hash=page_hash,
+                dom_fingerprint=str(structural["dom_fingerprint"]),
+                schema_signature=str(structural["schema_signature"]),
+                rating_evidence_signature=dict(structural["rating_evidence_signature"]),
                 etag=str(response_headers.get("ETag") or response_headers.get("etag") or ""),
                 last_modified=str(response_headers.get("Last-Modified") or response_headers.get("last-modified") or ""),
                 visible_rating=float(visible_rating),

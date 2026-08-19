@@ -1,186 +1,190 @@
 # Air Fryer Recipe Rankings
 
-An auditable, continuously refreshed leaderboard of highly rated air-fryer recipes from major public recipe publishers.
+An auditable, continuously refreshed leaderboard of highly rated air-fryer recipes from public recipe publishers.
 
-The project is designed to answer a harder question than “which recipe has the highest displayed star average?” It combines rating quality, rating volume, category mix, publisher-level rating tendencies, statistical uncertainty, evidence verification, duplicate detection, freshness, source reliability, and ranking robustness.
+The project does not simply sort displayed star averages. It combines rating quality and volume, category-aware publisher normalization, Bayesian shrinkage, uncertainty, extraction evidence, duplicate detection, freshness, longitudinal behavior, source health, and ranking robustness.
 
-## What V4 does
+## V5 architecture
 
-### Incremental crawling instead of brute force
+V5 treats the repository as a research and production data pipeline with four explicit contracts:
 
-The crawler maintains a persistent URL catalog with discovery source, sitemap `lastmod`, first/last discovery time, last checked time, page hash, ETag, Last-Modified, last change time, HTTP state, and priority.
+1. **Raw evidence**: immutable observations under `data/observations/`. This is the longitudinal source of truth.
+2. **Clean state**: validated current recipe evidence in `data/state.json`. Individual clean recipe records are schema-versioned independently from the state envelope.
+3. **Model outputs**: immutable ranking snapshots under `data/rankings/`, generated from a frozen versioned model configuration.
+4. **Serving outputs**: CSV, Excel, DuckDB, JSON, and GitHub Pages artifacts under `output/` and `docs/`.
 
-Refresh cadence:
+Derived layers can be regenerated. Raw observation history is never rewritten to make it agree with a later model.
 
-- **Hourly:** re-check up to 100 high-priority URLs globally, favoring Top-100 recipes, new discoveries, modified pages, moving rating counts, and any recipe awaiting evidence migration.
-- **Daily:** re-run discovery and revalidate the complete known catalog.
-- **Weekly deep:** traverse a larger sitemap surface, refresh discovery pages, expand the known URL catalog, and revalidate the catalog.
-- **Backfill:** force-refetch every legacy-evidence recipe without conditional HTTP shortcuts.
-- **Pull requests:** run a bounded three-publisher live smoke crawl.
+### Ranking model
 
-If V4 loads older state that still contains the former implicit 0.85 evidence-confidence assumption, it marks those rows `legacy_unverified`, lowers them to an explicit 0.60 confidence tier, prioritizes them for revalidation, and automatically turns the next normal hourly run into a backfill run until the old evidence has been re-extracted.
+The active model is versioned in `config/model.yaml`. Production parameters never self-modify.
 
-### Immutable evidence history plus DuckDB analytics
+For each eligible recipe, V5:
 
-Every successful rating check is written as a new NDJSON record under:
-
-`data/observations/YYYY/MM/DD/HHMMSSZ.ndjson`
-
-Rank snapshots, coverage, and anomalies are also written as immutable NDJSON under `data/rankings/`, `data/coverage/`, and `data/anomalies/`.
-
-**NDJSON remains the source of truth.** V4 additionally builds `output/air_fryer_analytics.duckdb` as a derived analytical cache. The DuckDB artifact contains current rankings, observation history, ranking history, source health/reliability, uncertainty calibration, robustness simulations, anomalies, and dedupe-benchmark results. It can always be rebuilt from the raw evidence layer.
-
-### Evidence verification and evidence grades
-
-Primary extraction uses Schema.org `Recipe` and `AggregateRating` JSON-LD. When visible/microdata rating evidence is also available, the two representations are cross-checked.
-
-Evidence states include:
-
-- `verified`: structured and visible evidence agree
-- `schema_only`: valid AggregateRating was available but no independent visible value was found
-- `visible_only`: only visible/microdata evidence was available
-- `conflict`: structured and visible evidence materially disagree
-- `legacy_unverified`: pre-V4 evidence awaiting forced revalidation
-
-Conflicted or sub-threshold evidence is quarantined. Rankable rows receive an intuitive evidence grade (`A+` through `D`, with failing/conflicted evidence marked `F`) based on verification channel, confidence, rating volume, and freshness.
-
-### Category-aware hierarchical Bayesian ranking
-
-Raw star averages are not ranked directly.
-
-1. Ratings are normalized to a five-star scale.
-2. A global prior is estimated with square-root rating-count weighting.
-3. Category baselines are partially pooled toward the global prior.
-4. Publisher leniency/strictness is estimated from rating residuals after category expectations, reducing confounding from recipe mix.
-5. Publisher bias is partially pooled and capped before adjustment.
-6. Each recipe's adjusted rating is shrunk toward the global prior according to rating volume.
-7. A calibrated uncertainty penalty is subtracted.
-8. An evidence-quality penalty is subtracted when evidence confidence is below the preferred tier.
+1. normalizes the publisher rating to a five-star scale;
+2. estimates a square-root-volume-weighted global prior;
+3. estimates partially pooled category baselines;
+4. estimates publisher rating-system residuals after category expectations;
+5. partially pools and caps publisher adjustment;
+6. computes a Bayesian posterior using rating volume;
+7. subtracts histogram, empirical-history, or conservative theoretical uncertainty;
+8. subtracts an evidence-quality penalty when evidence is below the preferred tier;
+9. calculates rank provenance and robustness diagnostics.
 
 Conceptually:
 
-`hierarchical_score = BayesianPosterior(category-aware source-adjusted rating) - calibrated uncertainty - evidence penalty`
+`hierarchical_score = BayesianPosterior(category-aware source-adjusted rating) - uncertainty - evidence penalty`
 
-This reduces the advantage enjoyed by publishers where nearly every recipe receives a very high average without assuming that publisher differences are entirely caused by rating generosity.
+Popularity growth is descriptive and does not directly boost the primary quality score.
 
-### Empirical uncertainty calibration
+### Ranking robustness
 
-When a publisher exposes a usable rating histogram, observed star-distribution variance is used directly.
+Every leaderboard is stress-tested across 36 nearby parameter configurations. The system reports:
 
-When no histogram is available, V4 groups historical rating observations into review-volume buckets:
-
-- 0-24 ratings
-- 25-99
-- 100-499
-- 500-1,999
-- 2,000+
-
-Each bucket remains on the conservative theoretical fallback until at least 30 real observation pairs exist. Once that threshold is reached, the fallback is automatically replaced by an empirical 95%-style penalty derived from observed rating changes in that volume regime.
-
-### Ranking robustness laboratory
-
-A single set of modeling constants should not create false precision. Every production ranking is therefore stress-tested across **36 deterministic nearby parameter combinations** spanning:
-
-- publisher-bias cap
-- evidence-penalty strength
-- Bayesian prior strength
-- uncertainty cap
-
-The system reports:
-
-- Spearman rank correlation for the Top 200
-- Kendall rank correlation for the Top 100
-- Top-10 overlap
-- Top-50 overlap
+- Top-200 Spearman correlation
+- Top-100 Kendall correlation
+- Top-10 and Top-50 overlap
 - per-recipe rank standard deviation
-- per-recipe likely rank range
-- Top-10 and Top-50 frequency across simulations
-- a 0-1 `rank_confidence` score
+- likely rank range
+- Top-10 and Top-50 frequency
+- `rank_confidence` from 0 to 1
 
-The dashboard and workbook expose these values so a recipe that is robustly #4 can be distinguished from one whose plausible position ranges from #3 to #35.
+A deterministic golden-ranking fixture ensures scoring changes create a reviewable CI diff rather than silent rank drift.
 
-### Rank provenance
+### Historical predictive backtesting
 
-Every ranking row includes a human-readable explanation showing the components that produced the final score, including raw rating, category-aware publisher adjustment, Bayesian posterior, uncertainty penalty, evidence penalty, and final score.
+V5 can evaluate ranking models against later high-volume evidence rather than judging parameters only by plausibility.
 
-### Longitudinal signals
+Daily/deep runs can test frozen candidate configurations over 30-, 60-, and 90-day horizons and report:
 
-Historical observations and ranking snapshots now support secondary metrics such as:
+- future-quality rank correlation
+- posterior mean absolute error
+- final-score mean absolute error
+- future Top-10 overlap
 
-- 7-day review growth
-- 30-day review growth
-- 30-day rating trend
-- review velocity per day
-- all-time peak rank within retained history
-- days observed in the Top 10
-- days observed in the Top 50
+Backtesting remains disabled until enough longitudinal history exists. `config/model.yaml` requires minimum history/windows/recipe coverage, and `automatic_parameter_promotion` is explicitly false. A recommended configuration is advisory until changed through a reviewed model-version update.
+
+### Time-aware diagnostics
+
+Observation history supports:
+
+- 7-day and 30-day review growth
+- 30-day rating slope
+- 30-day review-count slope
+- 7-day velocity
+- 14-day review acceleration
+- page-change count and last material page change
+- recent rating change-point detection
+- peak rank
+- days in Top 10 and Top 50
 - rank volatility
 
-These are descriptive. Popularity growth does **not** directly boost the primary “best reviewed” ranking score.
+These signals aid interpretation and anomaly detection without turning virality into quality.
 
-### Fuzzy cross-site duplicate detection
+## Evidence integrity
 
-Duplicate detection is intentionally conservative and uses several signals:
+Primary extraction uses Schema.org `Recipe` / `AggregateRating` JSON-LD and independently visible/microdata evidence when available.
+
+Evidence states include:
+
+- `verified`
+- `schema_only`
+- `visible_only`
+- `conflict`
+- `legacy_unverified`
+
+Conflicted/sub-threshold evidence is quarantined. Legacy evidence is explicitly downgraded and force-refetched instead of inheriting an obsolete favorable default.
+
+### Structural publisher contracts
+
+Every fetched page records:
+
+- page content hash
+- structural DOM fingerprint
+- JSON-LD schema signature
+- visible rating-evidence shape
+
+Changes to publisher markup generate QA/observability events even when HTTP requests still succeed.
+
+### Reviewed real-page fixtures
+
+`tests/fixtures/real_pages/` contains sanitized structural snapshots tied to real publisher pages. They preserve only the fields necessary to test extraction behavior.
+
+Weekly deep runs can capture candidate fixtures from configured publishers into an Actions artifact. Candidates never overwrite checked-in fixtures automatically; promotion requires a reviewed code change so broken publisher markup cannot redefine the regression test.
+
+### Evidence-confidence calibration
+
+`data/benchmarks/evidence_labels.json` contains reviewed fixture expectations. V5 estimates extraction correctness and Wilson intervals by evidence class, but empirical confidence replacement does not activate until a class has at least the configured minimum reviewed sample size. Small seed samples therefore cannot masquerade as calibrated probabilities.
+
+## Duplicate detection
+
+Cross-site dedupe is deliberately precision-oriented. Signals include:
 
 - canonical URL
 - normalized title similarity
-- normalized ingredient-token overlap
-- instruction-token similarity
-- 64-bit instruction SimHash
+- normalized ingredient overlap
+- instruction-token overlap
+- instruction SimHash
 - author agreement
-- image URL fingerprint as weak corroboration
-- actual image-content perceptual hash for bounded ambiguous cases
+- image URL fingerprint
+- bounded actual image-content perceptual hashing for ambiguous candidates
 
-Perceptual-image enrichment is limited to ambiguous duplicate candidates and capped at 20 image fetches per run so it does not double crawler traffic.
+Cross-site review counts are **never summed** because syndicated pages may share a review population.
 
-**Review counts from cross-site duplicates are not summed.** Syndicated pages can share a review population, so adding those counts would create false evidence.
+### Dedupe benchmark
 
-### Formal dedupe benchmark
+`data/benchmarks/dedupe_pairs.json` is a versioned adjudicated validation set. V5 reports:
 
-`data/benchmarks/dedupe_pairs.json` is a checked-in labeled benchmark containing true duplicates and hard negatives. Each run publishes:
+- precision, recall, and F1
+- TP/FP/TN/FN
+- positive/negative similarity distributions
+- threshold precision/recall curve
+- metrics by labeled pair type
+- pair-level outcomes
 
-- precision
-- recall
-- F1
-- false-positive count
-- false-negative count
-- pair-level similarity and outcome
+CI currently requires at least 95% precision and 90% recall. The benchmark policy targets at least 500 manually adjudicated pairs. `output/dedupe_label_queue.csv` surfaces ambiguous real-corpus candidates nearest the production threshold for review.
 
-The benchmark is intentionally versioned and should grow over time with adjudicated real-world pairs from the live corpus.
+## Observability and fail-closed publishing
 
-### Source health instead of misleading “sources OK” counts
+Source health distinguishes “not checked” from “failed.” Pipeline metrics include:
 
-Hourly runs do not contact every publisher, so “not checked” must not be treated as failure. V4 separately reports:
+- crawl/extraction success
+- ranking eligibility
+- evidence-conflict rate
+- robots denials
+- HTTP 403/429 counts
+- mean/p95 fetch time
+- source freshness
+- structural publisher changes
+- legacy-evidence backlog
+- anomaly volume
 
-- sources configured
-- sources checked this run
-- sources successful this run
-- sources degraded this run
-- sources healthy at last check
-- sources checked within 24 hours
-- sources checked within 7 days
-- 24-hour corpus coverage freshness
-- 7-day corpus coverage freshness
+Before a production result is committed, a publication gate checks for catastrophic regressions such as:
 
-Per-publisher reliability also includes last-check timestamp, hours since last check, success rate, evidence confidence, pending legacy evidence, recent anomalies, and category-adjusted rating bias.
+- empty leaderboard
+- major corpus-size collapse
+- inability to produce a Top 50
+- catastrophic evidence-conflict rate
+- unexplained Top-50 collapse without a model-version change
+- implausible dedupe explosion
 
-### Anomaly and QA detection
+If the gate fails, the workflow fails before state is persisted or public output is committed. Diagnostic artifacts are still uploaded so the failed candidate run can be inspected while the prior public leaderboard remains intact.
 
-The pipeline flags conditions such as:
+## Historical storage
 
-- rating counts decreasing
-- explicit review velocity
-- unusually large review-count jumps
-- large rating changes
-- structured/visible rating conflicts
-- malformed rating scales
-- duplicate canonical URLs
-- recipes disappearing with 404/410 responses
-- fetch/source degradation
+`config/storage.yaml` defines the storage contract.
+
+- Git-backed NDJSON remains authoritative today.
+- `output/air_fryer_analytics.duckdb` is a regenerable analytical cache.
+- Weekly deep runs can generate a compressed Parquet history archive artifact.
+- Storage health reports NDJSON records/bytes and recommends archival migration once configured thresholds are crossed.
+- External object-storage upload is disabled unless explicitly configured in the environment and policy.
+
+This gives the project a migration path away from unbounded Git history without prematurely introducing external infrastructure.
 
 ## Outputs
 
-### Repository data
+### Repository/current data
 
 - `output/top50.csv`
 - `output/leaderboard.csv`
@@ -189,102 +193,82 @@ The pipeline flags conditions such as:
 - `output/source_reliability.csv`
 - `output/ranking_robustness.csv`
 - `output/dedupe_benchmark.csv`
+- `output/dedupe_label_queue.csv`
+- `output/pipeline_metrics.csv`
+- `output/historical_backtest.csv`
+- `output/hyperparameter_evaluation.csv`
+- `output/evidence_calibration.csv`
+- `output/evidence_label_results.csv`
+- `output/publication_quality_gate.csv`
+- `output/quality_gate.json`
+- `output/pipeline_metrics.json`
+- `output/storage_health.json`
 - `output/anomalies.csv`
 - `output/summary.json`
+- `data/contracts.json`
 - `data/state.json`
-- `data/observations/...`
-- `data/rankings/...`
-- `data/coverage/...`
-- `data/anomalies/...`
-- `data/benchmarks/dedupe_pairs.json`
+- immutable `data/observations/`, `data/rankings/`, `data/coverage/`, and `data/anomalies/`
 
-### Excel workbook
+### Excel artifact
 
-`output/air_fryer_rankings.xlsx` is uploaded as a GitHub Actions artifact and includes:
+The workbook includes the Top 50, all rankings, rank explainability, source coverage/health/reliability, rating history/trends, time signals, uncertainty calibration, evidence calibration, evidence labels, robustness simulations, historical backtests, hyperparameter evaluation, pipeline metrics, publication gate, storage health, data contracts, movers, entrants, QA anomalies, duplicate groups, dedupe benchmark/label queue, methodology, and category leaderboards.
 
-- Top 50
-- All Rankings
-- Rank Explainability
-- Source Coverage
-- Source Health
-- Source Reliability
-- Rating History
-- Rating Trends with Top-10 rating-count growth chart
-- Uncertainty Calibration
-- Rank Robustness
-- New Entrants
-- Biggest Movers
-- QA Anomalies
-- Duplicate Groups
-- Dedupe Benchmark
-- Methodology
-- Chicken
-- Potatoes
-- Vegetables
-- Desserts
-- Beef
-- Pork
-- Seafood
-- Breakfast
-- Snacks
+### Analytical artifacts
 
-### DuckDB analytical cache
+- `air_fryer_analytics.duckdb`: queryable current/history/research tables and Top-10/Top-50 views
+- `history_archive.parquet`: compressed deep-run historical archive when generated
+- `sbom.json`: CycloneDX software bill of materials
+- `fixture-candidates`: sanitized publisher regression-fixture candidates from deep runs
 
-`output/air_fryer_analytics.duckdb` is uploaded as a separate GitHub Actions artifact and contains queryable tables/views for current and historical research outputs. It is deliberately ignored by Git because it is a regenerable binary cache.
+## Continuous integration and supply-chain controls
 
-### Searchable web dashboard
+The primary workflow runs:
 
-Every production run builds a static site in `docs/` with:
+1. pinned dependency installation;
+2. vulnerability audit and CycloneDX SBOM generation;
+3. Ruff linting;
+4. mypy static analysis;
+5. pytest with branch coverage gate;
+6. bounded live three-publisher PR crawl;
+7. Excel/DuckDB generation;
+8. publication-gate evaluation.
 
-- recipe/publisher search
-- category filtering
-- evidence-confidence filtering
-- rank-confidence filtering
-- hierarchical score
-- evidence grade
-- plausible rank range
-- 7-day review growth
-- review velocity
-- ranking movement
-- expandable “Why this rank?” provenance
-- direct recipe links
+GitHub Actions are pinned to exact commit SHAs. CodeQL runs independently. Dependabot monitors both Python dependencies and Actions references.
 
-## GitHub Actions
+The test suite combines deterministic unit/regression tests, reviewed real-page fixture tests, Hypothesis property tests, benchmark quality floors, and golden model-output tests.
 
-Workflow: `.github/workflows/hourly.yml`
+## Refresh cadence
 
-Schedules:
-
-- `17 * * * *` — hourly incremental refresh
-- `43 8 * * *` — daily discovery and complete known-catalog refresh
-- `13 9 * * 0` — weekly deep discovery and refresh
-
-Manual runs support `hourly`, `daily`, `deep`, or `backfill` mode.
-
-Pull requests automatically run tests plus a bounded live crawl against Pinch of Yum, Budget Bytes, and Skinnytaste without writing production state.
+- `17 * * * *`: hourly incremental refresh
+- `43 8 * * *`: daily discovery/full-known-catalog refresh plus backtest evaluation
+- `13 9 * * 0`: weekly deep discovery/refresh, storage archive and candidate fixture capture
+- manual: `hourly`, `daily`, `deep`, or `backfill`
+- pull requests: static/security/test gates plus bounded live smoke crawl without production writes
 
 ## Running locally
 
 ```bash
-python -m pip install -r requirements.txt
-PYTHONPATH=src pytest -q
+python -m pip install -r requirements-dev.txt
+ruff check src tests
+mypy src/airfryer_rankings
+PYTHONPATH=src pytest --cov=airfryer_rankings
 PYTHONPATH=src python -m airfryer_rankings.run --mode hourly
 ```
 
-For an explicit legacy-evidence refresh:
-
-```bash
-PYTHONPATH=src python -m airfryer_rankings.run --mode backfill
-```
-
-For a complete discovery refresh:
+For a complete deep refresh:
 
 ```bash
 PYTHONPATH=src python -m airfryer_rankings.run --mode deep
 ```
 
-## Ranking caveat
+For a legacy-evidence revalidation pass:
 
-No crawler can literally prove complete coverage of every recipe on the public internet. Sites can block crawlers, omit ratings from machine-readable markup, change page structures, remove recipes, or expose only partial review evidence.
+```bash
+PYTHONPATH=src python -m airfryer_rankings.run --mode backfill
+```
 
-Accordingly, this project reports source coverage, extraction confidence, empirical/theoretical uncertainty, rank robustness, anomalies, freshness, and benchmark quality alongside rankings. The goal is not to pretend uncertainty does not exist; it is to make that uncertainty measurable, reproducible, and auditable.
+## Scope and caveat
+
+No crawler can prove complete coverage of every air-fryer recipe on the public internet. Publishers can block crawlers, change markup, remove recipes, expose incomplete ratings, or use rating systems with different behavioral biases.
+
+The project therefore reports coverage, evidence confidence, source health, uncertainty, model robustness, benchmark quality, historical validation, and explicit data-quality gates alongside the leaderboard. The objective is not to erase uncertainty; it is to make the assumptions, evidence, failure modes, and model behavior measurable and reproducible.

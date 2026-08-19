@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "airfryer-rankings"
+version = "5.0.0"
+description = "Auditable air-fryer recipe ranking and evidence pipeline"
+requires-python = ">=3.12"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+  "live: requires live publisher network access",
+  "slow: computationally heavier statistical validation",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["airfryer_rankings"]
+omit = [
+  "src/airfryer_rankings/dashboard.py",
+  # CLI/orchestration entrypoints are validated through GitHub Actions smoke runs.
+  # Keep the branch-coverage gate focused on reusable library logic rather than
+  # counting process wiring and live-network capture utilities as unit-test debt.
+  "src/airfryer_rankings/run.py",
+  "src/airfryer_rankings/fixture_capture.py",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 82
+exclude_also = [
+  "if TYPE_CHECKING:",
+  "if __name__ == .__main__.:",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "B"]
+ignore = ["B008"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011"]
+# Legacy monolithic regression module retains a harmless compatibility import;
+# new V5 tests are held to the normal F401 rule.
+"tests/test_core.py" = ["B011", "F401"]
+
+[tool.mypy]
+python_version = "3.12"
+packages = ["airfryer_rankings"]
+mypy_path = "src"
+ignore_missing_imports = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+show_error_codes = true
+strict_equality = true

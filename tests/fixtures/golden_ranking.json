@@ -1,0 +1,11 @@
+{
+  "model_version": 5,
+  "description": "Deterministic five-recipe corpus with one publisher/category so publisher residual is zero. Scores are rounded to 9 decimals.",
+  "expected": [
+    {"recipe_id":"a","rank":1,"hierarchical_score":4.809175335},
+    {"recipe_id":"b","rank":2,"hierarchical_score":4.711960435},
+    {"recipe_id":"e","rank":3,"hierarchical_score":4.704234183},
+    {"recipe_id":"c","rank":4,"hierarchical_score":4.687473512},
+    {"recipe_id":"d","rank":5,"hierarchical_score":4.676736588}
+  ]
+}
