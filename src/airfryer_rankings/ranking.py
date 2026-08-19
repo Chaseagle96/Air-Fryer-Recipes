@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from .calibration import evidence_grade
 from .dedupe import dedupe_current
 from .model_config import DEFAULT_MODEL_PARAMETERS, ModelParameters, load_model_config
-from .models import now_iso, parse_dt
+from .models import load_sources, now_iso, parse_dt
 from .ranking_components import eligible_current, rank_provenance, robustness_lab, score_current
 
 MAX_SOURCE_BIAS = DEFAULT_MODEL_PARAMETERS.max_source_bias
@@ -12,6 +14,21 @@ EVIDENCE_PENALTY_SCALE = DEFAULT_MODEL_PARAMETERS.evidence_penalty_scale
 DEFAULT_UNCERTAINTY_CAP = DEFAULT_MODEL_PARAMETERS.uncertainty_cap
 SOURCE_PRIOR_STRENGTH = DEFAULT_MODEL_PARAMETERS.source_prior_strength
 CATEGORY_PRIOR_STRENGTH = DEFAULT_MODEL_PARAMETERS.category_prior_strength
+
+
+def _strict_source_patterns(model_config_path: str) -> dict[str, str]:
+    """Resolve strict vertical patterns from the source config beside the model config."""
+
+    source_path = Path(model_config_path).with_name("sources.yaml")
+    try:
+        sources = load_sources(source_path)
+    except Exception:
+        return {}
+    return {
+        source.domain.lower().strip(): source.include_pattern
+        for source in sources
+        if not source.allow_unmatched_discovery_links and source.include_pattern
+    }
 
 
 def bayesian_rank(
@@ -28,6 +45,8 @@ def bayesian_rank(
     params, model_payload = load_model_config(model_config_path)
     if model_params is not None:
         params = model_params
+    if required_source_patterns is None and allowed_sources is not None:
+        required_source_patterns = _strict_source_patterns(model_config_path)
 
     current = eligible_current(
         state,
