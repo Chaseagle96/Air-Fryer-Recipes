@@ -132,8 +132,12 @@ jobs:
         working-directory: verticals/slow_cooker
         run: |
           sources="../../config/verticals/slow_cooker/sources.yaml"
+          max_urls=250
+          hourly_limit=100
           if [ "${{ steps.mode.outputs.mode }}" = "smoke" ]; then
             sources=/tmp/slow-cooker-smoke-sources.yaml
+            max_urls=2
+            hourly_limit=6
           fi
           PYTHONPATH=../../src python -m airfryer_rankings.run \
             --mode "${{ steps.mode.outputs.mode }}" \
@@ -142,11 +146,30 @@ jobs:
             --model-config ../../config/verticals/slow_cooker/model.yaml \
             --storage-config ../../config/verticals/slow_cooker/storage.yaml \
             --slo-config ../../config/slo.yaml \
-            --max-urls ${{ steps.mode.outputs.mode == 'smoke' && '2' || '250' }} \
-            --hourly-limit ${{ steps.mode.outputs.mode == 'smoke' && '6' || '100' }}
+            --max-urls "$max_urls" \
+            --hourly-limit "$hourly_limit"
           if [ -f output/air_fryer_rankings.xlsx ]; then
             mv output/air_fryer_rankings.xlsx output/slow_cooker_rankings.xlsx
           fi
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("output/summary.json")
+          payload = json.loads(path.read_text(encoding="utf-8"))
+          payload["vertical"] = "slow_cooker"
+          payload["vertical_name"] = "Slow Cooker"
+          payload["workbook_file"] = "output/slow_cooker_rankings.xlsx"
+          path.write_text(json.dumps(payload, indent=2, default=str) + "\n", encoding="utf-8")
+
+          assert Path("data/state.json").exists()
+          assert Path("output/slow_cooker_rankings.xlsx").exists()
+          assert Path("output/slow_cooker_analytics.duckdb").exists()
+          assert Path("docs/index.html").exists()
+          assert payload["vertical"] == "slow_cooker"
+          assert str(payload.get("analytics_cache_file", "")).endswith("slow_cooker_analytics.duckdb")
+          assert "Slow Cooker" in Path("docs/index.html").read_text(encoding="utf-8")
+          PY
 
       - name: Upload Slow Cooker Excel workbook
         if: always() && hashFiles('verticals/slow_cooker/output/slow_cooker_rankings.xlsx') != ''
