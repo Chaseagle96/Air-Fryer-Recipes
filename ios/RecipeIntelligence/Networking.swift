@@ -5,6 +5,7 @@ enum RecipeIntelligenceClientError: LocalizedError {
     case unsupportedSchema(Int)
     case pageOutOfRange
     case inconsistentSnapshot
+    case nonAuthoritativeFeed(String)
 
     var errorDescription: String? {
         switch self {
@@ -12,7 +13,19 @@ enum RecipeIntelligenceClientError: LocalizedError {
         case .unsupportedSchema(let version): return "This app does not support Recipe Intelligence schema version \(version)."
         case .pageOutOfRange: return "There are no more recipes in this vertical."
         case .inconsistentSnapshot: return "Recipe Intelligence updated while this refresh was loading. The current recipes were kept and the app will retry."
+        case .nonAuthoritativeFeed(let status): return "Recipe Intelligence is refreshing this ranking and has not certified the current generation yet (\(status))."
         }
+    }
+}
+
+private struct FeedAuthorityEnvelope: Decodable {
+    let authoritative: Bool
+    let status: String
+    let rankingGeneratedAt: String
+
+    enum CodingKeys: String, CodingKey {
+        case authoritative, status
+        case rankingGeneratedAt = "ranking_generated_at"
     }
 }
 
@@ -73,6 +86,19 @@ actor LiveRecipeIntelligenceClient: RecipeIntelligenceClient {
         guard manifest.vertical.id == vertical.id else {
             throw RecipeIntelligenceClientError.badResponse
         }
+
+        guard let authorityURL = URL(string: "authority.json", relativeTo: vertical.manifestURL)?.absoluteURL else {
+            throw RecipeIntelligenceClientError.badResponse
+        }
+        let versionedAuthorityURL = cacheBustedURL(authorityURL, token: manifest.generatedAt)
+        let authority: FeedAuthorityEnvelope = try await request(versionedAuthorityURL, forceRefresh: true)
+        guard authority.authoritative else {
+            throw RecipeIntelligenceClientError.nonAuthoritativeFeed(authority.status)
+        }
+        guard authority.rankingGeneratedAt == manifest.generatedAt else {
+            throw RecipeIntelligenceClientError.inconsistentSnapshot
+        }
+
         manifestCache[vertical.id] = manifest
         return manifest
     }
