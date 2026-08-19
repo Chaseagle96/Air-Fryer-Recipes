@@ -265,11 +265,14 @@ def record_candidate_discovery(
 
 def _source_config_from_record(record: dict, defaults: SourceConfig) -> SourceConfig:
     crawl = record.get("crawl_config") or {}
+    delay_value = crawl.get("delay")
+    if not isinstance(delay_value, (int, float, str)):
+        delay_value = max(defaults.delay, 0.20)
     return SourceConfig(
         domain=str(record["domain"]),
         enabled=True,
         max_urls=int(crawl.get("max_urls") or defaults.max_urls),
-        delay=float(crawl.get("delay") if crawl.get("delay") is not None else max(defaults.delay, 0.20)),
+        delay=float(delay_value),
         sitemap_urls=tuple(crawl.get("sitemap_urls") or ()),
         discovery_urls=tuple(crawl.get("discovery_urls") or ()),
         rating_selector=str(crawl.get("rating_selector") or ""),
