@@ -89,8 +89,13 @@ final class AppModel: ObservableObject {
                 return
             }
         } catch {
-            // loadNextPage can still use a previously cached manifest or the local
-            // SwiftData recipe cache, so defer user-facing error handling to it.
+            guard generation == selectionGeneration, selectedVertical?.id == vertical.id else { return }
+            if isAuthorityFailure(error) {
+                quarantineRankedFeed(error, verticalID: vertical.id)
+                return
+            }
+            // Ordinary connectivity failures may still use a previously certified
+            // manifest or local cache. Authority failures never take this path.
         }
         await loadNextPage(generation: generation)
     }
@@ -105,7 +110,15 @@ final class AppModel: ObservableObject {
             reachedEnd = false
             isLoading = false
             feedStatusMessage = nil
-            _ = try? await client.fetchFeedManifest(vertical: selectedVertical, forceRefresh: true)
+            do {
+                _ = try await client.fetchFeedManifest(vertical: selectedVertical, forceRefresh: true)
+            } catch {
+                guard generation == selectionGeneration else { return }
+                if isAuthorityFailure(error) {
+                    quarantineRankedFeed(error, verticalID: selectedVertical.id)
+                    return
+                }
+            }
             guard generation == selectionGeneration else { return }
             await loadNextPage(generation: generation)
         } else {
@@ -179,8 +192,13 @@ final class AppModel: ObservableObject {
             errorMessage = nil
             feedStatusMessage = "Rankings updated from Recipe Intelligence."
         } catch {
+            guard generation == selectionGeneration, selectedVertical?.id == vertical.id else { return }
+            if isAuthorityFailure(error) {
+                quarantineRankedFeed(error, verticalID: vertical.id)
+                return
+            }
             if deck.isEmpty { errorMessage = error.localizedDescription }
-            feedStatusMessage = "Couldn’t check for new rankings. Showing current recipes."
+            feedStatusMessage = "Couldn’t check for new rankings. Showing the last certified recipes."
         }
     }
 
@@ -342,7 +360,7 @@ final class AppModel: ObservableObject {
         let saved = fetchAll(SavedRecipeRecord.self).filter { $0.profileID == profileID && recipeIDs.contains($0.recipeID) }
         for item in fetchAll(ShoppingListItem.self) where item.profileID == profileID && !item.isManual { modelContext.delete(item) }
         let drafts = shoppingListService.combine(savedRecipes: saved)
-        for draft in drafts { modelContext.insert(ShoppingListItem(profileID: profileID, draft: draft)) }
+        for draft in drafts { modelContext.insert(ShoppingListItem(profileID: profileID, draft: draft, isManual: true)) }
         for savedRecord in saved {
             _ = recordEvent(.shoppingListAdded, recipeID: savedRecord.recipeID, verticalID: savedRecord.verticalID)
         }
@@ -382,6 +400,30 @@ final class AppModel: ObservableObject {
         rebuildDeck()
     }
 
+    private func isAuthorityFailure(_ error: Error) -> Bool {
+        guard let clientError = error as? RecipeIntelligenceClientError else { return false }
+        switch clientError {
+        case .nonAuthoritativeFeed, .inconsistentSnapshot:
+            return true
+        default:
+            return false
+        }
+    }
+
+    private func quarantineRankedFeed(_ error: Error, verticalID: String) {
+        fetchedRecipes = []
+        deck = []
+        nextPageIndex = 0
+        reachedEnd = true
+        loadedFeedGeneratedAt[verticalID] = nil
+        currentFeedGeneratedAt = nil
+        lastFeedRefreshAt = .now
+        lastUndo = nil
+        canUndo = false
+        errorMessage = error.localizedDescription
+        feedStatusMessage = "Rankings are refreshing. No ranked recipes are shown until Recipe Intelligence certifies the current generation."
+    }
+
     private func loadNextPage(preservingTop: RemoteRecipe? = nil, generation: UUID? = nil) async {
         let requestGeneration = generation ?? selectionGeneration
         guard requestGeneration == selectionGeneration else { return }
@@ -413,12 +455,16 @@ final class AppModel: ObservableObject {
             reachedEnd = true
         } catch {
             guard requestGeneration == selectionGeneration, selectedVertical?.id == vertical.id else { return }
+            if isAuthorityFailure(error) {
+                quarantineRankedFeed(error, verticalID: vertical.id)
+                return
+            }
             let cached = cachedRecipes(verticalID: vertical.id)
             if fetchedRecipes.isEmpty && !cached.isEmpty {
                 fetchedRecipes = cached
                 reachedEnd = true
                 rebuildDeck(preserving: preservingTop)
-                errorMessage = "Offline: showing cached recipes."
+                errorMessage = "Offline: showing cached recipes from the last certified feed."
             } else {
                 errorMessage = error.localizedDescription
             }
