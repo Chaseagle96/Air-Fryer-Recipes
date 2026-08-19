@@ -45,9 +45,13 @@ on:
 permissions:
   contents: write
 
+# Source expansion and promoted-source catalog synchronization both write source
+# observability outputs. A shared repository-level concurrency group serializes
+# those workflows on the same ref so their git pull/rebase/commit phases cannot
+# race each other.
 concurrency:
-  group: recipe-intelligence-source-expansion-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name != 'schedule' }}
+  group: recipe-intelligence-source-network-${{ github.ref }}
+  cancel-in-progress: false
 
 env:
   RECIPE_INTELLIGENCE_BASE_SOURCES_ONLY: '1'
