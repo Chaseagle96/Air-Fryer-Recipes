@@ -22,12 +22,13 @@ def bayesian_rank(
     historical_metrics: dict[str, dict] | None = None,
     model_params: ModelParameters | None = None,
     model_config_path: str = "config/model.yaml",
+    allowed_sources: set[str] | None = None,
 ) -> tuple[list[dict], dict]:
     params, model_payload = load_model_config(model_config_path)
     if model_params is not None:
         params = model_params
 
-    current = eligible_current(state, stale_days)
+    current = eligible_current(state, stale_days, allowed_sources=allowed_sources)
     current, deduplicated, duplicate_rows = dedupe_current(current, detailed=True)
     if not current:
         return [], {
@@ -75,9 +76,6 @@ def bayesian_rank(
         row["movement"] = previous[recipe_id] - row["rank"] if recipe_id in previous else None
         row["rank_provenance"] = rank_provenance(row)
 
-        # Mobile-serving enrichment comes from the already validated clean state.
-        # Instruction prose remains internal; the public app feed exposes only
-        # availability/count and sends clients to the canonical publisher URL.
         row["canonical_url"] = str(item.get("canonical_url") or item.get("url") or row.get("url") or "")
         row["image_url"] = str(item.get("image_url") or "")
         row["ingredients"] = list(item.get("ingredients") or [])
