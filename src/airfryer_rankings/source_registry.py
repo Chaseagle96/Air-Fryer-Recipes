@@ -4,7 +4,7 @@ import json
 import statistics
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Iterable
 
 from .models import SourceConfig, now_iso
 from .source_security import normalize_candidate_domain
@@ -309,10 +309,11 @@ def source_registry_summary(base_sources: Iterable[SourceConfig], registry: dict
     for record in candidates:
         status = str(record.get("status") or "UNKNOWN")
         status_counts[status] = status_counts.get(status, 0) + 1
-        if record.get("quality_score") is not None:
+        score_value = record.get("quality_score")
+        if isinstance(score_value, (int, float, str)):
             try:
-                scores.append(float(record["quality_score"]))
-            except (TypeError, ValueError):
+                scores.append(float(score_value))
+            except ValueError:
                 pass
     effective = effective_source_configs(base, registry)
     auto_effective = [cfg for cfg in effective if cfg.origin == "discovered"]

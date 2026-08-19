@@ -48,8 +48,8 @@ from .source_registry import (
     QUALIFIED,
     QUARANTINED,
     REJECTED,
-    SUSPENDED,
     SOURCE_GATE_VERSION,
+    SUSPENDED,
     effective_source_configs,
     load_source_registry,
     record_candidate_discovery,
@@ -61,7 +61,6 @@ from .source_security import (
     UnsafeNetworkTarget,
     candidate_domain_from_url,
     is_non_publisher_domain,
-    normalize_candidate_domain,
     safe_get,
 )
 from .storage import load_state, save_state, write_run_records
@@ -151,9 +150,14 @@ class BraveSearchProvider:
     def search(self, query: str, limit: int) -> list[DiscoveryHit]:
         if not self.available():
             return []
+        params: dict[str, str | int] = {
+            "q": query,
+            "count": min(20, max(1, limit)),
+            "safesearch": "moderate",
+        }
         response = requests.get(
             "https://api.search.brave.com/res/v1/web/search",
-            params={"q": query, "count": min(20, max(1, limit)), "safesearch": "moderate"},
+            params=params,
             headers={"Accept": "application/json", "X-Subscription-Token": self.api_key},
             timeout=20,
         )
@@ -189,9 +193,16 @@ class GoogleCustomSearchProvider:
         start = 1
         while len(output) < limit and start <= 91:
             count = min(10, limit - len(output))
+            params: dict[str, str | int] = {
+                "key": self.api_key,
+                "cx": self.cx,
+                "q": query,
+                "num": count,
+                "start": start,
+            }
             response = requests.get(
                 "https://www.googleapis.com/customsearch/v1",
-                params={"key": self.api_key, "cx": self.cx, "q": query, "num": count, "start": start},
+                params=params,
                 timeout=20,
             )
             response.raise_for_status()
@@ -436,7 +447,7 @@ def _discover_outbound_candidates(
 
 
 def _load_seed_hits(seed_file: str | Path | None, contexts: list[VerticalContext]) -> dict[str, list[DiscoveryHit]]:
-    output = {context.slug: [] for context in contexts}
+    output: dict[str, list[DiscoveryHit]] = {context.slug: [] for context in contexts}
     if not seed_file:
         return output
     payload = _read_mapping(seed_file)
@@ -1010,7 +1021,9 @@ def _apply_qualification_result(
     temporary = list(metrics.get("temporary_failures") or [])
     if permanent:
         record["consecutive_qualifying_attempts"] = 0
-        record["rejection_cooldown_until"] = (parse_dt(run_at) + timedelta(days=int(policy.get("automatic_rejection_cooldown_days", 30))) if parse_dt(run_at) else datetime.now(timezone.utc) + timedelta(days=30)).isoformat()
+        run_datetime = parse_dt(run_at) or datetime.now(timezone.utc)
+        cooldown_days = int(policy.get("automatic_rejection_cooldown_days", 30))
+        record["rejection_cooldown_until"] = (run_datetime + timedelta(days=cooldown_days)).isoformat()
         transition_source(
             context.registry,
             domain,
