@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-19T03:38:50.932867+00:00",
+  "generated_at": "2026-08-19T04:07:54.568060+00:00",
   "vertical": {
     "id": "slow_cooker",
     "name": "Slow Cooker",
     "source_count": 38
   },
-  "recipe_count": 150,
+  "recipe_count": 216,
   "page_size": 100,
   "pages": [
     {
@@ -17,7 +17,12 @@
     {
       "index": 2,
       "path": "recipes/0002.json",
-      "count": 50
+      "count": 100
+    },
+    {
+      "index": 3,
+      "path": "recipes/0003.json",
+      "count": 16
     }
   ],
   "content_policy": {
