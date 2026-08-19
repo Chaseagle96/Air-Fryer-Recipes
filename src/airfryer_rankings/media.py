@@ -14,7 +14,7 @@ from .models import HEADERS, RecipeRow
 def perceptual_hash_bytes(payload: bytes, size: int = 8) -> str:
     with Image.open(BytesIO(payload)) as opened:
         grayscale = opened.convert("L").resize((size, size))
-        pixels = list(grayscale.get_flattened_data())
+        pixels = [int(pixel) for pixel in grayscale.get_flattened_data()]
     average = sum(pixels) / max(1, len(pixels))
     value = 0
     for idx, pixel in enumerate(pixels):
