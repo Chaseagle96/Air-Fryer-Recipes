@@ -1,0 +1,10 @@
+{
+  "baseline_configurations": [],
+  "configurations": [],
+  "history_span_days": 0.7497895173842593,
+  "minimum_history_days": 30,
+  "ready": false,
+  "reason": "insufficient_longitudinal_history",
+  "recommendation": null,
+  "windows": []
+}

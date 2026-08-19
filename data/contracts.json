@@ -23,10 +23,10 @@
     },
     {
       "authoritative": false,
-      "description": "Human- and machine-facing CSV, Excel, DuckDB, JSON, and web presentation artifacts.",
-      "location": "output/ and docs/",
+      "description": "Human- and machine-facing CSV, Excel, DuckDB, JSON, web presentation, and paged mobile-feed artifacts.",
+      "location": "output/, docs/, and docs/api/",
       "name": "serving",
-      "version": 3
+      "version": 4
     }
   ],
   "lineage": [

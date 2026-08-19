@@ -1,0 +1,36 @@
+{
+  "archive_recommended": false,
+  "automatic_upload_enabled": false,
+  "by_root": [
+    {
+      "bytes": 1281682,
+      "files": 10,
+      "records": 1487,
+      "root": "data/observations"
+    },
+    {
+      "bytes": 874239,
+      "files": 10,
+      "records": 2000,
+      "root": "data/rankings"
+    },
+    {
+      "bytes": 44359,
+      "files": 10,
+      "records": 400,
+      "root": "data/coverage"
+    },
+    {
+      "bytes": 16875,
+      "files": 6,
+      "records": 63,
+      "root": "data/anomalies"
+    }
+  ],
+  "bytes_threshold": 536870912,
+  "ndjson_bytes": 2217155,
+  "ndjson_files": 36,
+  "ndjson_records": 3950,
+  "object_storage_configured": false,
+  "record_threshold": 750000
+}
