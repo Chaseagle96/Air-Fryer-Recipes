@@ -2,6 +2,7 @@ defaults:
   max_urls: 250
   delay: 0.15
   include_pattern: '(?:slow[-_ ]?cook(?:er|ing|ed)|crock[-_ ]?pot)'
+  allow_unmatched_discovery_links: false
 sources:
   - domain: allrecipes.com
   - domain: foodnetwork.com
