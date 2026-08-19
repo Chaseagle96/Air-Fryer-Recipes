@@ -74,6 +74,25 @@ def _discovery_get(session, url: str, cfg: SourceConfig, timeout: int = 25):
     return get(session, url, timeout)
 
 
+def _sitemap_records(session, sitemap: str, cfg: SourceConfig, seen_sitemaps: set[str], max_docs: int):
+    if cfg.origin == "discovered":
+        return iter_sitemap_records(
+            session,
+            sitemap,
+            seen=seen_sitemaps,
+            max_docs=max_docs,
+            safe=True,
+        )
+    # Keep the pinned/manual adapter call signature unchanged. The additional
+    # safety keyword is only required for dynamically discovered publishers.
+    return iter_sitemap_records(
+        session,
+        sitemap,
+        seen=seen_sitemaps,
+        max_docs=max_docs,
+    )
+
+
 def discover_source_urls(
     cfg: SourceConfig,
     state: dict,
@@ -93,13 +112,7 @@ def discover_source_urls(
     match_cap = 20000 if mode == "deep" and global_max_urls is None else max(2000, (global_max_urls or cfg.max_urls) * (12 if mode == "deep" else 6))
 
     for sitemap in sitemaps:
-        for record in iter_sitemap_records(
-            session,
-            sitemap,
-            seen=seen_sitemaps,
-            max_docs=max_docs,
-            safe=cfg.origin == "discovered",
-        ):
+        for record in _sitemap_records(session, sitemap, cfg, seen_sitemaps, max_docs):
             url = record["url"]
             if not _same_domain(url, cfg.domain) or not include_re.search(url):
                 continue
