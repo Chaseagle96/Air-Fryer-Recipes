@@ -1,16 +1,114 @@
 {
   "authority": {
-    "authoritative": false,
+    "authoritative": true,
     "authority_contract_version": 2,
+    "catalog_fingerprint_sha256": "bbb44145b409ac3373057e4a5381bce9bd585b9c59896830e3c3072808b001df",
     "catalog_sync_generated_at": "2026-08-19T20:10:29.582452+00:00",
-    "invalidated_at": "2026-08-19T21:17:26.464476+00:00",
-    "last_ranking_generated_at": "2026-08-19T19:40:59.034682+00:00",
-    "reason": "source_or_catalog_generation_advanced",
+    "effective_catalog_url_count": 7749,
+    "effective_source_count": 45,
+    "effective_sources": [
+      "airfryingfoodie.com",
+      "allrecipes.com",
+      "ambitiouskitchen.com",
+      "bbcgoodfood.com",
+      "budgetbytes.com",
+      "cookingclassy.com",
+      "delish.com",
+      "diethood.com",
+      "dinneratthezoo.com",
+      "downshiftology.com",
+      "eatingbirdfood.com",
+      "eatingwell.com",
+      "everydayfamilycooking.com",
+      "feelgoodfoodie.net",
+      "foodandwine.com",
+      "foodnetwork.com",
+      "forktospoon.com",
+      "gimmesomeoven.com",
+      "iheartnaptime.net",
+      "jocooks.com",
+      "kelvinskitchen.com",
+      "kristineskitchenblog.com",
+      "lecremedelacrumb.com",
+      "loveandlemons.com",
+      "melskitchencafe.com",
+      "natashaskitchen.com",
+      "pinchofyum.com",
+      "platedcravings.com",
+      "rachelcooks.com",
+      "recipetineats.com",
+      "seriouseats.com",
+      "simplyrecipes.com",
+      "skinnytaste.com",
+      "spendwithpennies.com",
+      "tasteofhome.com",
+      "temeculablogs.com",
+      "thekitchn.com",
+      "thepioneerwoman.com",
+      "therealfooddietitians.com",
+      "therecipecritic.com",
+      "thestayathomechef.com",
+      "theyummybowl.com",
+      "twopeasandtheirpod.com",
+      "wellplated.com",
+      "wholesomeyum.com"
+    ],
+    "full_catalog_baseline": true,
+    "generation_fingerprint_sha256": "e692eef593e6e16b98e7815c65fbe4e00de0d82fbc6244e7fedaf1282fda3d3d",
+    "input_fingerprint_sha256": "6396d7012b0ef7d74d4eae5bcf4533516c0379cfd3eaf5c007f4c259352a071c",
+    "leaderboard_fingerprint_sha256": "caacd4c75599bcd164de620b48f4789ea894dab1354d6f19201474b76b11298f",
+    "leaderboard_sources": [
+      "airfryingfoodie.com",
+      "allrecipes.com",
+      "budgetbytes.com",
+      "delish.com",
+      "diethood.com",
+      "dinneratthezoo.com",
+      "downshiftology.com",
+      "eatingbirdfood.com",
+      "eatingwell.com",
+      "everydayfamilycooking.com",
+      "feelgoodfoodie.net",
+      "foodandwine.com",
+      "forktospoon.com",
+      "iheartnaptime.net",
+      "kelvinskitchen.com",
+      "kristineskitchenblog.com",
+      "lecremedelacrumb.com",
+      "loveandlemons.com",
+      "melskitchencafe.com",
+      "natashaskitchen.com",
+      "pinchofyum.com",
+      "platedcravings.com",
+      "rachelcooks.com",
+      "seriouseats.com",
+      "simplyrecipes.com",
+      "skinnytaste.com",
+      "spendwithpennies.com",
+      "tasteofhome.com",
+      "temeculablogs.com",
+      "thepioneerwoman.com",
+      "therealfooddietitians.com",
+      "therecipecritic.com",
+      "thestayathomechef.com",
+      "theyummybowl.com",
+      "wellplated.com",
+      "wholesomeyum.com"
+    ],
+    "model_semver": "5.2.0",
+    "model_version": 5,
+    "ranked_recipe_count": 5555,
+    "ranking_generated_at": "2026-08-19T21:33:18.481254+00:00",
+    "ranking_mode": "daily",
+    "raw_catalog_url_count": 7749,
     "source_expansion_generated_at": "2026-08-19T20:09:25.427733+00:00",
-    "status": "refresh_required",
+    "source_fingerprint_sha256": "cc4a986fb67aca38d44a974e209edd92623a60e7eff5401363787d0f1352d51e",
+    "source_gate_version": 2,
+    "status": "authoritative",
+    "targets_this_run": 7749,
     "vertical": "air_fryer"
   },
-  "catalog_url_count": 7699,
+  "catalog_url_count": 7749,
   "content_policy": {
     "corpus": "all normalized recipe records are published with serveability metadata; default Discover remains ranking-gated",
     "ingredients": "factual structured ingredient lines",
@@ -298,23 +396,304 @@
       "path": "corpus/0056.json"
     },
     {
-      "count": 22,
+      "count": 26,
       "index": 57,
       "path": "corpus/0057.json"
     }
   ],
-  "corpus_recipe_count": 5622,
+  "corpus_recipe_count": 5626,
   "corpus_status_counts": {
     "discover": 5555,
-    "explore": 67
+    "explore": 71
   },
-  "generated_at": "2026-08-19T19:40:59.034682+00:00",
+  "generated_at": "2026-08-19T21:33:18.481254+00:00",
   "page_size": 100,
-  "pages": [],
-  "ranked_recipe_count": 0,
-  "ranked_serving_available": false,
-  "ranked_serving_status": "refresh_required",
-  "recipe_count": 0,
+  "pages": [
+    {
+      "count": 100,
+      "index": 1,
+      "path": "recipes/0001.json"
+    },
+    {
+      "count": 100,
+      "index": 2,
+      "path": "recipes/0002.json"
+    },
+    {
+      "count": 100,
+      "index": 3,
+      "path": "recipes/0003.json"
+    },
+    {
+      "count": 100,
+      "index": 4,
+      "path": "recipes/0004.json"
+    },
+    {
+      "count": 100,
+      "index": 5,
+      "path": "recipes/0005.json"
+    },
+    {
+      "count": 100,
+      "index": 6,
+      "path": "recipes/0006.json"
+    },
+    {
+      "count": 100,
+      "index": 7,
+      "path": "recipes/0007.json"
+    },
+    {
+      "count": 100,
+      "index": 8,
+      "path": "recipes/0008.json"
+    },
+    {
+      "count": 100,
+      "index": 9,
+      "path": "recipes/0009.json"
+    },
+    {
+      "count": 100,
+      "index": 10,
+      "path": "recipes/0010.json"
+    },
+    {
+      "count": 100,
+      "index": 11,
+      "path": "recipes/0011.json"
+    },
+    {
+      "count": 100,
+      "index": 12,
+      "path": "recipes/0012.json"
+    },
+    {
+      "count": 100,
+      "index": 13,
+      "path": "recipes/0013.json"
+    },
+    {
+      "count": 100,
+      "index": 14,
+      "path": "recipes/0014.json"
+    },
+    {
+      "count": 100,
+      "index": 15,
+      "path": "recipes/0015.json"
+    },
+    {
+      "count": 100,
+      "index": 16,
+      "path": "recipes/0016.json"
+    },
+    {
+      "count": 100,
+      "index": 17,
+      "path": "recipes/0017.json"
+    },
+    {
+      "count": 100,
+      "index": 18,
+      "path": "recipes/0018.json"
+    },
+    {
+      "count": 100,
+      "index": 19,
+      "path": "recipes/0019.json"
+    },
+    {
+      "count": 100,
+      "index": 20,
+      "path": "recipes/0020.json"
+    },
+    {
+      "count": 100,
+      "index": 21,
+      "path": "recipes/0021.json"
+    },
+    {
+      "count": 100,
+      "index": 22,
+      "path": "recipes/0022.json"
+    },
+    {
+      "count": 100,
+      "index": 23,
+      "path": "recipes/0023.json"
+    },
+    {
+      "count": 100,
+      "index": 24,
+      "path": "recipes/0024.json"
+    },
+    {
+      "count": 100,
+      "index": 25,
+      "path": "recipes/0025.json"
+    },
+    {
+      "count": 100,
+      "index": 26,
+      "path": "recipes/0026.json"
+    },
+    {
+      "count": 100,
+      "index": 27,
+      "path": "recipes/0027.json"
+    },
+    {
+      "count": 100,
+      "index": 28,
+      "path": "recipes/0028.json"
+    },
+    {
+      "count": 100,
+      "index": 29,
+      "path": "recipes/0029.json"
+    },
+    {
+      "count": 100,
+      "index": 30,
+      "path": "recipes/0030.json"
+    },
+    {
+      "count": 100,
+      "index": 31,
+      "path": "recipes/0031.json"
+    },
+    {
+      "count": 100,
+      "index": 32,
+      "path": "recipes/0032.json"
+    },
+    {
+      "count": 100,
+      "index": 33,
+      "path": "recipes/0033.json"
+    },
+    {
+      "count": 100,
+      "index": 34,
+      "path": "recipes/0034.json"
+    },
+    {
+      "count": 100,
+      "index": 35,
+      "path": "recipes/0035.json"
+    },
+    {
+      "count": 100,
+      "index": 36,
+      "path": "recipes/0036.json"
+    },
+    {
+      "count": 100,
+      "index": 37,
+      "path": "recipes/0037.json"
+    },
+    {
+      "count": 100,
+      "index": 38,
+      "path": "recipes/0038.json"
+    },
+    {
+      "count": 100,
+      "index": 39,
+      "path": "recipes/0039.json"
+    },
+    {
+      "count": 100,
+      "index": 40,
+      "path": "recipes/0040.json"
+    },
+    {
+      "count": 100,
+      "index": 41,
+      "path": "recipes/0041.json"
+    },
+    {
+      "count": 100,
+      "index": 42,
+      "path": "recipes/0042.json"
+    },
+    {
+      "count": 100,
+      "index": 43,
+      "path": "recipes/0043.json"
+    },
+    {
+      "count": 100,
+      "index": 44,
+      "path": "recipes/0044.json"
+    },
+    {
+      "count": 100,
+      "index": 45,
+      "path": "recipes/0045.json"
+    },
+    {
+      "count": 100,
+      "index": 46,
+      "path": "recipes/0046.json"
+    },
+    {
+      "count": 100,
+      "index": 47,
+      "path": "recipes/0047.json"
+    },
+    {
+      "count": 100,
+      "index": 48,
+      "path": "recipes/0048.json"
+    },
+    {
+      "count": 100,
+      "index": 49,
+      "path": "recipes/0049.json"
+    },
+    {
+      "count": 100,
+      "index": 50,
+      "path": "recipes/0050.json"
+    },
+    {
+      "count": 100,
+      "index": 51,
+      "path": "recipes/0051.json"
+    },
+    {
+      "count": 100,
+      "index": 52,
+      "path": "recipes/0052.json"
+    },
+    {
+      "count": 100,
+      "index": 53,
+      "path": "recipes/0053.json"
+    },
+    {
+      "count": 100,
+      "index": 54,
+      "path": "recipes/0054.json"
+    },
+    {
+      "count": 100,
+      "index": 55,
+      "path": "recipes/0055.json"
+    },
+    {
+      "count": 55,
+      "index": 56,
+      "path": "recipes/0056.json"
+    }
+  ],
+  "ranked_recipe_count": 5555,
+  "ranked_serving_available": true,
+  "ranked_serving_status": "authoritative",
+  "recipe_count": 5555,
   "schema_version": 1,
   "vertical": {
     "id": "air_fryer",

@@ -1,7 +1,7 @@
 {
   "baseline_configurations": [],
   "configurations": [],
-  "history_span_days": 0.7497895173842593,
+  "history_span_days": 1.0130705370486113,
   "minimum_history_days": 30,
   "ready": false,
   "reason": "insufficient_longitudinal_history",
