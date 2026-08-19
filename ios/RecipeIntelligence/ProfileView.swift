@@ -26,6 +26,7 @@ struct ProfileView: View {
                         appModel.addProfile(named: newProfileName)
                         newProfileName = ""
                     }
+                    .disabled(newProfileName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }
 
@@ -38,34 +39,48 @@ struct ProfileView: View {
                             try? modelContext.save()
                         }
                     ), in: 0...3) {
-                        VStack(alignment: .leading) {
-                            Text("Adventure level")
-                            Text(adventureLabel(household.adventureLevel))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                        HStack(spacing: 12) {
+                            Image(systemName: "safari.fill")
+                                .font(.title2)
+                                .foregroundStyle(RecipeDesign.accent)
+                            VStack(alignment: .leading) {
+                                Text("Adventure level")
+                                Text(adventureLabel(household.adventureLevel))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
                         }
                     }
-                    Text("Household profiles are modeled separately so future recommendations can find recipes where different tastes genuinely converge instead of merely averaging preferences.")
+                    Text("Household profiles stay separate so future recommendations can find recipes where different tastes genuinely converge instead of merely averaging preferences.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
             }
 
             Section("Taste learning") {
-                LabeledContent("Signals captured", value: events.filter { $0.profileID == appModel.activeProfileID && !$0.isUndone }.count.formatted())
+                LabeledContent {
+                    Text(events.filter { $0.profileID == appModel.activeProfileID && !$0.isUndone }.count.formatted())
+                        .fontWeight(.semibold)
+                } label: {
+                    Label("Signals captured", systemImage: "waveform.path.ecg")
+                }
                 Text("Saves, skips, Not Now choices, cooking history, repeats, notes, reviews and planning actions stay on this device in the MVP. They form the training-quality event history for future personalization.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
 
             Section("Privacy") {
-                Label("Personal taste data stays on this device", systemImage: "lock.shield")
+                Label("Personal taste data stays on this device", systemImage: "lock.shield.fill")
+                    .foregroundStyle(.primary)
                 Text("No third-party analytics SDK is included. Recipe Intelligence receives no private notes or personal reviews from this MVP.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
         }
+        .scrollContentBackground(.hidden)
+        .recipeScreenBackground()
         .navigationTitle("Taste")
+        .recipeToolbarBehavior()
     }
 
     private func adventureLabel(_ level: Int) -> String {

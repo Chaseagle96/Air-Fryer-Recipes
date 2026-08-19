@@ -38,8 +38,10 @@ struct SavedView: View {
                     }
                 }
                 .listStyle(.insetGrouped)
+                .scrollContentBackground(.hidden)
             }
         }
+        .recipeScreenBackground()
         .navigationTitle("Saved")
         .searchable(text: $searchText, prompt: "Search saved recipes")
         .toolbar {
@@ -61,6 +63,7 @@ struct SavedView: View {
                 EliminationView(recipes: saved.filter { $0.status == .wantToTry })
             }
         }
+        .recipeToolbarBehavior()
     }
 }
 
@@ -70,10 +73,10 @@ private struct SavedRecipeRow: View {
     var body: some View {
         HStack(spacing: 12) {
             RemoteRecipeImage(url: saved.imageURL, title: saved.title)
-                .frame(width: 76, height: 76)
+                .frame(width: 78, height: 78)
                 .clipped()
-                .clipShape(RoundedRectangle(cornerRadius: 14))
-            VStack(alignment: .leading, spacing: 4) {
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            VStack(alignment: .leading, spacing: 5) {
                 Text(saved.title).font(.headline).lineLimit(2)
                 Text("#\(saved.rank) \(saved.verticalName) · \(saved.rating, specifier: "%.1f") ★")
                     .font(.subheadline)
@@ -83,6 +86,7 @@ private struct SavedRecipeRow: View {
                     .foregroundStyle(.secondary)
             }
         }
+        .padding(.vertical, 3)
         .accessibilityElement(children: .combine)
     }
 }
@@ -103,52 +107,62 @@ struct SavedRecipeDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 22) {
                 RemoteRecipeImage(url: saved.imageURL, title: saved.title)
-                    .frame(height: 280)
+                    .frame(height: 290)
                     .clipped()
-                    .clipShape(RoundedRectangle(cornerRadius: 24))
-                Text(saved.title).font(.largeTitle.bold())
-                Text("#\(saved.rank) \(saved.verticalName) · \(saved.rating, specifier: "%.1f") ★ · \(saved.ratingCount.formatted()) ratings")
-                    .foregroundStyle(.secondary)
+                    .clipShape(RoundedRectangle(cornerRadius: RecipeDesign.cornerRadius, style: .continuous))
 
-                Picker("Status", selection: Binding(
-                    get: { saved.status },
-                    set: { appModel.setStatus($0, for: saved) }
-                )) {
-                    ForEach(SavedRecipeStatus.allCases) { Text($0.rawValue).tag($0) }
-                }
-                .pickerStyle(.menu)
+                VStack(alignment: .leading, spacing: 10) {
+                    Text(saved.title).font(.largeTitle.bold())
+                    Text("#\(saved.rank) \(saved.verticalName) · \(saved.rating, specifier: "%.1f") ★ · \(saved.ratingCount.formatted()) ratings")
+                        .foregroundStyle(.secondary)
 
-                HStack {
-                    Button("Plan", systemImage: "calendar.badge.plus") { showPlan = true }
-                        .buttonStyle(.bordered)
-                    Button("I Cooked This", systemImage: "fork.knife") {
-                        appModel.markCooked(saved)
-                        showReview = true
+                    Picker("Status", selection: Binding(
+                        get: { saved.status },
+                        set: { appModel.setStatus($0, for: saved) }
+                    )) {
+                        ForEach(SavedRecipeStatus.allCases) { Text($0.rawValue).tag($0) }
                     }
-                    .buttonStyle(.borderedProminent)
-                    Button(saved.status == .favorite ? "Unfavorite" : "Favorite", systemImage: "heart.fill") { appModel.toggleFavorite(saved) }
-                        .buttonStyle(.bordered)
+                    .pickerStyle(.menu)
+                }
+                .padding(18)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .recipeGlassSurface()
+
+                RecipeGlassGroup(spacing: 12) {
+                    HStack(spacing: 12) {
+                        Button("Plan", systemImage: "calendar.badge.plus") { showPlan = true }
+                            .recipeGlassButton()
+                        Button("I Cooked This", systemImage: "fork.knife") {
+                            appModel.markCooked(saved)
+                            showReview = true
+                        }
+                        .recipeGlassButton(prominent: true)
+                        Button(saved.status == .favorite ? "Unfavorite" : "Favorite", systemImage: "heart.fill") { appModel.toggleFavorite(saved) }
+                            .recipeGlassButton()
+                    }
                 }
 
                 if !saved.ingredients.isEmpty {
-                    Text("Ingredients").font(.title2.bold()).accessibilityAddTraits(.isHeader)
-                    ForEach(Array(saved.ingredients.enumerated()), id: \.offset) { _, ingredient in
-                        Text("• \(ingredient)")
+                    VStack(alignment: .leading, spacing: 10) {
+                        sectionTitle("Ingredients", systemImage: "carrot")
+                        ForEach(Array(saved.ingredients.enumerated()), id: \.offset) { _, ingredient in
+                            Text("• \(ingredient)")
+                        }
                     }
                 }
 
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Private notes").font(.title2.bold()).accessibilityAddTraits(.isHeader)
-                    HStack {
+                VStack(alignment: .leading, spacing: 12) {
+                    sectionTitle("Private notes", systemImage: "note.text")
+                    HStack(alignment: .bottom) {
                         TextField("What would you change next time?", text: $noteText, axis: .vertical)
                             .textFieldStyle(.roundedBorder)
                         Button("Add") {
                             appModel.addNote(to: saved, text: noteText)
                             noteText = ""
                         }
-                        .buttonStyle(.borderedProminent)
+                        .recipeGlassButton(prominent: true)
                     }
                     ForEach(notes) { note in
                         VStack(alignment: .leading, spacing: 3) {
@@ -162,13 +176,15 @@ struct SavedRecipeDetailView: View {
                 }
 
                 if let latest = reviews.first {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Your latest review").font(.title2.bold()).accessibilityAddTraits(.isHeader)
+                    VStack(alignment: .leading, spacing: 8) {
+                        sectionTitle("Your latest review", systemImage: "star.bubble")
                         Text("Overall \(latest.overall)/5 · Taste \(latest.taste)/5 · Ease \(latest.ease)/5 · Value \(latest.value)/5")
                         Text("Make again: \(latest.wouldMakeAgain.rawValue)")
                         if !latest.householdReaction.isEmpty { Text("Household: \(latest.householdReaction)") }
                         if !latest.notes.isEmpty { Text(latest.notes).foregroundStyle(.secondary) }
                     }
+                    .padding(16)
+                    .recipeGlassSurface(cornerRadius: RecipeDesign.compactCornerRadius)
                 }
 
                 if let url = saved.sourceURL {
@@ -176,11 +192,12 @@ struct SavedRecipeDetailView: View {
                         appModel.recordOriginalSourceOpened(recipeID: saved.recipeID, verticalID: saved.verticalID)
                         openURL(url)
                     }
-                    .buttonStyle(.bordered)
+                    .recipeGlassButton()
                 }
             }
             .padding()
         }
+        .recipeScreenBackground()
         .navigationTitle("Saved Recipe")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showReview) { ReviewFormView(saved: saved) }
@@ -196,5 +213,12 @@ struct SavedRecipeDetailView: View {
                 .navigationTitle("Plan Recipe")
             }
         }
+        .recipeToolbarBehavior()
+    }
+
+    private func sectionTitle(_ title: String, systemImage: String) -> some View {
+        Label(title, systemImage: systemImage)
+            .font(.title2.bold())
+            .accessibilityAddTraits(.isHeader)
     }
 }

@@ -34,9 +34,14 @@ struct ReviewFormView: View {
                         .lineLimit(3...7)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .recipeScreenBackground()
             .navigationTitle("Review Recipe")
+            .recipeToolbarBehavior()
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         appModel.submitReview(
@@ -62,7 +67,8 @@ struct ReviewFormView: View {
             HStack {
                 Text(title)
                 Spacer()
-                Text("\(value.wrappedValue) / 5").fontWeight(.semibold)
+                Label("\(value.wrappedValue) / 5", systemImage: "star.fill")
+                    .fontWeight(.semibold)
             }
         }
         .accessibilityLabel("\(title) rating, \(value.wrappedValue) out of 5")

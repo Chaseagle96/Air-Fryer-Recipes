@@ -25,7 +25,7 @@ permissions:
 
 jobs:
   build-and-test:
-    runs-on: macos-15
+    runs-on: xcode-27
     timeout-minutes: 45
     steps:
       - name: Checkout
@@ -33,7 +33,12 @@ jobs:
 
       - name: Show Xcode environment
         run: |
-          xcodebuild -version
+          XCODE_VERSION="$(xcodebuild -version | head -n 1)"
+          echo "$XCODE_VERSION"
+          case "$XCODE_VERSION" in
+            "Xcode 27"*) ;;
+            *) echo "Expected Xcode 27 runner, got: $XCODE_VERSION" >&2; exit 1 ;;
+          esac
           xcodebuild -project ios/RecipeIntelligence.xcodeproj -list
 
       - name: Build iOS simulator app

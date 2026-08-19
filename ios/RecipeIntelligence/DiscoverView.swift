@@ -7,17 +7,18 @@ struct DiscoverView: View {
     var body: some View {
         GeometryReader { proxy in
             ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 12) {
+                VStack(spacing: 14) {
                     verticalSelector
                     refreshStatus
 
                     if appModel.isLoading && appModel.deck.isEmpty {
                         Spacer(minLength: 120)
                         ProgressView("Finding great recipes…")
+                            .controlSize(.large)
                         Spacer(minLength: 120)
                     } else if let recipe = appModel.deck.first {
                         deck(recipe)
-                            .frame(height: max(520, proxy.size.height - 90))
+                            .frame(height: max(520, proxy.size.height - 92))
                             .task(id: recipe.recipeID) { await appModel.prefetchIfNeeded(recipe) }
                     } else {
                         emptyState
@@ -27,11 +28,13 @@ struct DiscoverView: View {
                 .frame(maxWidth: .infinity)
                 .frame(minHeight: proxy.size.height, alignment: .top)
                 .padding(.horizontal)
+                .padding(.bottom, 12)
             }
             .refreshable {
                 await appModel.refreshCurrentFeed(trigger: .manual)
             }
         }
+        .recipeScreenBackground()
         .navigationTitle("Discover")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -54,39 +57,56 @@ struct DiscoverView: View {
             NavigationStack { RemoteRecipeDetailView(recipe: recipe) }
         }
         .animation(.snappy, value: appModel.deck.first?.recipeID)
+        .recipeToolbarBehavior()
     }
 
     @ViewBuilder
     private var refreshStatus: some View {
         if appModel.isRefreshingFeed {
             Label("Checking for new rankings…", systemImage: "arrow.triangle.2.circlepath")
+                .font(.footnote.weight(.semibold))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .recipeGlassSurface(cornerRadius: 16)
                 .accessibilityIdentifier("discover.refreshStatus")
         } else if let message = appModel.feedStatusMessage {
             Text(message)
+                .font(.footnote.weight(.medium))
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .recipeGlassSurface(cornerRadius: 16)
                 .accessibilityIdentifier("discover.refreshStatus")
         }
     }
 
     private var verticalSelector: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                ForEach(appModel.verticals) { vertical in
-                    Button {
-                        Task { await appModel.selectVertical(vertical) }
-                    } label: {
-                        Label(vertical.name, systemImage: vertical.icon)
-                            .font(.subheadline.weight(.semibold))
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 9)
-                            .background(appModel.selectedVertical?.id == vertical.id ? Color.accentColor.opacity(0.18) : Color.secondary.opacity(0.10), in: Capsule())
+            RecipeGlassGroup(spacing: 8) {
+                HStack(spacing: 8) {
+                    ForEach(appModel.verticals) { vertical in
+                        let selected = appModel.selectedVertical?.id == vertical.id
+                        Button {
+                            Task { await appModel.selectVertical(vertical) }
+                        } label: {
+                            Label(vertical.name, systemImage: vertical.icon)
+                                .font(.subheadline.weight(.semibold))
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 10)
+                                .recipeGlassSurface(
+                                    cornerRadius: 18,
+                                    tint: selected ? RecipeDesign.accent.opacity(0.28) : nil,
+                                    interactive: true
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Explore \(vertical.name) recipes")
+                        .accessibilityAddTraits(selected ? .isSelected : [])
+                        .accessibilityIdentifier("vertical.\(vertical.id)")
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Explore \(vertical.name) recipes")
-                    .accessibilityAddTraits(appModel.selectedVertical?.id == vertical.id ? .isSelected : [])
-                    .accessibilityIdentifier("vertical.\(vertical.id)")
                 }
             }
-            .padding(.vertical, 2)
+            .padding(.vertical, 4)
         }
     }
 
@@ -111,19 +131,21 @@ struct DiscoverView: View {
             }
             .frame(maxHeight: .infinity)
 
-            HStack(spacing: 16) {
-                actionButton("Skip", systemImage: "xmark", identifier: "discover.skip") {
-                    appModel.handleDecision(.skip, recipe: topRecipe)
-                }
-                actionButton("Not Now", systemImage: "clock", identifier: "discover.notNow") {
-                    appModel.handleDecision(.notNow, recipe: topRecipe)
-                }
-                actionButton("Save", systemImage: "heart.fill", identifier: "discover.save", prominent: true) {
-                    appModel.handleDecision(.save, recipe: topRecipe)
-                }
-                actionButton("Details", systemImage: "info.circle", identifier: "discover.details") {
-                    appModel.recordOpened(topRecipe)
-                    detailRecipe = topRecipe
+            RecipeGlassGroup(spacing: 12) {
+                HStack(spacing: 12) {
+                    actionButton("Skip", systemImage: "xmark", identifier: "discover.skip") {
+                        appModel.handleDecision(.skip, recipe: topRecipe)
+                    }
+                    actionButton("Not Now", systemImage: "clock", identifier: "discover.notNow") {
+                        appModel.handleDecision(.notNow, recipe: topRecipe)
+                    }
+                    actionButton("Save", systemImage: "heart.fill", identifier: "discover.save", prominent: true) {
+                        appModel.handleDecision(.save, recipe: topRecipe)
+                    }
+                    actionButton("Details", systemImage: "info.circle", identifier: "discover.details") {
+                        appModel.recordOpened(topRecipe)
+                        detailRecipe = topRecipe
+                    }
                 }
             }
             .frame(maxWidth: .infinity)
@@ -138,19 +160,11 @@ struct DiscoverView: View {
         prominent: Bool = false,
         action: @escaping () -> Void
     ) -> some View {
-        if prominent {
-            Button(action: action) {
-                actionButtonLabel(title, systemImage: systemImage)
-            }
-            .buttonStyle(.borderedProminent)
-            .accessibilityIdentifier(identifier)
-        } else {
-            Button(action: action) {
-                actionButtonLabel(title, systemImage: systemImage)
-            }
-            .buttonStyle(.bordered)
-            .accessibilityIdentifier(identifier)
+        Button(action: action) {
+            actionButtonLabel(title, systemImage: systemImage)
         }
+        .recipeGlassButton(prominent: prominent)
+        .accessibilityIdentifier(identifier)
     }
 
     private func actionButtonLabel(_ title: String, systemImage: String) -> some View {
@@ -168,6 +182,7 @@ struct DiscoverView: View {
             Text(appModel.errorMessage ?? "Try another vertical, or come back after Recipe Intelligence finds more recipes.")
         } actions: {
             Button("Try Again") { Task { await appModel.retry() } }
+                .recipeGlassButton(prominent: true)
         }
         .frame(maxHeight: .infinity)
     }
@@ -190,9 +205,9 @@ private struct RecipeCardView: View {
                     .overlay(alignment: .topLeading) {
                         Text("#\(recipe.rank) \(recipe.verticalName)")
                             .font(.caption.weight(.bold))
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 7)
-                            .background(.ultraThinMaterial, in: Capsule())
+                            .padding(.horizontal, 11)
+                            .padding(.vertical, 8)
+                            .recipeGlassSurface(cornerRadius: 18)
                             .padding(12)
                     }
 
@@ -202,7 +217,7 @@ private struct RecipeCardView: View {
                         .lineLimit(3)
                         .minimumScaleFactor(0.8)
 
-                    HStack(spacing: 12) {
+                    HStack(spacing: 10) {
                         Label(String(format: "%.1f", recipe.rating), systemImage: "star.fill")
                         Text("\(recipe.ratingCount.formatted()) ratings")
                         if !recipe.evidenceGrade.isEmpty { Text("Evidence \(recipe.evidenceGrade)") }
@@ -224,9 +239,9 @@ private struct RecipeCardView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(16)
             }
-            .background(.background)
-            .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
-            .shadow(color: .black.opacity(0.12), radius: 18, y: 8)
+            .recipeGlassSurface(cornerRadius: 30, interactive: isTop)
+            .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+            .shadow(color: .black.opacity(0.08), radius: 14, y: 7)
             .overlay(alignment: offset.width >= 40 ? .topLeading : .topTrailing) {
                 if isTop && abs(offset.width) >= 40 {
                     Text(offset.width > 0 ? "SAVE" : "NOPE")

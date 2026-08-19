@@ -38,7 +38,7 @@ struct RecipeIntelligenceApp: App {
         WindowGroup {
             RootView()
                 .environmentObject(appModel)
-                .tint(.orange)
+                .tint(RecipeDesign.accent)
         }
         .modelContainer(modelContainer)
     }

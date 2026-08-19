@@ -7,42 +7,59 @@ struct RemoteRecipeDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 22) {
                 RemoteRecipeImage(url: recipe.photoURL, title: recipe.title)
-                    .frame(height: 300)
+                    .frame(height: 320)
                     .clipped()
-                    .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(recipe.title).font(.largeTitle.bold())
-                    Text("#\(recipe.rank) in \(recipe.verticalName)")
-                        .font(.headline)
-                        .foregroundStyle(.secondary)
-                    HStack {
-                        Label(String(format: "%.1f", recipe.rating), systemImage: "star.fill")
-                        Text("\(recipe.ratingCount.formatted()) ratings")
-                        Text(recipe.confidenceLabel)
+                    .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+                    .overlay(alignment: .bottomLeading) {
+                        Text("#\(recipe.rank) · \(recipe.verticalName)")
+                            .font(.subheadline.weight(.bold))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 9)
+                            .recipeGlassSurface(cornerRadius: 18)
+                            .padding(14)
                     }
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(recipe.title)
+                        .font(.largeTitle.bold())
+                        .fixedSize(horizontal: false, vertical: true)
+
                     Text("From \(recipe.source)")
-                        .font(.subheadline.weight(.semibold))
-                    if !recipe.author.isEmpty { Text("By \(recipe.author)").foregroundStyle(.secondary) }
+                        .font(.headline)
+                    if !recipe.author.isEmpty {
+                        Text("By \(recipe.author)")
+                            .foregroundStyle(.secondary)
+                    }
+
+                    RecipeGlassGroup(spacing: 10) {
+                        HStack(spacing: 10) {
+                            RecipeMetricPill(title: String(format: "%.1f", recipe.rating), systemImage: "star.fill")
+                            RecipeMetricPill(title: "\(recipe.ratingCount.formatted()) ratings", systemImage: "person.2.fill")
+                            RecipeMetricPill(title: recipe.confidenceLabel, systemImage: "checkmark.seal.fill")
+                        }
+                    }
+                    .fixedSize(horizontal: false, vertical: true)
                 }
+                .padding(18)
+                .recipeGlassSurface(cornerRadius: RecipeDesign.cornerRadius)
 
                 if !recipe.ingredients.isEmpty {
-                    sectionTitle("Ingredients")
-                    ForEach(Array(recipe.ingredients.enumerated()), id: \.offset) { _, ingredient in
-                        Label(ingredient, systemImage: "circle.fill")
-                            .symbolRenderingMode(.hierarchical)
-                            .font(.body)
+                    VStack(alignment: .leading, spacing: 12) {
+                        sectionTitle("Ingredients")
+                        ForEach(Array(recipe.ingredients.enumerated()), id: \.offset) { _, ingredient in
+                            Label(ingredient, systemImage: "circle.fill")
+                                .symbolRenderingMode(.hierarchical)
+                                .font(.body)
+                        }
                     }
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
                     sectionTitle("Cooking directions")
                     if recipe.hasInstructions {
-                        Text("Recipe Intelligence found structured directions, but the MVP does not republish publisher instruction prose. Open the original recipe for the complete cooking method.")
+                        Text("Recipe Intelligence found structured directions, but the app does not republish publisher instruction prose. Open the original recipe for the complete cooking method.")
                     } else {
                         Text("Open the original publisher page for the complete cooking method.")
                     }
@@ -56,28 +73,44 @@ struct RemoteRecipeDetailView: View {
                             .foregroundStyle(.secondary)
                             .padding(.top, 6)
                     }
+                    .padding(16)
+                    .recipeGlassSurface(cornerRadius: RecipeDesign.compactCornerRadius)
                 }
+            }
+            .padding(.horizontal)
+            .padding(.top, 8)
+            .padding(.bottom, 110)
+        }
+        .recipeScreenBackground()
+        .safeAreaInset(edge: .bottom) {
+            RecipeGlassGroup(spacing: 10) {
+                HStack(spacing: 10) {
+                    Button("Save to Try", systemImage: "heart.fill") {
+                        appModel.saveFromDetail(recipe)
+                    }
+                    .recipeGlassButton(prominent: true)
+                    .accessibilityIdentifier("detail.save")
 
-                HStack {
-                    Button("Save to Try", systemImage: "heart.fill") { appModel.saveFromDetail(recipe) }
-                        .buttonStyle(.borderedProminent)
-                        .accessibilityIdentifier("detail.save")
                     if let url = recipe.sourceURL {
-                        Button("View Original Recipe", systemImage: "arrow.up.right.square") {
+                        Button("Original", systemImage: "arrow.up.right.square") {
                             appModel.recordOriginalSourceOpened(recipeID: recipe.recipeID, verticalID: recipe.verticalID)
                             openURL(url)
                         }
-                        .buttonStyle(.bordered)
+                        .recipeGlassButton()
                     }
                 }
+                .padding(.horizontal)
+                .padding(.vertical, 8)
             }
-            .padding()
         }
         .navigationTitle("Recipe")
         .navigationBarTitleDisplayMode(.inline)
+        .recipeToolbarBehavior()
     }
 
     private func sectionTitle(_ title: String) -> some View {
-        Text(title).font(.title2.bold()).accessibilityAddTraits(.isHeader)
+        Text(title)
+            .font(.title2.bold())
+            .accessibilityAddTraits(.isHeader)
     }
 }
