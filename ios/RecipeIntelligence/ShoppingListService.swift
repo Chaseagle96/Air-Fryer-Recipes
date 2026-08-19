@@ -76,7 +76,22 @@ struct IngredientParser {
             .replacingOccurrences(of: ",", with: " ")
             .split(separator: " ")
             .map(String.init)
+            .map(singularize)
             .joined(separator: " ")
+    }
+
+    private static func singularize(_ token: String) -> String {
+        guard token.count > 3 else { return token }
+        if token.hasSuffix("ies") {
+            return String(token.dropLast(3)) + "y"
+        }
+        if token.hasSuffix("oes") {
+            return String(token.dropLast(2))
+        }
+        if token.hasSuffix("s"), !token.hasSuffix("ss") {
+            return String(token.dropLast())
+        }
+        return token
     }
 
     private static func category(for name: String) -> String {
