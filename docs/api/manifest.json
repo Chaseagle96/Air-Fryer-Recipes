@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-19T01:41:49.045406+00:00",
+  "vertical": {
+    "id": "air_fryer",
+    "name": "Air Fryer",
+    "source_count": 40
+  },
+  "recipe_count": 1068,
+  "ranked_recipe_count": 1068,
+  "page_size": 100,
+  "pages": [
+    {
+      "index": 1,
+      "path": "recipes/0001.json",
+      "count": 100
+    },
+    {
+      "index": 2,
+      "path": "recipes/0002.json",
+      "count": 100
+    },
+    {
+      "index": 3,
+      "path": "recipes/0003.json",
+      "count": 100
+    },
+    {
+      "index": 4,
+      "path": "recipes/0004.json",
+      "count": 100
+    },
+    {
+      "index": 5,
+      "path": "recipes/0005.json",
+      "count": 100
+    },
+    {
+      "index": 6,
+      "path": "recipes/0006.json",
+      "count": 100
+    },
+    {
+      "index": 7,
+      "path": "recipes/0007.json",
+      "count": 100
+    },
+    {
+      "index": 8,
+      "path": "recipes/0008.json",
+      "count": 100
+    },
+    {
+      "index": 9,
+      "path": "recipes/0009.json",
+      "count": 100
+    },
+    {
+      "index": 10,
+      "path": "recipes/0010.json",
+      "count": 100
+    },
+    {
+      "index": 11,
+      "path": "recipes/0011.json",
+      "count": 68
+    }
+  ],
+  "corpus_recipe_count": 1078,
+  "corpus_pages": [
+    {
+      "index": 1,
+      "path": "corpus/0001.json",
+      "count": 100
+    },
+    {
+      "index": 2,
+      "path": "corpus/0002.json",
+      "count": 100
+    },
+    {
+      "index": 3,
+      "path": "corpus/0003.json",
+      "count": 100
+    },
+    {
+      "index": 4,
+      "path": "corpus/0004.json",
+      "count": 100
+    },
+    {
+      "index": 5,
+      "path": "corpus/0005.json",
+      "count": 100
+    },
+    {
+      "index": 6,
+      "path": "corpus/0006.json",
+      "count": 100
+    },
+    {
+      "index": 7,
+      "path": "corpus/0007.json",
+      "count": 100
+    },
+    {
+      "index": 8,
+      "path": "corpus/0008.json",
+      "count": 100
+    },
+    {
+      "index": 9,
+      "path": "corpus/0009.json",
+      "count": 100
+    },
+    {
+      "index": 10,
+      "path": "corpus/0010.json",
+      "count": 100
+    },
+    {
+      "index": 11,
+      "path": "corpus/0011.json",
+      "count": 78
+    }
+  ],
+  "corpus_status_counts": {
+    "discover": 1068,
+    "explore": 10
+  },
+  "catalog_url_count": 3744,
+  "content_policy": {
+    "ingredients": "factual structured ingredient lines",
+    "instructions": "publisher prose not republished; open canonical_url for full directions",
+    "corpus": "all normalized recipe records are published with serveability metadata; default Discover remains ranking-gated"
+  }
+}
