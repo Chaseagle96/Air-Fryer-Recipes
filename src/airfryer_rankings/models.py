@@ -126,6 +126,7 @@ class SourceConfig:
     rating_selector: str = ""
     count_selector: str = ""
     include_pattern: str = AIR_FRYER_PATTERN
+    allow_unmatched_discovery_links: bool = True
 
 
 def now_iso() -> str:
@@ -228,6 +229,12 @@ def load_sources(path: str | Path) -> list[SourceConfig]:
                 rating_selector=str(item.get("rating_selector", "") or ""),
                 count_selector=str(item.get("count_selector", "") or ""),
                 include_pattern=str(item.get("include_pattern", defaults.get("include_pattern", AIR_FRYER_PATTERN)) or AIR_FRYER_PATTERN),
+                allow_unmatched_discovery_links=bool(
+                    item.get(
+                        "allow_unmatched_discovery_links",
+                        defaults.get("allow_unmatched_discovery_links", True),
+                    )
+                ),
             )
         )
     return output
