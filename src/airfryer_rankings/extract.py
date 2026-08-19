@@ -42,7 +42,7 @@ def extract_recipe_from_html(
     visible_rating, visible_count = visible_rating_evidence(soup, cfg)
     page_hash = hashlib.sha256(html.encode("utf-8", errors="ignore")).hexdigest()[:24]
     structural = structure_metadata(html)
-    parse_meta = {"issues": [], "page_hash": page_hash, **structural}
+    parse_meta = {"issues": [], "page_hash": page_hash, "recipe_recognized": False, **structural}
     candidates: list[RecipeRow] = []
 
     for obj in jsonld_objects(soup):
@@ -50,6 +50,11 @@ def extract_recipe_from_html(
         types = typ if isinstance(typ, list) else [typ]
         if not any(str(value).lower() == "recipe" for value in types if value is not None):
             continue
+        # Recognizing a Recipe schema is a successful structural extraction even
+        # when the publisher does not expose public aggregate rating evidence.
+        # Ranking eligibility is tracked separately by whether a RecipeRow can
+        # be produced with verified rating/count evidence.
+        parse_meta["recipe_recognized"] = True
         aggregate = obj.get("aggregateRating") or {}
         if not isinstance(aggregate, dict):
             continue
@@ -120,6 +125,9 @@ def extract_recipe_from_html(
         return max(candidates, key=lambda row: (row.evidence_confidence, row.rating_count)), parse_meta
 
     if visible_rating is not None and visible_count and 0 <= visible_rating <= 5.05:
+        # The visible-evidence fallback itself proves that the page was
+        # structurally extractable as a recipe/rating document.
+        parse_meta["recipe_recognized"] = True
         title = str((soup.title.string if soup.title else "") or url).strip()
         recipe_id = hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:24]
         return (
