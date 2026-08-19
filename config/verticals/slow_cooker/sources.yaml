@@ -1,0 +1,58 @@
+defaults:
+  max_urls: 250
+  delay: 0.15
+  include_pattern: '(?:slow[-_ ]?cook(?:er|ing|ed)|crock[-_ ]?pot)'
+sources:
+  - domain: allrecipes.com
+  - domain: foodnetwork.com
+    discovery_urls:
+      - https://www.foodnetwork.com/topics/easy-slow-cooking.html
+      - https://www.foodnetwork.com/recipes/main-dish/slow-cooker-main-dishes
+  - domain: delish.com
+  - domain: eatingwell.com
+  - domain: tasteofhome.com
+  - domain: skinnytaste.com
+    discovery_urls:
+      - https://www.skinnytaste.com/recipes/slow-cooker/
+  - domain: therecipecritic.com
+    discovery_urls:
+      - https://therecipecritic.com/slow-cooker-recipes/
+  - domain: spendwithpennies.com
+    discovery_urls:
+      - https://www.spendwithpennies.com/category/recipes/slow-cooker/
+  - domain: pinchofyum.com
+  - domain: budgetbytes.com
+    discovery_urls:
+      - https://www.budgetbytes.com/category/recipes/slow-cooker/
+  - domain: simplyrecipes.com
+  - domain: wellplated.com
+    discovery_urls:
+      - https://www.wellplated.com/category/recipes-by-type/slow-cooker/
+  - domain: natashaskitchen.com
+  - domain: downshiftology.com
+  - domain: gimmesomeoven.com
+  - domain: lecremedelacrumb.com
+  - domain: therealfooddietitians.com
+  - domain: loveandlemons.com
+  - domain: thepioneerwoman.com
+  - domain: cookingclassy.com
+  - domain: iheartnaptime.net
+  - domain: feelgoodfoodie.net
+  - domain: kristineskitchenblog.com
+  - domain: jocooks.com
+  - domain: recipetineats.com
+    discovery_urls:
+      - https://www.recipetineats.com/category/slow-cooker-recipes/
+  - domain: bbcgoodfood.com
+  - domain: seriouseats.com
+  - domain: thekitchn.com
+  - domain: foodandwine.com
+  - domain: ambitiouskitchen.com
+  - domain: eatingbirdfood.com
+  - domain: wholesomeyum.com
+  - domain: dinneratthezoo.com
+  - domain: diethood.com
+  - domain: twopeasandtheirpod.com
+  - domain: platedcravings.com
+  - domain: rachelcooks.com
+  - domain: melskitchencafe.com
