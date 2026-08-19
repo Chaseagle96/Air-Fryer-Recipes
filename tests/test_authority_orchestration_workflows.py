@@ -36,3 +36,25 @@ def test_authoritative_refresh_is_manual_fallback_only() -> None:
     assert "workflow_dispatch:" in workflow
     assert "workflow_run:" not in workflow
     assert "\n  push:" not in workflow
+
+
+def test_authority_self_heal_dispatches_only_stale_verticals() -> None:
+    workflow = (REPO_ROOT / ".github/workflows/authority-self-heal.yml").read_text(encoding="utf-8")
+
+    assert "Recipe Intelligence Authority Invalidation" in workflow
+    assert "actions: write" in workflow
+    assert "jq -e '.authoritative == true and .status == \"authoritative\"'" in workflow
+    assert "gh workflow run \"$workflow\"" in workflow
+    assert "-f mode=daily" in workflow
+    assert "hourly.yml 'Air Fryer'" in workflow
+    assert "slow-cooker.yml 'Slow Cooker'" in workflow
+
+
+def test_authority_self_heal_avoids_duplicate_and_retry_loops() -> None:
+    workflow = (REPO_ROOT / ".github/workflows/authority-self-heal.yml").read_text(encoding="utf-8")
+
+    assert "gh run list" in workflow
+    assert '.status == "queued"' in workflow
+    assert '.status == "in_progress"' in workflow
+    assert "Recipe Intelligence — Slow Cooker" not in workflow
+    assert "workflows:\n      - Recipe Intelligence Authority Invalidation" in workflow
