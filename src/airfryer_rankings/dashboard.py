@@ -3,9 +3,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from .runtime import vertical_name
+
 
 def _dashboard_html() -> str:
-    return """<!doctype html>
+    html = """<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -58,6 +60,7 @@ fetch('data.json',{cache:'no-store'}).then(r=>r.json()).then(data=>{
 for(const id of ['search','category','confidence','rankconfidence'])document.querySelector('#'+id).addEventListener('input',render);
 </script>
 </body></html>"""
+    return html.replace("Air Fryer", vertical_name())
 
 
 def write_dashboard(
@@ -73,6 +76,7 @@ def write_dashboard(
     docs.mkdir(parents=True, exist_ok=True)
     payload = {
         "generated_at": generated_at,
+        "vertical": vertical_name(),
         "source_count": source_count,
         "leaderboard": ranked[:500],
         "source_reliability": reliability,

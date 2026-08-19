@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "vertical": "slow_cooker",
+  "target_adjudicated_pairs": 500,
+  "pairs": [],
+  "note": "Slow Cooker duplicate adjudication is independent from the Air Fryer corpus. Candidate pairs are generated from the Slow Cooker state and must be human-reviewed before entering this benchmark."
+}

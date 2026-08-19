@@ -4,14 +4,22 @@ All notable ranking-engine and repository-governance changes are recorded here.
 
 ## Unreleased
 
+### Added
+- Independent **Slow Cooker** production vertical with its own source registry, discovery pattern, model configuration, storage policy, mutable state/history, evidence-label ledger, dedupe benchmark ledger, outputs, dashboard, and GitHub Actions refresh workflow.
+- Slow Cooker discovery recognizes `slow cooker`, `slow-cooker`, `slow cooked`, `crockpot`, and `crock-pot` semantics without reusing the Air Fryer discovery regex.
+- Shared runtime identity helpers allow reusable serving/analytical components to namespace vertical-specific artifacts while preserving Air Fryer compatibility.
+- `VERTICALS.md` documents the isolation contract for current and future cooking-method verticals.
+
 ### Changed
 - Repository/platform identity renamed from Air Fryer Recipe Rankings to **Recipe Intelligence**.
 - Python distribution metadata renamed to `recipe-intelligence`; the internal `airfryer_rankings` namespace remains for 5.2.x compatibility.
 - Primary GitHub Actions workflow, artifact labels, README badges, governance documentation, and generated dashboard now use the Recipe Intelligence identity.
-- Air Fryer is explicitly documented as the first production vertical rather than the long-term platform boundary.
+- Air Fryer and Slow Cooker now share extraction/ranking/QA code but do not share mutable state, observations, priors, rank history, or serving snapshots.
+- Crawler user-agent now identifies the broader Recipe Intelligence repository.
 
 ### Compatibility
-- Existing Air Fryer raw evidence, state, ranking history, output filenames, Python import namespace, model version, and scoring behavior are unchanged by the rebrand.
+- Existing Air Fryer raw evidence, state, ranking history, output filenames, Python import namespace, model version, and scoring behavior remain compatible.
+- Air Fryer keeps its original discovery semantics; per-source `include_pattern` defaults to the existing Air Fryer regex unless a vertical overrides it.
 
 ## 5.2.0 - 2026-08-18
 

@@ -10,12 +10,13 @@ from urllib.parse import urlsplit, urlunsplit
 
 import yaml
 
-UA = "AirFryerRankingsBot/5.0 (+https://github.com/Chaseagle96/Air-Fryer-Recipes; research crawler)"
+UA = "RecipeIntelligenceBot/5.2 (+https://github.com/Chaseagle96/Recipe-Intelligence; research crawler)"
 HEADERS = {
     "User-Agent": UA,
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 }
-KEY_RE = re.compile(r"(?:air[-_ ]?fry(?:er|ing|ed)|airfry(?:er|ing|ed))", re.I)
+AIR_FRYER_PATTERN = r"(?:air[-_ ]?fry(?:er|ing|ed)|airfry(?:er|ing|ed))"
+KEY_RE = re.compile(AIR_FRYER_PATTERN, re.I)
 SPACE_RE = re.compile(r"[^a-z0-9]+")
 NUMBER_RE = re.compile(r"-?\d[\d,]*(?:\.\d+)?")
 MEASURE_RE = re.compile(
@@ -124,6 +125,8 @@ class SourceConfig:
     discovery_urls: tuple[str, ...] = ()
     rating_selector: str = ""
     count_selector: str = ""
+    include_pattern: str = AIR_FRYER_PATTERN
+    allow_unmatched_discovery_links: bool = True
 
 
 def now_iso() -> str:
@@ -225,6 +228,13 @@ def load_sources(path: str | Path) -> list[SourceConfig]:
                 discovery_urls=tuple(item.get("discovery_urls", []) or []),
                 rating_selector=str(item.get("rating_selector", "") or ""),
                 count_selector=str(item.get("count_selector", "") or ""),
+                include_pattern=str(item.get("include_pattern", defaults.get("include_pattern", AIR_FRYER_PATTERN)) or AIR_FRYER_PATTERN),
+                allow_unmatched_discovery_links=bool(
+                    item.get(
+                        "allow_unmatched_discovery_links",
+                        defaults.get("allow_unmatched_discovery_links", True),
+                    )
+                ),
             )
         )
     return output

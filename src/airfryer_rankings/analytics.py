@@ -6,6 +6,8 @@ from pathlib import Path
 import duckdb
 import pandas as pd
 
+from .runtime import vertical_output_path
+
 
 def _frame(rows) -> pd.DataFrame:
     if isinstance(rows, dict):
@@ -57,7 +59,7 @@ def write_duckdb_cache(
     contracts: dict | None = None,
     dedupe_label_queue: list[dict] | None = None,
 ) -> str:
-    target = Path(path)
+    target = vertical_output_path(path, "air_fryer_analytics.duckdb", "analytics.duckdb")
     target.parent.mkdir(parents=True, exist_ok=True)
     connection = duckdb.connect(str(target))
     try:

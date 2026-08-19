@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import re
 import time
 from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
 
 from .http import get, iter_sitemap_records, make_session, robots_and_sitemaps
-from .models import KEY_RE, UA, SourceConfig
+from .models import UA, SourceConfig
 
 
 def _catalog_update(state: dict, cfg: SourceConfig, url: str, run_at: str, *, lastmod: str = "", method: str = "sitemap") -> bool:
@@ -38,16 +39,32 @@ def _same_domain(url: str, domain: str) -> bool:
     return host == domain or host.endswith("." + domain)
 
 
-def _looks_recipe_link(url: str, text: str, domain: str) -> bool:
+def _compile_include_pattern(cfg: SourceConfig) -> re.Pattern[str]:
+    try:
+        return re.compile(cfg.include_pattern, re.I)
+    except re.error as exc:
+        raise ValueError(f"Invalid include_pattern for {cfg.domain}: {cfg.include_pattern!r}") from exc
+
+
+def _looks_recipe_link(
+    url: str,
+    text: str,
+    domain: str,
+    include_re: re.Pattern[str],
+    *,
+    allow_unmatched: bool = True,
+) -> bool:
     if not _same_domain(url, domain):
         return False
     parsed = urlparse(url)
     path = parsed.path.lower()
     if path in ("", "/") or any(x in path for x in ("/category/", "/tag/", "/author/", "/about", "/contact", "/privacy")):
         return False
-    if KEY_RE.search(url + " " + text):
+    if include_re.search(url + " " + text):
         return True
-    # Category discovery pages may link to air-fryer recipes whose slugs omit the cooking method.
+    if not allow_unmatched:
+        return False
+    # Backward-compatible mode for trusted vertical pages whose recipe slugs omit the cooking method.
     return path.count("/") >= 2 and not path.endswith((".jpg", ".jpeg", ".png", ".webp", ".pdf"))
 
 
@@ -61,6 +78,7 @@ def discover_source_urls(
     started = time.monotonic()
     session = make_session()
     parser, sitemaps, _, robots_status = robots_and_sitemaps(session, cfg)
+    include_re = _compile_include_pattern(cfg)
     seen_sitemaps: set[str] = set()
     max_docs = 300 if mode == "deep" else 120
     matched = 0
@@ -71,7 +89,7 @@ def discover_source_urls(
     for sitemap in sitemaps:
         for record in iter_sitemap_records(session, sitemap, seen=seen_sitemaps, max_docs=max_docs):
             url = record["url"]
-            if not _same_domain(url, cfg.domain) or not KEY_RE.search(url):
+            if not _same_domain(url, cfg.domain) or not include_re.search(url):
                 continue
             try:
                 if not parser.can_fetch(UA, url):
@@ -99,7 +117,13 @@ def discover_source_urls(
         for anchor in soup.find_all("a", href=True):
             href = urljoin(discovery_url, str(anchor.get("href") or "").strip())
             text = anchor.get_text(" ", strip=True)
-            if not _looks_recipe_link(href, text, cfg.domain):
+            if not _looks_recipe_link(
+                href,
+                text,
+                cfg.domain,
+                include_re,
+                allow_unmatched=cfg.allow_unmatched_discovery_links,
+            ):
                 continue
             href = href.split("#", 1)[0]
             newly_discovered += int(_catalog_update(state, cfg, href, run_at, method="category"))
