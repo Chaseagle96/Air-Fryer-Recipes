@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import re
 from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -98,22 +99,42 @@ def _leaderboard_fingerprint(path: str | Path) -> str:
     return hashlib.sha256(target.read_bytes()).hexdigest()
 
 
-def _leaderboard_sources(path: str | Path) -> set[str]:
+def _leaderboard_sources(path: str | Path, sources: list[SourceConfig]) -> set[str]:
+    """Validate leaderboard source membership and any strict vertical semantics."""
+
     target = Path(path)
     if not target.exists():
         raise AuthorityError(f"leaderboard missing: {target}")
+    source_map = {source.domain.lower().strip(): source for source in sources}
+    leaderboard_sources: set[str] = set()
+    vertical_mismatches: list[str] = []
     try:
         with target.open("r", encoding="utf-8", newline="") as handle:
             reader = csv.DictReader(handle)
             if not reader.fieldnames or "source" not in reader.fieldnames:
                 raise AuthorityError("leaderboard is missing required source column")
-            return {
-                str(row.get("source") or "").lower().strip()
-                for row in reader
-                if str(row.get("source") or "").strip()
-            }
+            for row in reader:
+                source = str(row.get("source") or "").lower().strip()
+                if not source:
+                    continue
+                leaderboard_sources.add(source)
+                config = source_map.get(source)
+                if config is None or config.allow_unmatched_discovery_links or not config.include_pattern:
+                    continue
+                haystack = f"{row.get('title', '')} {row.get('url', '')}"
+                try:
+                    matches_vertical = bool(re.search(config.include_pattern, haystack, re.I))
+                except re.error as exc:
+                    raise AuthorityError(f"invalid strict vertical include pattern for {source}: {exc}") from exc
+                if not matches_vertical:
+                    vertical_mismatches.append(f"{source}:{str(row.get('title') or row.get('url') or '')[:100]}")
     except UnicodeDecodeError as exc:
         raise AuthorityError(f"leaderboard is not valid UTF-8 CSV: {target}") from exc
+
+    if vertical_mismatches:
+        sample = ", ".join(vertical_mismatches[:10])
+        raise AuthorityError("leaderboard contains recipes outside strict vertical policy: " + sample)
+    return leaderboard_sources
 
 
 def _update_manifest(path: str | Path | None, authority: dict[str, Any]) -> None:
@@ -202,7 +223,7 @@ def publish_authority(
             f"current catalog regressed below synchronized catalog: current={catalog_count} synced={metrics_catalog_count}"
         )
 
-    leaderboard_sources = _leaderboard_sources(leaderboard_path)
+    leaderboard_sources = _leaderboard_sources(leaderboard_path, sources)
     unauthorized_sources = sorted(leaderboard_sources - effective_source_set)
     if unauthorized_sources:
         raise AuthorityError(
