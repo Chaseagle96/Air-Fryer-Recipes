@@ -11,16 +11,16 @@ final class RecipeIntelligenceUITests: XCTestCase {
         app.launch()
 
         XCTAssertTrue(app.navigationBars["Discover"].waitForExistence(timeout: 8))
-        let save = app.buttons["discover.save"]
-        XCTAssertTrue(save.waitForExistence(timeout: 5))
-        save.tap()
+        let card = app.otherElements["discover.card"]
+        XCTAssertTrue(card.waitForExistence(timeout: 5))
+        card.swipeRight()
 
         app.tabBars.buttons["Saved"].tap()
         XCTAssertTrue(app.navigationBars["Saved"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["Crispy Air Fryer Chicken Thighs"].waitForExistence(timeout: 5))
     }
 
-    func testVerticalSwitchAndNotNowAreIndependentActions() {
+    func testVerticalSwitchAndSwipeSkipAreIndependentActions() {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-testing"]
         app.launch()
@@ -28,10 +28,12 @@ final class RecipeIntelligenceUITests: XCTestCase {
         let slowCooker = app.buttons["vertical.slow_cooker"]
         XCTAssertTrue(slowCooker.waitForExistence(timeout: 5))
         slowCooker.tap()
-        let notNow = app.buttons["discover.notNow"]
-        XCTAssertTrue(notNow.waitForExistence(timeout: 5))
-        notNow.tap()
-        XCTAssertTrue(app.buttons["discover.save"].exists)
+
+        let card = app.otherElements["discover.card"]
+        XCTAssertTrue(card.waitForExistence(timeout: 5))
+        card.swipeLeft()
+
+        XCTAssertTrue(app.otherElements["discover.card"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["discover.undo"].exists)
     }
 
