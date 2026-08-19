@@ -1,26 +1,26 @@
 {
   "failures": [],
   "metrics": {
-    "anomalies": 190,
-    "crawl_success_rate": 0.7337316534614885,
-    "crawl_targets": 7699,
+    "anomalies": 30,
+    "crawl_success_rate": 1.0,
+    "crawl_targets": 100,
     "current_deduplicated_count": 74,
     "current_model_semver": "5.2.0",
     "current_model_version": 5,
     "current_ranked_recipes": 5548,
-    "dom_structure_changes": 168,
-    "extract_success_rate": 0.7350683148991543,
+    "dom_structure_changes": 30,
+    "extract_success_rate": 1.0,
     "model_identity_changed": false,
-    "previous_deduplicated_count": 10,
+    "previous_deduplicated_count": 74,
     "previous_model_semver": "5.2.0",
     "previous_model_version": 5,
-    "previous_ranked_recipes": 1068,
-    "ranked_recipe_retention": 5.194756554307116,
+    "previous_ranked_recipes": 5548,
+    "ranked_recipe_retention": 1.0,
     "ranking_eligible_rate": 0.9868374244041267,
     "sources_stale_24h": 0,
-    "top50_overlap_previous": 0.66
+    "top50_overlap_previous": 1.0
   },
-  "mode": "daily",
+  "mode": "hourly",
   "model_semver": "5.2.0",
   "model_version": 5,
   "passed": true,
@@ -48,8 +48,6 @@
     "top50_overlap_warn_below": 0.5
   },
   "warnings": [
-    "crawl success rate is degraded at 73.4%",
-    "extraction success rate is degraded at 73.5%",
-    "anomaly volume is elevated at 190; review operational diagnostics"
+    "DOM structure changes elevated at 30 across 100 crawl targets"
   ]
 }

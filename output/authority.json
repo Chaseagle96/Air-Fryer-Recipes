@@ -52,10 +52,10 @@
     "wellplated.com",
     "wholesomeyum.com"
   ],
-  "full_catalog_baseline": true,
-  "generation_fingerprint_sha256": "05eeb46e3e25e0d054ed63d3296617b67a616f3488360565de7b409d9a3b5182",
+  "full_catalog_baseline": false,
+  "generation_fingerprint_sha256": "a59569f8ee30bf78dd98273b3bc952467efc3237dbf3aed290a223ade2989f37",
   "input_fingerprint_sha256": "7a8763a513482a8509da69885fea152f65c318ff194fcf958769a0736145967d",
-  "leaderboard_fingerprint_sha256": "d93c61129562372e276db0b6bb4677648c526508d1d42f06586b89773bfeb273",
+  "leaderboard_fingerprint_sha256": "f6c9835da58deeb1efdc2d87e316d9cf173353bf4e7ccc9e576a5fb9987b6840",
   "leaderboard_sources": [
     "airfryingfoodie.com",
     "allrecipes.com",
@@ -97,13 +97,13 @@
   "model_semver": "5.2.0",
   "model_version": 5,
   "ranked_recipe_count": 5548,
-  "ranking_generated_at": "2026-08-19T15:14:11.001155+00:00",
-  "ranking_mode": "daily",
+  "ranking_generated_at": "2026-08-19T17:00:58.676764+00:00",
+  "ranking_mode": "hourly",
   "raw_catalog_url_count": 7699,
   "source_expansion_generated_at": "2026-08-19T10:50:14.279021+00:00",
   "source_fingerprint_sha256": "cc4a986fb67aca38d44a974e209edd92623a60e7eff5401363787d0f1352d51e",
   "source_gate_version": 2,
   "status": "authoritative",
-  "targets_this_run": 7699,
+  "targets_this_run": 100,
   "vertical": "air_fryer"
 }

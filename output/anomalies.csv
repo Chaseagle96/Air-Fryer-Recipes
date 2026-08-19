@@ -1,192 +1,32 @@
 timestamp,severity,type,recipe_id,title,source,url,detail
-2026-08-19T15:14:11.001155+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/category/air-fryer-recipes/halloween/,RetryError
-2026-08-19T15:14:11.001155+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/category/air-fryer-recipes/holidays/,RetryError
-2026-08-19T15:14:11.001155+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/category/air-fryer-recipes/kid-friendly-recipes/,RetryError
-2026-08-19T15:14:11.001155+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/category/air-fryer-recipes/mothers-day-recipes/,RetryError
-2026-08-19T15:14:11.001155+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/category/air-fryer-recipes/popular/,RetryError
-2026-08-19T15:14:11.001155+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/category/air-fryer-recipes/pork/,RetryError
-2026-08-19T15:14:11.001155+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/category/air-fryer-recipes/side-dishes/,RetryError
-2026-08-19T15:14:11.001155+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/category/air-fryer-recipes/snacks/,RetryError
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fried-babybel-cheese/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-oatmeal-crusted-chicken/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-oatmeal-raisin-cookies/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-oatmeal/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-okra/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-omelette/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-onions/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-oreo-cheesecake/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-parmesan-brussel-sprouts/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-parmesan-crusted-chicken/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pasta-chips/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-peach-glazed-chicken/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-peaches/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-peanut-butter-blossoms/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-peanut-butter-cookies/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pears/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pecan-pie/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pesto-pinwheels/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pickle-poppers/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pierogies/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pigs-in-a-blanket/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pistachio-crusted-chicken/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pita-chips/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pita-pizza/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pizookie/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pizza-bombs/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pizza-crescent-rolls/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pizza-egg-rolls/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pizza-pasta-casserole/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pizza-quesadilla/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pizza-rolls/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pizza/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-plantains/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-poached-eggs/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pop-tarts/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-popcorn-chicken/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-popcorn/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pork-belly/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pork-chops/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pork-steaks/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pork-tenderloin/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-potato-chips/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-potato-peelings/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-potato-skins/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-potato-wedges/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-potatoes/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pretzel-bites/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pretzel-dogs/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-protein-cheesecake/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pumpkin-pie/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pumpkin-spice-donut-holes/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pumpkin-spice-pecans/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-quesadillas/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-recipes-for-college/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-reindeer-chow/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-ribeye-steak/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-roasted-garlic/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-roasted-potatoes/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-rolls/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-salmon-cakes/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-salmon/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-sausage-and-peppers/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-sausage-links/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-sausage-patties/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-sausage-rolls/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-scallops/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-scotch-eggs/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-scrambled-eggs/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-seafood-recipes/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-seasoned-french-fries/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-shrimp-recipes/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-shrimp-skewers/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-shrimp-tacos/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-shrimp/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-side-dishes/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-smashed-potatoes/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-smores-crescent-rolls/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-smores-dip/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-smores/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-snickerdoodle-cookies/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-snowball-cookies/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-soft-boiled-eggs/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-soft-pretzels/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-spaghetti-squash/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-spam/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-spiced-pecans/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-squash/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-steak-fries/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-steak/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-stir-fry/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-strawberry-cheesecake-chimichangas/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-strawberry-cheesecake-cottage-cheese-toast/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-strawberry-cheesecake-wontons/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-strawberry-cream-cheese-pie/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-stuffed-chicken/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-stuffed-clams/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-stuffed-mini-peppers/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-stuffed-mushrooms/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-stuffed-peppers/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-stuffing/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-sugar-cookies/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-sugared-pecans/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-super-bowl-recipes/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-swai-fish/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-sweet-and-sour-chicken/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-sweet-potato-chips/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-sweet-potato-cubes/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-sweet-potato-fries/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-sweet-potato-wedges/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-t-bone-steak/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-taco-bombs/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-taco-casserole/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-taco-shells/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-taco-stuffed-shells/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-tater-tots/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-teriyaki-chicken/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-teriyaki-pork-chops/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-teriyaki-salmon-bites/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-texas-toast/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-texas-twinkies/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-tilapia/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-tostinos-pizza/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-trader-joes-orange-chicken/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-truffle-fries/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-tuna-melt/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-tuna-steaks/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-turkey-bacon/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-turkey-burgers/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-turkey-cheese-melt/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-turkey-legs/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-turkey-meatballs/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-turkey-meatloaf/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-twinkies/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-twisted-bacon/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-vegetable-kabobs/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-veggie-tots/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-white-chocolate-chip-peppermint-cookies/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-whole-chicken/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-yogurt-marinated-chicken/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-yorkshire-pudding/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-zucchini-chips/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-zucchini-fries/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-zucchini-fritters/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-zucchini-pizza-boats/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-zucchini/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/aldi-red-bag-chicken/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/bacon-wrapped-recipes-made-in-the-air-fryer/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/bbq-chicken-in-air-fryer/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/benefits-of-air-frying/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,feelgoodfoodie.net,https://feelgoodfoodie.net/recipe/air-fryer-popcorn/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,fetch_error,,,forktospoon.com,https://forktospoon.com/wp-content/uploads/2021/06/Air-Fryer-Apple-Pie-Bombs-84.jpg,ValueError
-2026-08-19T15:14:11.001155+00:00,medium,fetch_error,,,forktospoon.com,https://forktospoon.com/wp-content/uploads/2021/06/Air-Fryer-Apple-Pie-Bombs-90.jpg,ValueError
-2026-08-19T15:14:11.001155+00:00,medium,fetch_error,,,forktospoon.com,https://forktospoon.com/wp-content/uploads/2021/06/Air-Fryer-Sweet-Potato-Fries-2021-06-16T081020.602.jpg,ValueError
-2026-08-19T15:14:11.001155+00:00,medium,fetch_error,,,forktospoon.com,https://forktospoon.com/wp-content/uploads/2021/06/Air-Fryer-Sweet-Potato-Fries-2021-06-29T095518.415.jpg,ValueError
-2026-08-19T15:14:11.001155+00:00,medium,fetch_error,,,forktospoon.com,https://forktospoon.com/wp-content/uploads/2022/08/Kohls-Black-Friday-Air-Fryer-Deals-LIVE-NOW-82-768x644-1.webp,ValueError
-2026-08-19T15:14:11.001155+00:00,medium,fetch_error,,,forktospoon.com,https://forktospoon.com/wp-content/uploads/2022/10/Reheat-Bread-In-Air-Fryer-1.png,ValueError
-2026-08-19T15:14:11.001155+00:00,medium,fetch_error,,,forktospoon.com,https://forktospoon.com/wp-content/uploads/2022/10/Reheat-Bread-In-Air-Fryer-2.png,ValueError
-2026-08-19T15:14:11.001155+00:00,medium,fetch_error,,,forktospoon.com,https://forktospoon.com/wp-content/uploads/2022/10/Where-To-Put-Air-Fryer-In-Kitchen-1-1.png,ValueError
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,natashaskitchen.com,https://natashaskitchen.com/air-fryer-chicken-wings/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,natashaskitchen.com,https://natashaskitchen.com/air-fryer-baked-potatoes/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,natashaskitchen.com,https://natashaskitchen.com/air-fryer-french-fries/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,natashaskitchen.com,https://natashaskitchen.com/air-fryer-bacon/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,fetch_error,,,platedcravings.com,https://platedcravings.com/air-fryer-croutons/,RetryError
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/284657/air-fryer-blueberry-crisp/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/8453018/easy-air-fryer-whole-chicken/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/270194/air-fryer-buffalo-chicken-wings/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/275390/air-fryer-sausage-patties/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/286358/air-fryer-buttermilk-biscuits/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/278581/air-fryer-french-fries/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/8381341/air-fryer-grilled-cheese/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/275679/air-fryer-mushrooms/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/280419/air-fryer-artichoke-hearts/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/275991/air-fryer-baba-ganoush/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/8375342/air-fryer-lemon-pepper-wings/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/air-fryer-chicken-legs-recipe-8553696,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,high,recipe_disappeared,,,bbcgoodfood.com,https://www.bbcgoodfood.com/howto/guide/summer-air-fryer-recipes,404
-2026-08-19T15:14:11.001155+00:00,high,recipe_disappeared,,,bbcgoodfood.com,https://www.bbcgoodfood.com/recipes/air-fryer-apple-pancakes,404
-2026-08-19T15:14:11.001155+00:00,high,recipe_disappeared,,,bbcgoodfood.com,https://www.bbcgoodfood.com/recipes/air-fryer-chocolate-fondants-2,404
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,lecremedelacrumb.com,https://www.lecremedelacrumb.com/air-fryer-potatoes/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,dom_structure_changed,,,skinnytaste.com,https://www.skinnytaste.com/air-fryer-baked-potato/,publisher markup contract changed
-2026-08-19T15:14:11.001155+00:00,medium,fetch_error,,,tasteofhome.com,https://www.tasteofhome.com/article/air-fryer-liner-baking-hack/,RetryError
-2026-08-19T15:14:11.001155+00:00,medium,fetch_error,,,tasteofhome.com,https://www.tasteofhome.com/article/air-fryer-oreos/,RetryError
-2026-08-19T15:14:11.001155+00:00,medium,publisher_dom_contract_changes,,,,,dom_structure_changes=168 threshold=0 above
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,natashaskitchen.com,https://natashaskitchen.com/air-fryer-chicken-wings/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,natashaskitchen.com,https://natashaskitchen.com/air-fryer-baked-potatoes/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,natashaskitchen.com,https://natashaskitchen.com/air-fryer-french-fries/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,natashaskitchen.com,https://natashaskitchen.com/air-fryer-bacon/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,natashaskitchen.com,https://natashaskitchen.com/air-fryer-pork-chops-recipe/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,natashaskitchen.com,https://natashaskitchen.com/air-fryer-potatoes/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,natashaskitchen.com,https://natashaskitchen.com/air-fryer-sweet-potato-fries/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,natashaskitchen.com,https://natashaskitchen.com/air-fryer-chicken-thighs/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/270940/air-fryer-eggplant-parmesan/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/275553/breaded-air-fryer-pork-chops/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/278581/air-fryer-french-fries/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/8381341/air-fryer-grilled-cheese/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/275548/air-fryer-meatballs/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/8453018/easy-air-fryer-whole-chicken/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/276006/air-fryer-lobster-tails-with-lemon-garlic-butter/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/270194/air-fryer-buffalo-chicken-wings/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/275390/air-fryer-sausage-patties/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/278702/air-fryer-chimichangas/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/272859/keto-lemon-garlic-chicken-thighs-in-the-air-fryer/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/286358/air-fryer-buttermilk-biscuits/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/275255/air-fryer-bbq-baby-back-ribs/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/275679/air-fryer-mushrooms/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/280419/air-fryer-artichoke-hearts/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/277907/air-fryer-dry-rubbed-pork-tenderloin-with-broccoli/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,pinchofyum.com,https://pinchofyum.com/air-fryer-salmon,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,pinchofyum.com,https://pinchofyum.com/air-fryer-chicken-thighs,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,spendwithpennies.com,https://www.spendwithpennies.com/air-fryer-hamburgers/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,spendwithpennies.com,https://www.spendwithpennies.com/air-fryer-whole-chicken/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,spendwithpennies.com,https://www.spendwithpennies.com/air-fryer-zucchini/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,dom_structure_changed,,,platedcravings.com,https://platedcravings.com/air-fryer-chicken-wings/,publisher markup contract changed
+2026-08-19T17:00:58.676764+00:00,medium,publisher_dom_contract_changes,,,,,dom_structure_changes=30 threshold=0 above
