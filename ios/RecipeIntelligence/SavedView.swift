@@ -1,7 +1,7 @@
 import SwiftData
 import SwiftUI
 
-private enum SavedSortOption: String, CaseIterable, Identifiable {
+private enum SavedSortOption: String, CaseIterable, Identifiable, Hashable {
     case recentlySaved = "Recently Saved"
     case recipeRank = "Recipe Intelligence Rank"
     case personalRating = "My Rating"
