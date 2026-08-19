@@ -1,0 +1,76 @@
+name: Recipe Intelligence iOS
+
+on:
+  pull_request:
+    paths:
+      - 'ios/**'
+      - 'api/verticals.json'
+      - 'src/airfryer_rankings/app_feed.py'
+      - 'src/airfryer_rankings/dashboard.py'
+      - 'src/airfryer_rankings/ranking.py'
+  push:
+    branches: [main]
+    paths:
+      - 'ios/**'
+      - 'api/verticals.json'
+      - 'src/airfryer_rankings/app_feed.py'
+      - 'src/airfryer_rankings/dashboard.py'
+      - 'src/airfryer_rankings/ranking.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Show Xcode environment
+        run: |
+          xcodebuild -version
+          xcodebuild -project ios/RecipeIntelligence.xcodeproj -list
+
+      - name: Build iOS simulator app
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project ios/RecipeIntelligence.xcodeproj \
+            -scheme RecipeIntelligence \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Select simulator
+        id: simulator
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, subprocess
+          data = json.loads(subprocess.check_output(["xcrun", "simctl", "list", "devices", "available", "-j"]))
+          for runtime, devices in data["devices"].items():
+              if "iOS" not in runtime:
+                  continue
+              for device in devices:
+                  if device.get("isAvailable") and device.get("name", "").startswith("iPhone"):
+                      print(f"udid={device['udid']}")
+                      print(f"name={device['name']}")
+                      raise SystemExit
+          raise SystemExit("No available iPhone simulator found")
+          PY
+
+      - name: Run unit and UI tests
+        run: |
+          set -o pipefail
+          xcrun simctl boot "${{ steps.simulator.outputs.udid }}" || true
+          xcodebuild \
+            -project ios/RecipeIntelligence.xcodeproj \
+            -scheme RecipeIntelligence \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.udid }}" \
+            CODE_SIGNING_ALLOWED=NO \
+            test

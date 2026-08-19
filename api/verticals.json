@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "verticals": [
+    {
+      "id": "air_fryer",
+      "name": "Air Fryer",
+      "icon": "wind",
+      "available": true,
+      "manifest_url": "https://raw.githubusercontent.com/Chaseagle96/Recipe-Intelligence/main/docs/api/manifest.json"
+    },
+    {
+      "id": "slow_cooker",
+      "name": "Slow Cooker",
+      "icon": "clock.arrow.circlepath",
+      "available": true,
+      "manifest_url": "https://raw.githubusercontent.com/Chaseagle96/Recipe-Intelligence/main/verticals/slow_cooker/docs/api/manifest.json"
+    }
+  ]
+}
