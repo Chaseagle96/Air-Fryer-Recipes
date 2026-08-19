@@ -33,11 +33,13 @@ def build_pipeline_metrics(
     total_targets = len(targets)
     fetched = sum(int(row.get("fetched", 0) or 0) for row in coverage)
     not_modified = sum(int(row.get("not_modified", 0) or 0) for row in coverage)
+    recognized = sum(int(row.get("recognized_recipes", 0) or 0) for row in coverage)
     verified = sum(int(row.get("verified_recipes", 0) or 0) for row in coverage)
     errors = sum(int(row.get("errors", 0) or 0) for row in coverage)
     conflicts = sum(1 for row in rows if getattr(row, "evidence_status", None) == "conflict")
     eligible_denominator = max(1, len(state.get("recipes", {})))
     transport_successes = fetched + not_modified
+    extraction_rate = _rate(recognized, max(1, transport_successes))
     verification_rate = _rate(verified, max(1, transport_successes))
     latencies = [
         float(row.get("elapsed_seconds", 0.0)) / max(1, int(row.get("targets", 0) or 0))
@@ -66,12 +68,13 @@ def build_pipeline_metrics(
         "crawl_targets": total_targets,
         "pages_fetched": fetched,
         "pages_not_modified": not_modified,
+        "recognized_recipe_responses": recognized,
         "verified_recipe_responses": verified,
         "crawl_errors": errors,
         "crawl_success_rate": _rate(transport_successes, max(1, total_targets)),
         "fetch_success_rate": _rate(transport_successes, max(1, total_targets)),
+        "extract_success_rate": extraction_rate,
         "recipe_verification_rate": verification_rate,
-        "extract_success_rate": verification_rate,
         "ranking_eligible_rate": _rate(len(ranked), eligible_denominator),
         "evidence_conflict_rate": _rate(conflicts, max(1, len(rows))),
         "robots_denials": sum(1 for event in crawl_events if event.get("type") == "robots_denied"),

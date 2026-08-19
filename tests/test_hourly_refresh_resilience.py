@@ -1,4 +1,5 @@
 from airfryer_rankings.crawler import select_refresh_targets
+from airfryer_rankings.extract import extract_recipe_from_html
 from airfryer_rankings.models import SourceConfig
 from airfryer_rankings.observability import build_pipeline_metrics
 
@@ -57,13 +58,38 @@ def test_recent_unverified_urls_are_deprioritized():
     assert targets[0]["url"] == "https://x.com/healthy"
 
 
-def test_crawl_success_rate_measures_transport_not_rating_verification():
+def test_ratingless_jsonld_recipe_is_structurally_recognized():
+    html = '''
+    <html><head>
+      <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Recipe",
+        "name": "Slow Cooker Soup",
+        "recipeIngredient": ["1 onion", "2 cups broth"],
+        "recipeInstructions": ["Combine ingredients", "Cook until tender"]
+      }
+      </script>
+    </head><body></body></html>
+    '''
+    row, metadata = extract_recipe_from_html(
+        html,
+        "https://example.com/slow-cooker-soup",
+        "example.com",
+    )
+
+    assert row is None
+    assert metadata["recipe_recognized"] is True
+
+
+def test_crawl_success_and_extraction_are_independent_of_rating_verification():
     coverage = [
         {
             "source": "example.com",
             "targets": 100,
             "fetched": 97,
             "not_modified": 3,
+            "recognized_recipes": 90,
             "verified_recipes": 38,
             "errors": 0,
             "elapsed_seconds": 50.0,
@@ -85,5 +111,6 @@ def test_crawl_success_rate_measures_transport_not_rating_verification():
 
     assert metrics["crawl_success_rate"] == 1.0
     assert metrics["fetch_success_rate"] == 1.0
+    assert metrics["extract_success_rate"] == 0.90
     assert metrics["recipe_verification_rate"] == 0.38
-    assert metrics["extract_success_rate"] == 0.38
+    assert metrics["recognized_recipe_responses"] == 90
