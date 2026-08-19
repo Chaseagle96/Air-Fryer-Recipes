@@ -15,12 +15,18 @@ def fresh(item: dict, now: datetime, stale_days: int) -> bool:
     return bool(observed and observed >= now - timedelta(days=stale_days))
 
 
-def eligible_current(state: dict, stale_days: int, now: datetime | None = None) -> list[dict]:
+def eligible_current(
+    state: dict,
+    stale_days: int,
+    now: datetime | None = None,
+    allowed_sources: set[str] | None = None,
+) -> list[dict]:
     now = now or datetime.now(timezone.utc)
     return [
         dict(item)
         for item in state.get("recipes", {}).values()
-        if fresh(item, now, stale_days)
+        if (allowed_sources is None or str(item.get("source") or "") in allowed_sources)
+        and fresh(item, now, stale_days)
         and int(item.get("rating_count", 0)) > 0
         and float(item.get("evidence_confidence", 0.60)) >= 0.60
         and item.get("evidence_status") != "conflict"
