@@ -15,7 +15,7 @@ For deterministic UI tests, launch with `--ui-testing`; the app uses representat
 ## Architecture
 
 - `Models.swift`: versioned Recipe Intelligence DTOs and product enums.
-- `Networking.swift`: async/await Recipe Intelligence client with vertical discovery, version-aware manifests and paged feeds.
+- `Networking.swift`: async/await Recipe Intelligence client with vertical discovery, version-aware manifests and paged ranked/corpus feeds.
 - `PersistenceModels.swift`: private local SwiftData entities for cache, profiles, households, saves, events, notes, reviews, cooking history, meal plans and shopping items.
 - `RecommendationService.swift`: replaceable MVP recommendation interface plus a separate household-convergence interface.
 - `ShoppingListService.swift`: ingredient parsing, conservative quantity merging and grocery categorization.
@@ -26,17 +26,30 @@ Remote Recipe Intelligence evidence is conceptually separate from private user-o
 
 ## Mobile backend contract
 
-`api/verticals.json` enumerates available verticals. Each vertical points to its own `docs/api/manifest.json`, which declares the total ranked recipe count and ordered page files. Pages contain up to 100 recipes and expose:
+`api/verticals.json` enumerates available verticals. Each vertical points to its own `docs/api/manifest.json`. One manifest exposes two coordinated views of the same Recipe Intelligence vertical:
 
-- recipe and vertical IDs;
-- title, publisher, author and canonical source URL;
-- recipe image URL;
-- factual ingredient lines;
-- vertical rank, rating and rating count;
-- evidence/rank confidence and provenance;
-- instruction availability/count without republishing publisher instruction prose.
+1. `pages`: the ordered, deduplicated, evidence-gated current leaderboard used by default Discover. Existing `recipe_count` remains the backwards-compatible ranked count.
+2. `corpus_pages`: every normalized recipe record currently retained in that vertical's Recipe Intelligence state, including records outside the current leaderboard.
 
-This is a serving projection only. It does not change Bayesian ranking, priors, calibration, dedupe or vertical isolation.
+Pages contain up to 100 recipes and expose factual/derived fields such as recipe and vertical IDs, title, publisher, author, canonical source URL, image URL, ingredient lines, rating evidence, ranking statistics when applicable, and instruction availability/count without republishing publisher instruction prose.
+
+Full-corpus records also carry serving metadata:
+
+- `is_ranked` and `discover_eligible`: whether the record belongs to the authoritative current leaderboard;
+- `explore_eligible`: whether the record can safely participate in broader personalized/exploratory retrieval;
+- `serveability`: `discover`, `explore`, `archive`, or `suppressed`;
+- `status_reasons`: machine-readable reasons such as `stale`, `no_rating_evidence`, `low_evidence`, `evidence_conflict`, `missing_title`, `missing_source_url`, or `duplicate_alias`;
+- duplicate representative/group metadata where available.
+
+The iOS client exposes `fetchRecipePage` for the ranked Discover feed and `fetchCorpusPage` for the broader knowledge base. The MVP Discover deck intentionally continues using the ranked feed. Future personalized search, household convergence, saved-recipe recovery, and deep exploration can retrieve the wider corpus without weakening Recipe Intelligence's global ranking gate.
+
+The corpus is built from recipes Recipe Intelligence has actually normalized into state. A URL that has merely been discovered, but has never produced a usable normalized recipe record, is counted as catalog coverage rather than being invented as a serveable recipe. `catalog_url_count` in the manifest preserves that distinction.
+
+This is a serving projection only. It does not change Bayesian ranking, priors, calibration, dedupe, crawl state or vertical isolation.
+
+### Zero-rescan backfill
+
+`scripts/backfill_mobile_corpus.py` publishes the full corpus from the existing local state plus the existing leaderboard. It performs no web discovery or recipe crawl and does not modify ranking history. `.github/workflows/mobile-corpus-backfill.yml` runs that projection for Air Fryer and Slow Cooker and commits only their generated `docs/api` serving artifacts. Normal future production refreshes regenerate the corpus automatically from each vertical's current state.
 
 ## Live ranking refresh
 
@@ -73,6 +86,7 @@ Every swipe action has an explicit button equivalent. Recipe cards expose VoiceO
 - No public/social reviews or copied publisher comments.
 - Publisher instruction prose is not republished; cooking directions open the canonical source page.
 - Recommendation logic is a transparent quality/evidence/diversity baseline, not a trained Spotify-level model yet.
+- Default Discover intentionally uses only the current ranked feed; full-corpus retrieval is an available data capability for the next personalization/search surfaces, not a license to show stale or suppressed records indiscriminately.
 - Shopping normalization is intentionally conservative and does not convert incompatible units.
 - Meal planning is one-week local planning without Calendar integration.
 - Household convergence is architected but not learned yet.
@@ -80,4 +94,4 @@ Every swipe action has an explicit button equivalent. Recipe cards expose VoiceO
 
 ## Validation
 
-`.github/workflows/ios.yml` performs a real Xcode simulator build and executes unit plus UI tests on a macOS runner. Python CI independently validates the mobile serving projection and ensures Air Fryer/Slow Cooker ranking pipelines remain healthy.
+`.github/workflows/ios.yml` performs a real Xcode simulator build and executes unit plus UI tests on a macOS runner. Python CI independently validates the ranked and full-corpus serving projections and ensures Air Fryer/Slow Cooker ranking pipelines remain healthy.
