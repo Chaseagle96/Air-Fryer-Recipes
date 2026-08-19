@@ -12,6 +12,7 @@ from .source_registry import load_source_registry
 from .storage import load_state
 
 AUTHORITY_CONTRACT_VERSION = 1
+FULL_REFRESH_MODES = {"daily", "deep", "backfill"}
 
 
 class AuthorityError(RuntimeError):
@@ -111,11 +112,11 @@ def publish_authority(
     public_authority_path: str | Path | None = None,
     manifest_path: str | Path | None = None,
 ) -> dict[str, Any]:
-    """Fail closed unless the serving leaderboard is newer than source/catalog activation.
+    """Fail closed unless the serving leaderboard matches current production inputs.
 
-    The contract proves that the ranking summary was generated from the exact effective
-    source set and persistent catalog currently checked out, and that source catalog
-    synchronization completed after the most recent source-expansion generation.
+    A changed source/catalog/model generation must first receive a full refresh. Once
+    that baseline is certified, hourly incremental runs may inherit authority while
+    the input fingerprint remains unchanged.
     """
 
     summary = _read_json(summary_path)
@@ -134,13 +135,9 @@ def publish_authority(
     summary_source_count = int(summary.get("configured_sources") or 0)
     summary_catalog_count = int(summary.get("catalog_urls") or 0)
     if summary_source_count != len(sources):
-        raise AuthorityError(
-            f"source mismatch: summary={summary_source_count} current={len(sources)}"
-        )
+        raise AuthorityError(f"source mismatch: summary={summary_source_count} current={len(sources)}")
     if summary_catalog_count != catalog_count:
-        raise AuthorityError(
-            f"catalog mismatch: summary={summary_catalog_count} current={catalog_count}"
-        )
+        raise AuthorityError(f"catalog mismatch: summary={summary_catalog_count} current={catalog_count}")
 
     source_gate_version = int(registry.get("source_gate_version") or 0)
     metrics_gate_version = int(metrics.get("source_gate_version") or 0)
@@ -167,7 +164,6 @@ def publish_authority(
             f"current catalog regressed below synchronized catalog: current={catalog_count} synced={metrics_catalog_count}"
         )
 
-    leaderboard_hash = _leaderboard_fingerprint(leaderboard_path)
     input_fingerprint = _canonical_hash(
         {
             "authority_contract_version": AUTHORITY_CONTRACT_VERSION,
@@ -178,6 +174,19 @@ def publish_authority(
             "model_semver": str(summary.get("model_semver") or ""),
         }
     )
+    existing = _read_json(authority_path)
+    inherited_input_authority = (
+        existing.get("authoritative") is True
+        and existing.get("input_fingerprint_sha256") == input_fingerprint
+        and existing.get("catalog_sync_generated_at") == metrics.get("catalog_sync_generated_at")
+    )
+    run_mode = str(summary.get("mode") or "")
+    if not inherited_input_authority and run_mode not in FULL_REFRESH_MODES:
+        raise AuthorityError(
+            "new source/catalog/model generation requires a daily, deep, or backfill refresh before certification"
+        )
+
+    leaderboard_hash = _leaderboard_fingerprint(leaderboard_path)
     generation_fingerprint = _canonical_hash(
         {
             "input_fingerprint": input_fingerprint,
@@ -203,6 +212,7 @@ def publish_authority(
         "source_expansion_generated_at": metrics.get("generated_at"),
         "catalog_sync_generated_at": metrics.get("catalog_sync_generated_at"),
         "ranking_generated_at": summary.get("generated_at"),
+        "ranking_mode": run_mode,
         "ranked_recipe_count": int(summary.get("ranked_recipes") or 0),
         "model_version": summary.get("model_version"),
         "model_semver": summary.get("model_semver"),
