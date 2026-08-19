@@ -280,7 +280,7 @@ def test_jsonld_histogram_is_preserved_and_used():
     assert ranked[0]["uncertainty_method"] == "rating_histogram"
 
 
-def test_empirical_uncertainty_activates_after_minimum_sample_pairs():
+def test_empirical_uncertainty_requires_temporal_and_cross_recipe_maturity():
     observations = []
     for i in range(32):
         observations.append({
@@ -288,8 +288,13 @@ def test_empirical_uncertainty_activates_after_minimum_sample_pairs():
             "rating": 4.7 + (0.01 if i % 2 else 0.0), "rating_count": 100 + i,
         })
     calibration = build_empirical_uncertainty(observations)
-    assert calibration["100-499"]["sample_pairs"] >= 30
-    assert calibration["100-499"]["ready"] is True
+    bucket = calibration["100-499"]
+    assert bucket["sample_pairs"] == 1
+    assert bucket["unique_recipes"] == 1
+    assert bucket["meets_pair_count"] is False
+    assert bucket["meets_unique_recipe_count"] is False
+    assert bucket["meets_history_span"] is False
+    assert bucket["ready"] is False
 
 
 def test_review_velocity_and_longitudinal_metrics_are_exposed():
