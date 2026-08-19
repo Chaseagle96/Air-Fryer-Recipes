@@ -115,6 +115,7 @@ jobs:
             max_urls: 2
             delay: 0.05
             include_pattern: '(?:slow[-_ ]?cook(?:er|ing|ed)|crock[-_ ]?pot)'
+            allow_unmatched_discovery_links: false
           sources:
             - domain: skinnytaste.com
               discovery_urls:
@@ -153,6 +154,7 @@ jobs:
           fi
           python - <<'PY'
           import json
+          import re
           from pathlib import Path
 
           path = Path("output/summary.json")
@@ -167,8 +169,16 @@ jobs:
           assert Path("output/slow_cooker_analytics.duckdb").exists()
           assert Path("docs/index.html").exists()
           assert payload["vertical"] == "slow_cooker"
+          assert int(payload.get("ranked_recipes") or 0) > 0, "Slow Cooker smoke run produced no ranked recipes"
           assert str(payload.get("analytics_cache_file", "")).endswith("slow_cooker_analytics.duckdb")
           assert "Slow Cooker" in Path("docs/index.html").read_text(encoding="utf-8")
+
+          vertical_re = re.compile(r"(?:slow[-_ ]?cook(?:er|ing|ed)|crock[-_ ]?pot)", re.I)
+          top = payload.get("top10") or []
+          assert top, "Slow Cooker smoke run produced no Top recipes"
+          assert all(vertical_re.search(f"{row.get('title', '')} {row.get('url', '')}") for row in top), (
+              "Slow Cooker smoke leaderboard contains a recipe without Slow Cooker/Crock-Pot semantics"
+          )
           PY
 
       - name: Upload Slow Cooker Excel workbook
