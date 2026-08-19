@@ -1,21 +1,6 @@
 name: Recipe Intelligence Authoritative Refresh
-# Manual full-refresh trigger: 2026-08-19T15:39:00Z
 
 on:
-  workflow_run:
-    workflows:
-      - Recipe Intelligence Source Catalog Sync
-    types: [completed]
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/hourly.yml'
-      - '.github/workflows/slow-cooker.yml'
-      - '.github/workflows/authority-invalidate.yml'
-      - '.github/workflows/authoritative-refresh.yml'
-      - '.github/workflows/authority-postcheck.yml'
-      - 'src/airfryer_rankings/authority.py'
-      - 'scripts/ranking_authority.py'
   workflow_dispatch:
 
 permissions:
@@ -28,10 +13,6 @@ concurrency:
 
 jobs:
   dispatch:
-    if: >-
-      github.event_name == 'push' ||
-      github.event_name == 'workflow_dispatch' ||
-      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -47,5 +28,5 @@ jobs:
 
       - name: Record dispatch contract
         run: |
-          echo 'Both production verticals were dispatched in daily mode.'
-          echo 'Serving authority remains refresh_required until their successful workflow_run postchecks publish a matching authority generation.'
+          echo 'Both production verticals were manually dispatched in daily mode.'
+          echo 'Automatic source/catalog recovery is serialized through Recipe Intelligence Authority Invalidation so invalidation always finishes before these full refreshes start.'
