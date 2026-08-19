@@ -114,6 +114,7 @@ def main() -> None:
     previous_summary, previous_rankings = load_previous_serving_snapshot("output")
     state = load_state(args.state)
     sources = load_sources(args.sources)
+    allowed_source_domains = {source.domain for source in sources}
     model_params, model_payload = load_model_config(args.model_config)
     storage_policy = load_storage_policy(args.storage_config)
     quality_policy = load_quality_gate_policy(args.slo_config)
@@ -181,6 +182,7 @@ def main() -> None:
         historical_metrics=historical_metrics,
         model_params=model_params,
         model_config_path=args.model_config,
+        allowed_sources=allowed_source_domains,
     )
     validate_records(ranked, validate_ranked_recipe)
     temporal = temporal_anomalies(ranked, run_at)
@@ -292,6 +294,11 @@ def main() -> None:
     calibration_ready = sum(1 for row in uncertainty_calibration.values() if row.get("ready"))
     evidence_calibration_ready = sum(1 for row in evidence_calibration.values() if row.get("ready"))
     migration_after = state.get("migration", {})
+    eligible_catalog_urls = sum(
+        1
+        for entry in state.get("url_catalog", {}).values()
+        if isinstance(entry, dict) and str(entry.get("source") or "").lower().strip() in allowed_source_domains
+    )
     method_row = {
         "generated_at": run_at,
         "requested_mode": requested_mode,
@@ -304,6 +311,7 @@ def main() -> None:
         "ranked_recipes": len(ranked),
         "configured_sources": len(sources),
         "catalog_urls": len(state.get("url_catalog", {})),
+        "eligible_catalog_urls": eligible_catalog_urls,
         "targets_this_run": len(targets),
         "global_prior": method.get("global_prior"),
         "volume_prior_m": method.get("volume_prior_m"),
