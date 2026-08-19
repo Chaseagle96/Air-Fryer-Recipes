@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import itertools
+import math
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from statistics import mean
@@ -10,6 +11,8 @@ from typing import Any
 from .model_config import ModelParameters
 from .models import parse_dt
 from .ranking_components import score_current, spearman
+
+BASELINE_FAMILIES = ("raw_rating", "confidence_lcb", "simple_bayesian")
 
 
 def _normalized_observations(observations: list[dict]) -> list[dict]:
@@ -120,11 +123,8 @@ def _config_id(params: ModelParameters) -> str:
     return hashlib.sha256(payload).hexdigest()[:12]
 
 
-def _evaluate_window(current: list[dict], future: dict[str, dict], params: ModelParameters) -> dict | None:
-    if not current or not future:
-        return None
-    ranked, _ = score_current(current, calibration=None, params=params)
-    predicted = {row["recipe_id"]: row for row in ranked if row["recipe_id"] in future}
+def _prediction_metrics(predicted_rows: list[dict], future: dict[str, dict]) -> dict | None:
+    predicted = {row["recipe_id"]: row for row in predicted_rows if row["recipe_id"] in future}
     ids = list(predicted)
     if len(ids) < 5:
         return None
@@ -153,6 +153,73 @@ def _evaluate_window(current: list[dict], future: dict[str, dict], params: Model
     }
 
 
+def _evaluate_window(current: list[dict], future: dict[str, dict], params: ModelParameters) -> dict | None:
+    if not current or not future:
+        return None
+    ranked, _ = score_current(current, calibration=None, params=params)
+    return _prediction_metrics(ranked, future)
+
+
+def _baseline_predictions(current: list[dict], family: str) -> list[dict]:
+    if family not in BASELINE_FAMILIES or not current:
+        return []
+    ratings = [float(row["normalized_rating"]) for row in current]
+    counts = [max(1, int(row["rating_count"])) for row in current]
+    weights = [math.sqrt(count) for count in counts]
+    global_prior = sum(rating * weight for rating, weight in zip(ratings, weights, strict=True)) / sum(weights)
+    rows: list[dict] = []
+    for item in current:
+        rating = float(item["normalized_rating"])
+        count = max(1, int(item["rating_count"]))
+        if family == "raw_rating":
+            posterior = rating
+            score = rating
+        elif family == "confidence_lcb":
+            posterior = rating
+            # A distribution-free lower-confidence analogue for bounded 1-5 star ratings.
+            score = max(0.0, rating - min(0.50, 1.96 * 2.5 / math.sqrt(count)))
+        else:
+            m = 50.0
+            posterior = (count / (count + m)) * rating + (m / (count + m)) * global_prior
+            score = posterior
+        rows.append(
+            {
+                "recipe_id": item["recipe_id"],
+                "rating_count": count,
+                "posterior_mean": posterior,
+                "hierarchical_score": score,
+            }
+        )
+    rows.sort(key=lambda row: (row["hierarchical_score"], math.log1p(row["rating_count"])), reverse=True)
+    for rank, row in enumerate(rows, 1):
+        row["rank"] = rank
+    return rows
+
+
+def _summarize_windows(window_results: list[dict]) -> list[dict]:
+    grouped: dict[str, list[dict]] = defaultdict(list)
+    for row in window_results:
+        grouped[row["config_id"]].append(row)
+    summaries: list[dict] = []
+    for config_id, values in grouped.items():
+        correlations = [row["spearman_future_quality"] for row in values if row["spearman_future_quality"] is not None]
+        summaries.append(
+            {
+                "config_id": config_id,
+                "model_family": values[0].get("model_family", "hierarchical"),
+                "is_active": bool(values[0].get("is_active")),
+                "windows": len(values),
+                "total_recipe_evaluations": sum(int(row["recipes"]) for row in values),
+                "mean_spearman_future_quality": mean(correlations) if correlations else None,
+                "mean_posterior_mae": mean(float(row["posterior_mae"]) for row in values),
+                "mean_score_mae": mean(float(row["score_mae"]) for row in values),
+                "mean_top10_overlap": mean(float(row["top10_overlap"]) for row in values),
+                "parameters": values[0].get("parameters", {}),
+            }
+        )
+    return summaries
+
+
 def run_historical_backtest(
     observations: list[dict],
     active: ModelParameters,
@@ -174,6 +241,7 @@ def run_historical_backtest(
             "minimum_history_days": minimum_history_days,
             "windows": [],
             "configurations": [],
+            "baseline_configurations": [],
             "recommendation": None,
             "reason": "insufficient_longitudinal_history",
         }
@@ -194,6 +262,7 @@ def run_historical_backtest(
 
     configurations = _configuration_grid(model_payload, active)
     window_results: list[dict] = []
+    baseline_results: list[dict] = []
     for cutoff, horizon in candidate_cutoffs:
         current = _asof_current(rows, cutoff)
         future = _future_targets(rows, cutoff, horizon)
@@ -206,32 +275,30 @@ def run_historical_backtest(
                     "cutoff": cutoff.isoformat(),
                     "horizon_days": horizon,
                     "config_id": _config_id(params),
+                    "model_family": "hierarchical",
                     "is_active": params == active,
                     "parameters": params.to_dict(),
                     **metrics,
                 }
             )
+        for family in BASELINE_FAMILIES:
+            metrics = _prediction_metrics(_baseline_predictions(current, family), future)
+            if not metrics:
+                continue
+            baseline_results.append(
+                {
+                    "cutoff": cutoff.isoformat(),
+                    "horizon_days": horizon,
+                    "config_id": f"baseline:{family}",
+                    "model_family": family,
+                    "is_active": False,
+                    "parameters": {},
+                    **metrics,
+                }
+            )
 
-    grouped: dict[str, list[dict]] = defaultdict(list)
-    for row in window_results:
-        grouped[row["config_id"]].append(row)
-    summaries: list[dict] = []
-    for config_id, values in grouped.items():
-        parameter_payload = values[0]["parameters"]
-        correlations = [row["spearman_future_quality"] for row in values if row["spearman_future_quality"] is not None]
-        summaries.append(
-            {
-                "config_id": config_id,
-                "is_active": bool(values[0]["is_active"]),
-                "windows": len(values),
-                "total_recipe_evaluations": sum(int(row["recipes"]) for row in values),
-                "mean_spearman_future_quality": mean(correlations) if correlations else None,
-                "mean_posterior_mae": mean(float(row["posterior_mae"]) for row in values),
-                "mean_score_mae": mean(float(row["score_mae"]) for row in values),
-                "mean_top10_overlap": mean(float(row["top10_overlap"]) for row in values),
-                "parameters": parameter_payload,
-            }
-        )
+    summaries = _summarize_windows(window_results)
+    baseline_summaries = _summarize_windows(baseline_results)
     eligible = [
         row
         for row in summaries
@@ -245,6 +312,14 @@ def run_historical_backtest(
         )
     )
     recommendation = eligible[0] if eligible else None
+    all_summaries = [*summaries, *baseline_summaries]
+    all_summaries.sort(
+        key=lambda row: (
+            -(row["mean_spearman_future_quality"] if row["mean_spearman_future_quality"] is not None else -1.0),
+            row["mean_posterior_mae"],
+        )
+    )
+    best_model_family = all_summaries[0]["model_family"] if all_summaries else None
     return {
         "ready": bool(recommendation),
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -253,14 +328,12 @@ def run_historical_backtest(
         "minimum_windows": minimum_windows,
         "minimum_recipes": minimum_recipes,
         "automatic_parameter_promotion": bool(policy.get("automatic_parameter_promotion", False)),
-        "windows": window_results,
-        "configurations": sorted(
-            summaries,
-            key=lambda row: (
-                -(row["mean_spearman_future_quality"] if row["mean_spearman_future_quality"] is not None else -1.0),
-                row["mean_posterior_mae"],
-            ),
-        ),
+        "windows": [*window_results, *baseline_results],
+        "configurations": all_summaries,
+        "baseline_configurations": baseline_summaries,
+        "best_observed_model_family": best_model_family,
+        # Recommendation is deliberately restricted to hierarchical parameter sets.
+        # Baseline families are comparison controls, never automatic promotion targets.
         "recommendation": recommendation,
         "reason": None if recommendation else "insufficient_evaluable_windows",
     }
