@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import csv
 import hashlib
 import json
 from dataclasses import asdict
@@ -12,7 +13,7 @@ from .source_registry import load_source_registry
 from .storage import load_state
 
 AUTHORITY_CONTRACT_VERSION = 1
-FULL_REFRESH_MODES = {"daily", "deep", "backfill"}
+FULL_REFRESH_MODES = {"daily", "deep"}
 
 
 class AuthorityError(RuntimeError):
@@ -79,11 +80,40 @@ def _catalog_fingerprint(state: dict[str, Any]) -> tuple[str, int]:
     return _canonical_hash(rows), len(rows)
 
 
+def _effective_catalog_count(state: dict[str, Any], effective_sources: set[str]) -> int:
+    catalog = state.get("url_catalog", {}) or {}
+    if not isinstance(catalog, dict):
+        return 0
+    return sum(
+        1
+        for raw in catalog.values()
+        if isinstance(raw, dict) and str(raw.get("source") or "").lower().strip() in effective_sources
+    )
+
+
 def _leaderboard_fingerprint(path: str | Path) -> str:
     target = Path(path)
     if not target.exists():
         raise AuthorityError(f"leaderboard missing: {target}")
     return hashlib.sha256(target.read_bytes()).hexdigest()
+
+
+def _leaderboard_sources(path: str | Path) -> set[str]:
+    target = Path(path)
+    if not target.exists():
+        raise AuthorityError(f"leaderboard missing: {target}")
+    try:
+        with target.open("r", encoding="utf-8", newline="") as handle:
+            reader = csv.DictReader(handle)
+            if not reader.fieldnames or "source" not in reader.fieldnames:
+                raise AuthorityError("leaderboard is missing required source column")
+            return {
+                str(row.get("source") or "").lower().strip()
+                for row in reader
+                if str(row.get("source") or "").strip()
+            }
+    except UnicodeDecodeError as exc:
+        raise AuthorityError(f"leaderboard is not valid UTF-8 CSV: {target}") from exc
 
 
 def _update_manifest(path: str | Path | None, authority: dict[str, Any]) -> None:
@@ -114,9 +144,9 @@ def publish_authority(
 ) -> dict[str, Any]:
     """Fail closed unless the serving leaderboard matches current production inputs.
 
-    A changed source/catalog/model generation must first receive a full refresh. Once
-    that baseline is certified, hourly incremental runs may inherit authority while
-    the input fingerprint remains unchanged.
+    A changed source/catalog/model generation must first receive a genuinely complete
+    known-catalog refresh. Once that baseline is certified, incremental runs may
+    inherit authority while the exact input fingerprint remains unchanged.
     """
 
     summary = _read_json(summary_path)
@@ -130,14 +160,22 @@ def publish_authority(
     state = load_state(state_path)
     registry = load_source_registry(registry_path, vertical)
     source_hash, source_domains = _source_fingerprint(sources)
+    effective_source_set = {domain.lower().strip() for domain in source_domains}
     catalog_hash, catalog_count = _catalog_fingerprint(state)
+    eligible_catalog_count = _effective_catalog_count(state, effective_source_set)
 
     summary_source_count = int(summary.get("configured_sources") or 0)
     summary_catalog_count = int(summary.get("catalog_urls") or 0)
+    summary_eligible_catalog_count = int(summary.get("eligible_catalog_urls") or 0)
     if summary_source_count != len(sources):
         raise AuthorityError(f"source mismatch: summary={summary_source_count} current={len(sources)}")
     if summary_catalog_count != catalog_count:
         raise AuthorityError(f"catalog mismatch: summary={summary_catalog_count} current={catalog_count}")
+    if summary_eligible_catalog_count != eligible_catalog_count:
+        raise AuthorityError(
+            "effective catalog mismatch: "
+            f"summary={summary_eligible_catalog_count} current={eligible_catalog_count}"
+        )
 
     source_gate_version = int(registry.get("source_gate_version") or 0)
     metrics_gate_version = int(metrics.get("source_gate_version") or 0)
@@ -164,6 +202,13 @@ def publish_authority(
             f"current catalog regressed below synchronized catalog: current={catalog_count} synced={metrics_catalog_count}"
         )
 
+    leaderboard_sources = _leaderboard_sources(leaderboard_path)
+    unauthorized_sources = sorted(leaderboard_sources - effective_source_set)
+    if unauthorized_sources:
+        raise AuthorityError(
+            "leaderboard contains non-effective sources: " + ", ".join(unauthorized_sources)
+        )
+
     input_fingerprint = _canonical_hash(
         {
             "authority_contract_version": AUTHORITY_CONTRACT_VERSION,
@@ -181,10 +226,19 @@ def publish_authority(
         and existing.get("catalog_sync_generated_at") == metrics.get("catalog_sync_generated_at")
     )
     run_mode = str(summary.get("mode") or "")
-    if not inherited_input_authority and run_mode not in FULL_REFRESH_MODES:
-        raise AuthorityError(
-            "new source/catalog/model generation requires a daily, deep, or backfill refresh before certification"
-        )
+    if not inherited_input_authority:
+        if run_mode not in FULL_REFRESH_MODES:
+            raise AuthorityError(
+                "new source/catalog/model generation requires a daily or deep refresh before certification"
+            )
+        if eligible_catalog_count <= 0:
+            raise AuthorityError("cannot establish authority without an effective recipe catalog")
+        targets_this_run = int(summary.get("targets_this_run") or 0)
+        if targets_this_run != eligible_catalog_count:
+            raise AuthorityError(
+                "full authority baseline did not target the entire effective catalog: "
+                f"targets={targets_this_run} effective_catalog={eligible_catalog_count}"
+            )
 
     leaderboard_hash = _leaderboard_fingerprint(leaderboard_path)
     generation_fingerprint = _canonical_hash(
@@ -204,6 +258,8 @@ def publish_authority(
         "effective_source_count": len(sources),
         "effective_sources": source_domains,
         "catalog_url_count": catalog_count,
+        "eligible_catalog_url_count": eligible_catalog_count,
+        "leaderboard_sources": sorted(leaderboard_sources),
         "source_fingerprint_sha256": source_hash,
         "catalog_fingerprint_sha256": catalog_hash,
         "input_fingerprint_sha256": input_fingerprint,
