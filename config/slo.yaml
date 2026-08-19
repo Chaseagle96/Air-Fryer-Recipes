@@ -1,0 +1,22 @@
+quality_gate:
+  corpus_retention_fail_below: 0.80
+  top50_overlap_warn_below: 0.50
+  top50_overlap_fail_below: 0.35
+  evidence_conflict_warn_above: 0.10
+  evidence_conflict_fail_above: 0.20
+  crawl_success_warn_below: 0.90
+  crawl_success_fail_below: 0.70
+  extract_success_warn_below: 0.90
+  extract_success_fail_below: 0.70
+  ranking_eligible_warn_below: 0.90
+  dom_structure_change_warn_fraction: 0.10
+  dom_structure_change_fail_fraction: 0.50
+  dom_structure_change_warn_min: 5
+  dom_structure_change_fail_min: 25
+  anomaly_warn_fraction: 0.03
+  anomaly_warn_min: 20
+  stale_sources_24h_warn_above: 0
+  http_429_warn_above: 3
+  dedupe_spike_minimum: 20
+  dedupe_spike_multiplier: 10
+  dedupe_spike_offset: 5
