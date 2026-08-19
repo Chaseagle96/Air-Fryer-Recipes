@@ -1,0 +1,73 @@
+name: Mobile Corpus Backfill
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: recipe-intelligence-mobile-corpus-backfill
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install runtime dependencies
+        run: pip install -r requirements.txt
+
+      - name: Backfill Air Fryer mobile corpus from existing state
+        run: PYTHONPATH=src python scripts/backfill_mobile_corpus.py
+
+      - name: Backfill Slow Cooker mobile corpus from existing state
+        shell: bash
+        run: |
+          cd verticals/slow_cooker
+          RECIPE_INTELLIGENCE_VERTICAL='Slow Cooker' \
+          RECIPE_INTELLIGENCE_VERTICAL_SLUG='slow_cooker' \
+          PYTHONPATH=../../src \
+          python ../../scripts/backfill_mobile_corpus.py
+
+      - name: Validate corpus manifests without crawling
+        run: |
+          PYTHONPATH=src python - <<'PY'
+          import json
+          from pathlib import Path
+
+          for path in [Path('docs/api/manifest.json'), Path('verticals/slow_cooker/docs/api/manifest.json')]:
+              payload = json.loads(path.read_text(encoding='utf-8'))
+              ranked = int(payload['ranked_recipe_count'])
+              corpus = int(payload['corpus_recipe_count'])
+              assert corpus >= ranked, (path, ranked, corpus)
+              assert sum(int(page['count']) for page in payload['pages']) == ranked
+              assert sum(int(page['count']) for page in payload['corpus_pages']) == corpus
+              assert payload['corpus_status_counts'].get('discover', 0) == ranked
+              print(path, 'ranked=', ranked, 'corpus=', corpus, 'statuses=', payload['corpus_status_counts'])
+          PY
+
+      - name: Commit generated corpus feeds
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/api verticals/slow_cooker/docs/api
+          if git diff --cached --quiet; then
+            echo 'Mobile corpus feeds are already current.'
+            exit 0
+          fi
+          git commit -m 'Backfill full mobile recipe corpus'
+          git pull --rebase origin main
+          git push origin HEAD:main
