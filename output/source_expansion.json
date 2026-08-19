@@ -9,7 +9,38 @@
   "candidate_domains_quarantined": 6,
   "candidate_domains_rejected": 0,
   "candidate_domains_suspended": 0,
-  "catalog_url_count": 3744,
+  "catalog_sync": [
+    {
+      "discovered_urls": 3603,
+      "elapsed_seconds": 53.74,
+      "new_urls": 3486,
+      "robots_status": "ok",
+      "sitemap_docs": 13,
+      "source": "forktospoon.com",
+      "status": "ok"
+    },
+    {
+      "discovered_urls": 268,
+      "elapsed_seconds": 3.15,
+      "new_urls": 53,
+      "robots_status": "ok",
+      "sitemap_docs": 8,
+      "source": "kelvinskitchen.com",
+      "status": "ok"
+    },
+    {
+      "discovered_urls": 477,
+      "elapsed_seconds": 0.63,
+      "new_urls": 231,
+      "robots_status": "ok",
+      "sitemap_docs": 7,
+      "source": "temeculablogs.com",
+      "status": "ok"
+    }
+  ],
+  "catalog_sync_generated_at": "2026-08-19T08:56:58.337676+00:00",
+  "catalog_url_count": 7514,
+  "catalog_urls_added_after_promotion": 3770,
   "effective_source_count": 43,
   "evaluations": [
     {

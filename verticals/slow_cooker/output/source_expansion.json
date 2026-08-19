@@ -9,7 +9,29 @@
   "candidate_domains_quarantined": 5,
   "candidate_domains_rejected": 1,
   "candidate_domains_suspended": 0,
-  "catalog_url_count": 3692,
+  "catalog_sync": [
+    {
+      "discovered_urls": 175,
+      "elapsed_seconds": 1.06,
+      "new_urls": 114,
+      "robots_status": "ok",
+      "sitemap_docs": 13,
+      "source": "forktospoon.com",
+      "status": "ok"
+    },
+    {
+      "discovered_urls": 126,
+      "elapsed_seconds": 2.58,
+      "new_urls": 22,
+      "robots_status": "ok",
+      "sitemap_docs": 8,
+      "source": "kelvinskitchen.com",
+      "status": "ok"
+    }
+  ],
+  "catalog_sync_generated_at": "2026-08-19T08:56:58.337676+00:00",
+  "catalog_url_count": 3828,
+  "catalog_urls_added_after_promotion": 136,
   "effective_source_count": 40,
   "evaluations": [
     {
