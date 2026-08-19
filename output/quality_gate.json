@@ -1,15 +1,53 @@
 {
   "failures": [],
   "metrics": {
-    "current_deduplicated_count": 8,
-    "current_ranked_recipes": 1019,
+    "anomalies": 18,
+    "crawl_success_rate": 0.91,
+    "crawl_targets": 100,
+    "current_deduplicated_count": 10,
+    "current_model_semver": "5.2.0",
+    "current_model_version": 5,
+    "current_ranked_recipes": 1068,
+    "dom_structure_changes": 13,
+    "extract_success_rate": 0.9578947368421052,
+    "model_identity_changed": true,
     "previous_deduplicated_count": 8,
-    "previous_ranked_recipes": 967,
-    "ranked_recipe_retention": 1.0537745604963806,
-    "top50_overlap_previous": 0.56
+    "previous_model_semver": null,
+    "previous_model_version": 5,
+    "previous_ranked_recipes": 1019,
+    "ranked_recipe_retention": 1.0480863591756624,
+    "ranking_eligible_rate": 0.9907235621521335,
+    "sources_stale_24h": 0,
+    "top50_overlap_previous": 1.0
   },
   "mode": "hourly",
+  "model_semver": "5.2.0",
   "model_version": 5,
   "passed": true,
-  "warnings": []
+  "policy": {
+    "anomaly_warn_fraction": 0.03,
+    "anomaly_warn_min": 20,
+    "corpus_retention_fail_below": 0.8,
+    "crawl_success_fail_below": 0.7,
+    "crawl_success_warn_below": 0.9,
+    "dedupe_spike_minimum": 20,
+    "dedupe_spike_multiplier": 10,
+    "dedupe_spike_offset": 5,
+    "dom_structure_change_fail_fraction": 0.5,
+    "dom_structure_change_fail_min": 25,
+    "dom_structure_change_warn_fraction": 0.1,
+    "dom_structure_change_warn_min": 5,
+    "evidence_conflict_fail_above": 0.2,
+    "evidence_conflict_warn_above": 0.1,
+    "extract_success_fail_below": 0.7,
+    "extract_success_warn_below": 0.9,
+    "http_429_warn_above": 3,
+    "ranking_eligible_warn_below": 0.9,
+    "stale_sources_24h_warn_above": 0,
+    "top50_overlap_fail_below": 0.35,
+    "top50_overlap_warn_below": 0.5
+  },
+  "warnings": [
+    "DOM structure changes elevated at 13 across 100 crawl targets"
+  ]
 }

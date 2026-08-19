@@ -1,0 +1,40 @@
+{"conflicts": 0, "dom_structure_changes": 13, "elapsed_seconds": 18.36, "errors": 0, "fetched": 25, "http_403": 0, "http_429": 0, "legacy_backfill_resolved": 0, "legacy_backfill_targets": 0, "missing": 0, "not_modified": 0, "robots_status": "ok", "schema_structure_changes": 0, "source": "allrecipes.com", "status": "ok", "targets": 25, "verified_recipes": 25}
+{"source": "foodnetwork.com", "status": "not_checked_this_run"}
+{"source": "delish.com", "status": "not_checked_this_run"}
+{"source": "eatingwell.com", "status": "not_checked_this_run"}
+{"source": "tasteofhome.com", "status": "not_checked_this_run"}
+{"source": "skinnytaste.com", "status": "not_checked_this_run"}
+{"source": "therecipecritic.com", "status": "not_checked_this_run"}
+{"source": "spendwithpennies.com", "status": "not_checked_this_run"}
+{"conflicts": 0, "dom_structure_changes": 0, "elapsed_seconds": 0.14, "errors": 0, "fetched": 0, "http_403": 0, "http_429": 0, "legacy_backfill_resolved": 0, "legacy_backfill_targets": 0, "missing": 0, "not_modified": 1, "robots_status": "ok", "schema_structure_changes": 0, "source": "pinchofyum.com", "status": "ok", "targets": 1, "verified_recipes": 1}
+{"source": "budgetbytes.com", "status": "not_checked_this_run"}
+{"source": "simplyrecipes.com", "status": "not_checked_this_run"}
+{"source": "wellplated.com", "status": "not_checked_this_run"}
+{"conflicts": 0, "dom_structure_changes": 0, "elapsed_seconds": 2.0, "errors": 0, "fetched": 4, "http_403": 0, "http_429": 0, "legacy_backfill_resolved": 0, "legacy_backfill_targets": 0, "missing": 0, "not_modified": 0, "robots_status": "ok", "schema_structure_changes": 0, "source": "natashaskitchen.com", "status": "ok", "targets": 4, "verified_recipes": 4}
+{"conflicts": 0, "dom_structure_changes": 0, "elapsed_seconds": 0.51, "errors": 0, "fetched": 1, "http_403": 0, "http_429": 0, "legacy_backfill_resolved": 0, "legacy_backfill_targets": 0, "missing": 0, "not_modified": 0, "robots_status": "ok", "schema_structure_changes": 0, "source": "downshiftology.com", "status": "ok", "targets": 1, "verified_recipes": 1}
+{"source": "gimmesomeoven.com", "status": "not_checked_this_run"}
+{"conflicts": 0, "dom_structure_changes": 0, "elapsed_seconds": 0.78, "errors": 0, "fetched": 1, "http_403": 0, "http_429": 0, "legacy_backfill_resolved": 0, "legacy_backfill_targets": 0, "missing": 0, "not_modified": 0, "robots_status": "ok", "schema_structure_changes": 0, "source": "lecremedelacrumb.com", "status": "ok", "targets": 1, "verified_recipes": 1}
+{"source": "therealfooddietitians.com", "status": "not_checked_this_run"}
+{"conflicts": 0, "dom_structure_changes": 0, "elapsed_seconds": 0.96, "errors": 0, "fetched": 1, "http_403": 0, "http_429": 0, "legacy_backfill_resolved": 0, "legacy_backfill_targets": 0, "missing": 0, "not_modified": 0, "robots_status": "ok", "schema_structure_changes": 0, "source": "loveandlemons.com", "status": "ok", "targets": 1, "verified_recipes": 1}
+{"source": "thepioneerwoman.com", "status": "not_checked_this_run"}
+{"source": "cookingclassy.com", "status": "not_checked_this_run"}
+{"source": "iheartnaptime.net", "status": "not_checked_this_run"}
+{"conflicts": 0, "dom_structure_changes": 0, "elapsed_seconds": 2.8, "errors": 0, "fetched": 6, "http_403": 0, "http_429": 0, "legacy_backfill_resolved": 0, "legacy_backfill_targets": 0, "missing": 0, "not_modified": 1, "robots_status": "ok", "schema_structure_changes": 0, "source": "feelgoodfoodie.net", "status": "ok", "targets": 7, "verified_recipes": 7}
+{"source": "kristineskitchenblog.com", "status": "not_checked_this_run"}
+{"source": "jocooks.com", "status": "not_checked_this_run"}
+{"source": "recipetineats.com", "status": "not_checked_this_run"}
+{"source": "bbcgoodfood.com", "status": "not_checked_this_run"}
+{"source": "seriouseats.com", "status": "not_checked_this_run"}
+{"source": "thekitchn.com", "status": "not_checked_this_run"}
+{"source": "foodandwine.com", "status": "not_checked_this_run"}
+{"source": "ambitiouskitchen.com", "status": "not_checked_this_run"}
+{"source": "eatingbirdfood.com", "status": "not_checked_this_run"}
+{"source": "wholesomeyum.com", "status": "not_checked_this_run"}
+{"source": "dinneratthezoo.com", "status": "not_checked_this_run"}
+{"source": "diethood.com", "status": "not_checked_this_run"}
+{"source": "twopeasandtheirpod.com", "status": "not_checked_this_run"}
+{"source": "everydayfamilycooking.com", "status": "not_checked_this_run"}
+{"conflicts": 0, "dom_structure_changes": 0, "elapsed_seconds": 142.78, "errors": 5, "fetched": 55, "http_403": 0, "http_429": 0, "legacy_backfill_resolved": 0, "legacy_backfill_targets": 0, "missing": 0, "not_modified": 0, "robots_status": "ok", "schema_structure_changes": 0, "source": "airfryingfoodie.com", "status": "ok", "targets": 60, "verified_recipes": 51}
+{"source": "platedcravings.com", "status": "not_checked_this_run"}
+{"source": "rachelcooks.com", "status": "not_checked_this_run"}
+{"source": "melskitchencafe.com", "status": "not_checked_this_run"}
