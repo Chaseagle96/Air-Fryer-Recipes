@@ -96,6 +96,18 @@ struct FeedManifest: Codable {
     let pageSize: Int
     let pages: [FeedPageReference]
 
+    // Added additively to schema v1. Older feeds omit these fields, so the app
+    // falls back to the ranked feed until that vertical publishes its corpus.
+    var rankedRecipeCount: Int? = nil
+    var corpusRecipeCount: Int? = nil
+    var corpusPages: [FeedPageReference]? = nil
+    var corpusStatusCounts: [String: Int]? = nil
+    var catalogURLCount: Int? = nil
+
+    var effectiveRankedRecipeCount: Int { rankedRecipeCount ?? recipeCount }
+    var effectiveCorpusRecipeCount: Int { corpusRecipeCount ?? recipeCount }
+    var effectiveCorpusPages: [FeedPageReference] { corpusPages ?? pages }
+
     enum CodingKeys: String, CodingKey {
         case schemaVersion = "schema_version"
         case generatedAt = "generated_at"
@@ -103,6 +115,11 @@ struct FeedManifest: Codable {
         case recipeCount = "recipe_count"
         case pageSize = "page_size"
         case pages
+        case rankedRecipeCount = "ranked_recipe_count"
+        case corpusRecipeCount = "corpus_recipe_count"
+        case corpusPages = "corpus_pages"
+        case corpusStatusCounts = "corpus_status_counts"
+        case catalogURLCount = "catalog_url_count"
     }
 }
 
@@ -167,9 +184,24 @@ struct RemoteRecipe: Codable, Identifiable, Hashable {
     let rankRangeHigh: Int?
     let rankProvenance: String
 
+    // Full-corpus metadata. These remain optional so existing schema-v1 ranked
+    // pages continue to decode while verticals roll out the richer publication.
+    var isRanked: Bool? = nil
+    var discoverEligible: Bool? = nil
+    var exploreEligible: Bool? = nil
+    var serveability: String? = nil
+    var statusReasons: [String]? = nil
+    var lastSeenAt: String? = nil
+    var duplicateGroupID: String? = nil
+    var duplicateConfidence: Double? = nil
+    var duplicateRepresentativeRecipeID: String? = nil
+
     var id: String { recipeID }
     var sourceURL: URL? { URL(string: canonicalURL.isEmpty ? url : canonicalURL) }
     var photoURL: URL? { imageURL.isEmpty ? nil : URL(string: imageURL) }
+    var isGloballyRanked: Bool { isRanked ?? rank > 0 }
+    var isDiscoverEligible: Bool { discoverEligible ?? isGloballyRanked }
+    var isExploreEligible: Bool { exploreEligible ?? isDiscoverEligible }
 
     var confidenceLabel: String {
         switch evidenceConfidence {
@@ -177,6 +209,10 @@ struct RemoteRecipe: Codable, Identifiable, Hashable {
         case 0.7..<0.9: return "Good rating evidence"
         default: return "Limited rating evidence"
         }
+    }
+
+    var rankingLabel: String {
+        isGloballyRanked ? "#\(rank) \(verticalName)" : "Exploratory · \(verticalName)"
     }
 
     enum CodingKeys: String, CodingKey {
@@ -201,6 +237,15 @@ struct RemoteRecipe: Codable, Identifiable, Hashable {
         case rankRangeLow = "rank_range_low"
         case rankRangeHigh = "rank_range_high"
         case rankProvenance = "rank_provenance"
+        case isRanked = "is_ranked"
+        case discoverEligible = "discover_eligible"
+        case exploreEligible = "explore_eligible"
+        case serveability
+        case statusReasons = "status_reasons"
+        case lastSeenAt = "last_seen_at"
+        case duplicateGroupID = "duplicate_group_id"
+        case duplicateConfidence = "duplicate_confidence"
+        case duplicateRepresentativeRecipeID = "duplicate_representative_recipe_id"
     }
 }
 
