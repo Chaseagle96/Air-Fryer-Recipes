@@ -82,7 +82,10 @@ def _fixture(tmp_path: Path) -> dict[str, Path]:
         },
     )
     leaderboard = tmp_path / "leaderboard.csv"
-    leaderboard.write_text("rank,title\n1,Air Fryer Chicken\n", encoding="utf-8")
+    leaderboard.write_text(
+        "rank,title,source,url\n1,Air Fryer Chicken,trusted.example,https://trusted.example/air-fryer-chicken\n",
+        encoding="utf-8",
+    )
     authority = tmp_path / "authority.json"
     public_authority = tmp_path / "docs" / "api" / "authority.json"
     manifest = tmp_path / "docs" / "api" / "manifest.json"
@@ -125,6 +128,7 @@ def test_publish_authority_certifies_matching_generation(tmp_path: Path) -> None
     assert payload["authoritative"] is True
     assert payload["authority_contract_version"] == 2
     assert payload["effective_source_count"] == 1
+    assert payload["leaderboard_sources"] == ["trusted.example"]
     assert payload["effective_catalog_url_count"] == 1
     assert payload["ranking_mode"] == "daily"
     assert payload["full_catalog_baseline"] is True
@@ -168,6 +172,49 @@ def test_publish_authority_rejects_ranking_scope_drift(tmp_path: Path) -> None:
     _write(paths["state"], state)
 
     with pytest.raises(AuthorityError, match="ranking source scope"):
+        _publish(paths)
+
+
+def test_publish_authority_rejects_non_effective_leaderboard_source(tmp_path: Path) -> None:
+    paths = _fixture(tmp_path)
+    paths["leaderboard"].write_text(
+        "rank,title,source,url\n1,Air Fryer Old,suspended.example,https://suspended.example/air-fryer-old\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(AuthorityError, match="non-effective source"):
+        _publish(paths)
+
+
+def test_publish_authority_rejects_strict_vertical_contamination(tmp_path: Path) -> None:
+    paths = _fixture(tmp_path)
+    paths["sources"].write_text(
+        "defaults:\n"
+        "  include_pattern: '(?:slow[-_ ]?cook(?:er|ing|ed)|crock[-_ ]?pot)'\n"
+        "  allow_unmatched_discovery_links: false\n"
+        "sources:\n"
+        "  - domain: trusted.example\n",
+        encoding="utf-8",
+    )
+    paths["leaderboard"].write_text(
+        "rank,title,source,url\n1,Birria Tacos,trusted.example,https://trusted.example/birria-tacos/\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(AuthorityError, match="strict vertical policy"):
+        _publish(paths)
+
+
+def test_publish_authority_rejects_leaderboard_count_mismatch(tmp_path: Path) -> None:
+    paths = _fixture(tmp_path)
+    paths["leaderboard"].write_text(
+        "rank,title,source,url\n"
+        "1,Air Fryer Chicken,trusted.example,https://trusted.example/air-fryer-chicken\n"
+        "2,Air Fryer Potatoes,trusted.example,https://trusted.example/air-fryer-potatoes\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(AuthorityError, match="row count"):
         _publish(paths)
 
 
@@ -270,7 +317,10 @@ def test_hourly_refresh_inherits_authority_when_inputs_are_unchanged(tmp_path: P
     summary["mode"] = "hourly"
     summary["targets_this_run"] = 0
     _write(paths["summary"], summary)
-    paths["leaderboard"].write_text("rank,title\n1,Air Fryer Potatoes\n", encoding="utf-8")
+    paths["leaderboard"].write_text(
+        "rank,title,source,url\n1,Air Fryer Potatoes,trusted.example,https://trusted.example/air-fryer-potatoes\n",
+        encoding="utf-8",
+    )
     manifest = _manifest_payload()
     manifest["generated_at"] = "2026-08-19T11:10:00+00:00"
     _write(paths["manifest"], manifest)

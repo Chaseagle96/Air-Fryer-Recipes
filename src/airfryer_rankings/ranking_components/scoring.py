@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import re
 from datetime import datetime, timedelta, timezone
 
 from ..model_config import ModelParameters
@@ -15,17 +16,40 @@ def fresh(item: dict, now: datetime, stale_days: int) -> bool:
     return bool(observed and observed >= now - timedelta(days=stale_days))
 
 
+def _matches_required_source_pattern(item: dict, required_source_patterns: dict[str, str] | None) -> bool:
+    if not required_source_patterns:
+        return True
+    source = str(item.get("source") or "").lower().strip()
+    pattern = required_source_patterns.get(source)
+    if not pattern:
+        return True
+    haystack = f"{item.get('title', '')} {item.get('canonical_url') or item.get('url', '')}"
+    return bool(re.search(pattern, haystack, re.I))
+
+
 def eligible_current(
     state: dict,
     stale_days: int,
     now: datetime | None = None,
     allowed_sources: set[str] | None = None,
+    required_source_patterns: dict[str, str] | None = None,
 ) -> list[dict]:
+    """Return rankable recipes in the current effective source and vertical scope."""
+
     now = now or datetime.now(timezone.utc)
+    normalized_sources = None
+    if allowed_sources is not None:
+        normalized_sources = {str(source).lower().strip() for source in allowed_sources if str(source).strip()}
+    normalized_patterns = {
+        str(source).lower().strip(): str(pattern)
+        for source, pattern in (required_source_patterns or {}).items()
+        if str(source).strip() and str(pattern).strip()
+    }
     return [
         dict(item)
         for item in state.get("recipes", {}).values()
-        if (allowed_sources is None or str(item.get("source") or "") in allowed_sources)
+        if (normalized_sources is None or str(item.get("source") or "").lower().strip() in normalized_sources)
+        and _matches_required_source_pattern(item, normalized_patterns)
         and fresh(item, now, stale_days)
         and int(item.get("rating_count", 0)) > 0
         and float(item.get("evidence_confidence", 0.60)) >= 0.60
