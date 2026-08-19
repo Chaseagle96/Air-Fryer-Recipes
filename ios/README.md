@@ -1,10 +1,10 @@
-# Recipe Intelligence iOS MVP
+# Recipe Intelligence iOS
 
-Recipe Intelligence for iOS is the personal decision layer on top of the repository's evidence-driven recipe rankings. It targets iOS 17+ with SwiftUI and SwiftData.
+Recipe Intelligence for iOS is the personal decision layer on top of the repository's evidence-driven recipe rankings. It targets iOS 17+ with SwiftUI and SwiftData, while the production build and CI use Xcode 27 so current iOS releases receive Apple's newest system appearance and controls. iOS 26+ receives the app's custom Liquid Glass surfaces; older supported releases retain system-material fallbacks.
 
 ## Open and run
 
-Open `RecipeIntelligence.xcodeproj` in Xcode 16 or newer. Select the `RecipeIntelligence` scheme and an iPhone simulator. No signing team is required for simulator builds.
+Open `RecipeIntelligence.xcodeproj` in Xcode 27 or newer. Select the `RecipeIntelligence` scheme and an iPhone simulator. No signing team is required for simulator builds.
 
 The production app reads the vertical catalog from:
 
@@ -17,12 +17,24 @@ For deterministic UI tests, launch with `--ui-testing`; the app uses representat
 - `Models.swift`: versioned Recipe Intelligence DTOs and product enums.
 - `Networking.swift`: async/await Recipe Intelligence client with vertical discovery, version-aware manifests and paged ranked/corpus feeds.
 - `PersistenceModels.swift`: private local SwiftData entities for cache, profiles, households, saves, events, notes, reviews, cooking history, meal plans and shopping items.
-- `RecommendationService.swift`: replaceable MVP recommendation interface plus a separate household-convergence interface.
+- `RecommendationService.swift`: replaceable recommendation interface plus a separate household-convergence interface.
 - `ShoppingListService.swift`: ingredient parsing, conservative quantity merging and grocery categorization.
 - `AppModel.swift`: main-actor orchestration, behavior-event capture and live feed reconciliation.
+- `DesignSystem.swift`: adaptive Liquid Glass surfaces, buttons, grouped glass containers, background treatment and navigation behavior with backwards-compatible fallbacks.
 - feature views: Discover, Saved/Elimination, Plan, Shopping, Reviews and Taste/Profile.
 
 Remote Recipe Intelligence evidence is conceptually separate from private user-owned state. The app does not upload notes, reviews or behavioral data.
+
+## iOS 27 and Liquid Glass
+
+The app follows Apple's platform-first Liquid Glass model rather than drawing a custom imitation of the system material everywhere.
+
+- Building with Xcode 27 lets system `TabView`, navigation bars, toolbars, sheets, menus and controls adopt the current platform appearance automatically.
+- Custom glass is concentrated on high-value interaction surfaces: vertical filters, recipe ranking/metadata panels, decision controls, detail actions, elimination controls and selected cards.
+- Adjacent custom glass controls use `GlassEffectContainer` so rendering and transitions behave as one visual group.
+- `.glass` and `.glassProminent` button styles are used on iOS 26+ with ordinary bordered-button fallbacks for iOS 17-25.
+- The tab bar minimizes as the user scrolls on supported systems; iOS 27 also minimizes the navigation toolbar on scroll where appropriate.
+- The deployment target remains iOS 17.0 so the visual modernization does not unnecessarily drop older devices.
 
 ## Mobile backend contract
 
@@ -41,7 +53,7 @@ Full-corpus records also carry serving metadata:
 - `status_reasons`: machine-readable reasons such as `stale`, `no_rating_evidence`, `low_evidence`, `evidence_conflict`, `missing_title`, `missing_source_url`, or `duplicate_alias`;
 - duplicate representative/group metadata where available.
 
-The iOS client exposes `fetchRecipePage` for the ranked Discover feed and `fetchCorpusPage` for the broader knowledge base. The MVP Discover deck intentionally continues using the ranked feed. Future personalized search, household convergence, saved-recipe recovery, and deep exploration can retrieve the wider corpus without weakening Recipe Intelligence's global ranking gate.
+The iOS client exposes `fetchRecipePage` for the ranked Discover feed and `fetchCorpusPage` for the broader knowledge base. Default Discover intentionally continues using the ranked feed. Future personalized search, household convergence, saved-recipe recovery, and deep exploration can retrieve the wider corpus without weakening Recipe Intelligence's global ranking gate.
 
 The corpus is built from recipes Recipe Intelligence has actually normalized into state. A URL that has merely been discovered, but has never produced a usable normalized recipe record, is counted as catalog coverage rather than being invented as a serveable recipe. `catalog_url_count` in the manifest preserves that distinction.
 
@@ -72,15 +84,15 @@ Add the backend vertical normally, publish its paged mobile feed, then add one e
 
 ## Persistence and learning events
 
-The MVP records timestamped local events for impressions, opens, save/skip/Not Now swipes, undo, saves, plans, cooking/repeat cooking, favorites, reviews, notes, shopping-list generation, elimination rounds and source opens. Events are profile-scoped and retain the recipe and vertical IDs needed by a future recommendation service.
+The app records timestamped local events for impressions, opens, save/skip/Not Now swipes, undo, saves, plans, cooking/repeat cooking, favorites, reviews, notes, shopping-list generation, elimination rounds and source opens. Events are profile-scoped and retain the recipe and vertical IDs needed by a future recommendation service.
 
-Multiple user profiles and a household entity exist from day one. Household recommendation is intentionally not faked: the MVP defines a separate convergence interface, while real per-person predicted enjoyment and household confidence are a future model milestone.
+Multiple user profiles and a household entity exist from day one. Household recommendation is intentionally not faked: the app defines a separate convergence interface, while real per-person predicted enjoyment and household confidence are a future model milestone.
 
 ## Accessibility
 
-Every swipe action has an explicit button equivalent. Recipe cards expose VoiceOver labels and custom actions, layouts use semantic Dynamic Type fonts, system colors and large controls, and swipe animations respect Reduce Motion. Pull-to-refresh also has an explicit toolbar button so feed refresh is never gesture-only.
+Every swipe action has an explicit button equivalent. Recipe cards expose VoiceOver labels and custom actions, layouts use semantic Dynamic Type fonts, system colors and large controls, and swipe animations respect Reduce Motion. Pull-to-refresh also has an explicit toolbar button so feed refresh is never gesture-only. The Liquid Glass implementation relies on system materials and controls so platform accessibility appearance adjustments remain authoritative, while pre-iOS-26 systems receive opaque system-surface fallbacks instead of unsupported effects.
 
-## Known MVP limitations
+## Known limitations
 
 - No account/cloud sync; personal data is local only.
 - No public/social reviews or copied publisher comments.
@@ -94,4 +106,4 @@ Every swipe action has an explicit button equivalent. Recipe cards expose VoiceO
 
 ## Validation
 
-`.github/workflows/ios.yml` performs a real Xcode simulator build and executes unit plus UI tests on a macOS runner. Python CI independently validates the ranked and full-corpus serving projections and ensures Air Fryer/Slow Cooker ranking pipelines remain healthy.
+`.github/workflows/ios.yml` runs on GitHub's Xcode 27 runner, verifies the selected Xcode version, performs a real simulator build, executes unit plus UI tests, builds an unsigned iPhone app, and packages an unsigned IPA artifact. Python CI independently validates the ranked and full-corpus serving projections and ensures Air Fryer/Slow Cooker ranking pipelines remain healthy.

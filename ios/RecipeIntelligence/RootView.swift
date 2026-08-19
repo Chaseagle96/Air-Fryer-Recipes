@@ -26,6 +26,7 @@ struct RootView: View {
                 .tabItem { Label("Taste", systemImage: "person.2") }
                 .accessibilityIdentifier("tab.taste")
         }
+        .recipeTabBarBehavior()
         .task { await appModel.bootstrap() }
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }

@@ -14,7 +14,9 @@ struct PlannerView: View {
     var body: some View {
         List {
             Section {
-                Text("Choose from recipes you saved. The planner is intentionally lightweight in the MVP; intelligent weekly balancing comes next.")
+                Label("Plan from recipes you already trust", systemImage: "calendar.badge.checkmark")
+                    .font(.headline)
+                Text("Choose from saved recipes now. Recipe Intelligence can layer smarter weekly balancing on top without changing this simple planning flow.")
                     .foregroundStyle(.secondary)
             }
             ForEach(dates, id: \.self) { date in
@@ -24,8 +26,11 @@ struct PlannerView: View {
                         Button("Choose a recipe", systemImage: "plus") { selectedDate = date }
                     } else {
                         ForEach(entries) { entry in
-                            HStack {
-                                VStack(alignment: .leading) {
+                            HStack(spacing: 12) {
+                                Image(systemName: "fork.knife.circle.fill")
+                                    .font(.title2)
+                                    .foregroundStyle(RecipeDesign.accent)
+                                VStack(alignment: .leading, spacing: 3) {
                                     Text(entry.title).font(.headline)
                                     Text(entry.verticalID.replacingOccurrences(of: "_", with: " ").capitalized)
                                         .font(.caption)
@@ -35,12 +40,16 @@ struct PlannerView: View {
                                 Button("Remove", systemImage: "trash", role: .destructive) { appModel.unplan(entry) }
                                     .labelStyle(.iconOnly)
                             }
+                            .padding(.vertical, 2)
                         }
                         Button("Replace", systemImage: "arrow.triangle.2.circlepath") { selectedDate = date }
                     }
                 }
             }
         }
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .recipeScreenBackground()
         .navigationTitle("This Week")
         .sheet(item: Binding(
             get: { selectedDate.map(DaySelection.init) },
@@ -48,6 +57,7 @@ struct PlannerView: View {
         )) { selection in
             NavigationStack { PlanRecipePicker(date: selection.date) }
         }
+        .recipeToolbarBehavior()
     }
 
     private func entries(on date: Date) -> [MealPlanEntry] {
@@ -73,20 +83,25 @@ private struct PlanRecipePicker: View {
                     appModel.planRecipe(saved, on: date)
                     dismiss()
                 } label: {
-                    HStack {
+                    HStack(spacing: 12) {
                         RemoteRecipeImage(url: saved.imageURL, title: saved.title)
-                            .frame(width: 64, height: 54)
+                            .frame(width: 66, height: 56)
                             .clipped()
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                        VStack(alignment: .leading) {
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        VStack(alignment: .leading, spacing: 3) {
                             Text(saved.title).font(.headline)
                             Text(saved.verticalName).font(.caption).foregroundStyle(.secondary)
                         }
                     }
+                    .padding(.vertical, 2)
                 }
                 .buttonStyle(.plain)
             }
         }
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .recipeScreenBackground()
         .navigationTitle("Choose Recipe")
+        .recipeToolbarBehavior()
     }
 }
