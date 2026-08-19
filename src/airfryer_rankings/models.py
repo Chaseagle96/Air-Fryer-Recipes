@@ -213,8 +213,29 @@ def categorize_recipe(title: str, ingredients: Iterable[str] = ()) -> tuple[str,
     return tuple(categories)
 
 
-def load_sources(path: str | Path) -> list[SourceConfig]:
-    data = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
+def _registry_path_for_source_file(source_path: Path) -> Path | None:
+    """Resolve the machine registry paired with a checked-in base source file."""
+
+    try:
+        target = source_path.resolve()
+    except OSError:
+        target = source_path.absolute()
+    parent = target.parent
+    if parent.name == "config" and target.name == "sources.yaml":
+        return parent.parent / "data" / "source_registry.json"
+    if (
+        target.name == "sources.yaml"
+        and parent.parent.name == "verticals"
+        and parent.parent.parent.name == "config"
+    ):
+        repo_root = parent.parent.parent.parent
+        return repo_root / "verticals" / parent.name / "data" / "source_registry.json"
+    return None
+
+
+def load_sources(path: str | Path, *, include_discovered: bool = True) -> list[SourceConfig]:
+    source_path = Path(path)
+    data = yaml.safe_load(source_path.read_text(encoding="utf-8")) or {}
     defaults = data.get("defaults", {}) or {}
     output: list[SourceConfig] = []
     for item in data.get("sources", []):
@@ -241,4 +262,17 @@ def load_sources(path: str | Path) -> list[SourceConfig]:
                 pinned=True,
             )
         )
-    return output
+    if not include_discovered:
+        return output
+    registry_path = _registry_path_for_source_file(source_path)
+    if registry_path is None or not registry_path.exists():
+        return output
+    # Local import avoids a module cycle: source_registry depends on SourceConfig,
+    # while base source parsing remains usable even when no registry exists.
+    from .source_registry import effective_source_configs, load_source_registry
+
+    vertical = parent_slug = source_path.parent.name
+    if parent_slug == "config":
+        vertical = "air_fryer"
+    registry = load_source_registry(registry_path, vertical)
+    return effective_source_configs(output, registry)
