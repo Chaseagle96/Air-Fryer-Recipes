@@ -10,33 +10,17 @@
     "status": "refresh_required",
     "vertical": "slow_cooker"
   },
-  "catalog_url_count": 3692,
+  "catalog_url_count": 4040,
   "content_policy": {
     "corpus": "all normalized recipe records are published with serveability metadata; default Discover remains ranking-gated",
     "ingredients": "factual structured ingredient lines",
     "instructions": "publisher prose not republished; open canonical_url for full directions"
   },
   "corpus_pages": [
-    {
-      "count": 100,
-      "index": 1,
-      "path": "corpus/0001.json"
-    },
-    {
-      "count": 100,
-      "index": 2,
-      "path": "corpus/0002.json"
-    },
-    {
-      "count": 100,
-      "index": 3,
-      "path": "corpus/0003.json"
-    },
-    {
-      "count": 74,
-      "index": 4,
-      "path": "corpus/0004.json"
-    }
+    {"count": 100, "index": 1, "path": "corpus/0001.json"},
+    {"count": 100, "index": 2, "path": "corpus/0002.json"},
+    {"count": 100, "index": 3, "path": "corpus/0003.json"},
+    {"count": 74, "index": 4, "path": "corpus/0004.json"}
   ],
   "corpus_recipe_count": 374,
   "corpus_status_counts": {
@@ -44,34 +28,15 @@
   },
   "generated_at": "2026-08-19T05:02:49.320697+00:00",
   "page_size": 100,
-  "pages": [
-    {
-      "count": 100,
-      "index": 1,
-      "path": "recipes/0001.json"
-    },
-    {
-      "count": 100,
-      "index": 2,
-      "path": "recipes/0002.json"
-    },
-    {
-      "count": 100,
-      "index": 3,
-      "path": "recipes/0003.json"
-    },
-    {
-      "count": 74,
-      "index": 4,
-      "path": "recipes/0004.json"
-    }
-  ],
-  "ranked_recipe_count": 374,
-  "recipe_count": 374,
+  "pages": [],
+  "ranked_recipe_count": 0,
+  "ranked_serving_available": false,
+  "ranked_serving_status": "refresh_required",
+  "recipe_count": 0,
   "schema_version": 1,
   "vertical": {
     "id": "slow_cooker",
     "name": "Slow Cooker",
-    "source_count": 38
+    "source_count": 42
   }
 }
