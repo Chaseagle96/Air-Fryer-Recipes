@@ -60,59 +60,6 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-
-      - name: Finalize source-state isolation on the implementation branch
-        if: github.event_name == 'pull_request' && github.head_ref == 'agent/autonomous-source-expansion'
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          source = Path('src/airfryer_rankings/source_expansion.py')
-          text = source.read_text(encoding='utf-8')
-          text = text.replace(
-              'from .storage import load_state, save_state, write_run_records',
-              'from .storage import load_state, write_run_records',
-          )
-          old = '''                if outcome in {PROMOTED, ACTIVE} and str(record.get("status")) in {PROMOTED, ACTIVE}:\n                    if outcome == PROMOTED:\n                        promotions += 1\n                    catalog_result = _promoted_catalog_discovery(context, record, mode, budget, run_at)\n                    if catalog_result is not None:\n                        metrics["promotion_catalog_discovery"] = catalog_result\n'''
-          new = '''                if outcome in {PROMOTED, ACTIVE} and str(record.get("status")) in {PROMOTED, ACTIVE}:\n                    if outcome == PROMOTED:\n                        promotions += 1\n                    metrics["production_activation"] = (\n                        "effective allowlist immediately; URL catalog expansion on the next vertical daily/deep discovery run"\n                    )\n'''
-          if old in text:
-              text = text.replace(old, new)
-          old = '''            save_source_registry(context.registry_path, context.registry)\n            save_state(context.state_path, context.state)\n            context.output_dir.mkdir(parents=True, exist_ok=True)\n'''
-          new = '''            save_source_registry(context.registry_path, context.registry)\n            context.output_dir.mkdir(parents=True, exist_ok=True)\n'''
-          if old in text:
-              text = text.replace(old, new)
-          source.write_text(text, encoding='utf-8')
-
-          docs = Path('SOURCE_DISCOVERY.md')
-          text = docs.read_text(encoding='utf-8')
-          old = '''When a candidate is promoted, its machine-owned `crawl_config` contains its relevant sitemap/discovery entry points, inclusion pattern, crawl delay, and URL cap. It immediately becomes part of the effective allowlist. A bounded catalog-discovery pass can seed the vertical URL catalog, and subsequent normal daily/deep discovery uses the same existing `discover_source_urls()` path as manual sources.\n'''
-          new = '''When a candidate is promoted, its machine-owned `crawl_config` contains its relevant sitemap/discovery entry points, inclusion pattern, crawl delay, and URL cap. It immediately becomes part of the effective allowlist. The next normal vertical daily/deep discovery run uses the same existing `discover_source_urls()` path as manual sources to seed and expand the persistent URL catalog. Source-expansion automation deliberately does not write ranking state files itself, avoiding cross-workflow state races while keeping promotion automatic.\n'''
-          if old in text:
-              docs.write_text(text.replace(old, new), encoding='utf-8')
-
-          temporary = Path('.github/workflows/source-expansion-state-isolation.yml')
-          if temporary.exists():
-              temporary.unlink()
-          PY
-          python - <<'PY'
-          from pathlib import Path
-          workflow = Path('.github/workflows/source-expansion.yml')
-          text = workflow.read_text(encoding='utf-8')
-          text = text.replace('          git add data/state.json verticals/slow_cooker/data/state.json\n', '')
-          workflow.write_text(text, encoding='utf-8')
-          PY
-          if git diff --quiet; then
-            echo 'Source-state isolation is already finalized.'
-          else
-            git config user.name 'github-actions[bot]'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add src/airfryer_rankings/source_expansion.py SOURCE_DISCOVERY.md .github/workflows/source-expansion.yml
-            if [ -e .github/workflows/source-expansion-state-isolation.yml ]; then git add .github/workflows/source-expansion-state-isolation.yml; else git add -u .github/workflows; fi
-            git commit -m 'Isolate source expansion from ranking state writes'
-            git push origin HEAD:${{ github.head_ref }}
-          fi
 
       - name: Set up Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
