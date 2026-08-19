@@ -53,7 +53,7 @@
       "wellplated.com",
       "wholesomeyum.com"
     ],
-    "full_catalog_baseline": true,
+    "full_catalog_baseline": false,
     "generation_fingerprint_sha256": "e692eef593e6e16b98e7815c65fbe4e00de0d82fbc6244e7fedaf1282fda3d3d",
     "input_fingerprint_sha256": "6396d7012b0ef7d74d4eae5bcf4533516c0379cfd3eaf5c007f4c259352a071c",
     "leaderboard_fingerprint_sha256": "caacd4c75599bcd164de620b48f4789ea894dab1354d6f19201474b76b11298f",
