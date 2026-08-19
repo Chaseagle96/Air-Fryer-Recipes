@@ -15,11 +15,11 @@ For deterministic UI tests, launch with `--ui-testing`; the app uses representat
 ## Architecture
 
 - `Models.swift`: versioned Recipe Intelligence DTOs and product enums.
-- `Networking.swift`: async/await Recipe Intelligence client with vertical discovery and paged feeds.
+- `Networking.swift`: async/await Recipe Intelligence client with vertical discovery, version-aware manifests and paged feeds.
 - `PersistenceModels.swift`: private local SwiftData entities for cache, profiles, households, saves, events, notes, reviews, cooking history, meal plans and shopping items.
 - `RecommendationService.swift`: replaceable MVP recommendation interface plus a separate household-convergence interface.
 - `ShoppingListService.swift`: ingredient parsing, conservative quantity merging and grocery categorization.
-- `AppModel.swift`: main-actor orchestration and behavior-event capture.
+- `AppModel.swift`: main-actor orchestration, behavior-event capture and live feed reconciliation.
 - feature views: Discover, Saved/Elimination, Plan, Shopping, Reviews and Taste/Profile.
 
 Remote Recipe Intelligence evidence is conceptually separate from private user-owned state. The app does not upload notes, reviews or behavioral data.
@@ -38,9 +38,24 @@ Remote Recipe Intelligence evidence is conceptually separate from private user-o
 
 This is a serving projection only. It does not change Bayesian ranking, priors, calibration, dedupe or vertical isolation.
 
+## Live ranking refresh
+
+The iOS binary does not embed a fixed leaderboard. It follows the generated Recipe Intelligence serving artifacts on GitHub.
+
+- App launch force-checks the current vertical catalog and feed manifest.
+- Returning to the foreground checks the live catalog and current vertical again.
+- While the app remains active, it checks every 15 minutes so an hourly backend refresh can flow into the app without requiring a relaunch.
+- Discover supports pull-to-refresh plus an explicit accessible Refresh Rankings button.
+- Manifest checks compare `generated_at`; recipe pages are requested with that generation as a version token so stable GitHub raw URLs cannot hide a new snapshot behind HTTP caching.
+- If nothing changed, the existing deck is left untouched.
+- If rankings changed, the card currently being viewed stays pinned while the unseen pool is replaced and re-ranked from the new snapshot.
+- If the user swipes while a refresh is in flight, the finished refresh does not resurrect that card.
+- Saved recipe metadata such as rank, rating, rating count, imagery and ingredients is refreshed when the corresponding recipe appears in a newly loaded snapshot. Personal lifecycle state, notes, reviews, cooking history and plans are never overwritten by remote refreshes.
+- If the network is unavailable, the app retains the current deck and can fall back to its SwiftData recipe cache.
+
 ## Adding a vertical
 
-Add the backend vertical normally, publish its paged mobile feed, then add one entry to `api/verticals.json`. The iOS vertical selector and paged client do not contain Air Fryer/Slow Cooker-specific branching.
+Add the backend vertical normally, publish its paged mobile feed, then add one entry to `api/verticals.json`. The iOS vertical selector and paged client do not contain Air Fryer/Slow Cooker-specific branching. The live catalog refresh also allows a newly published vertical to appear without shipping a new iOS binary.
 
 ## Persistence and learning events
 
@@ -50,7 +65,7 @@ Multiple user profiles and a household entity exist from day one. Household reco
 
 ## Accessibility
 
-Every swipe action has an explicit button equivalent. Recipe cards expose VoiceOver labels and custom actions, layouts use semantic Dynamic Type fonts, system colors and large controls, and swipe animations respect Reduce Motion.
+Every swipe action has an explicit button equivalent. Recipe cards expose VoiceOver labels and custom actions, layouts use semantic Dynamic Type fonts, system colors and large controls, and swipe animations respect Reduce Motion. Pull-to-refresh also has an explicit toolbar button so feed refresh is never gesture-only.
 
 ## Known MVP limitations
 
@@ -61,6 +76,7 @@ Every swipe action has an explicit button equivalent. Recipe cards expose VoiceO
 - Shopping normalization is intentionally conservative and does not convert incompatible units.
 - Meal planning is one-week local planning without Calendar integration.
 - Household convergence is architected but not learned yet.
+- iOS background execution is not used to poll GitHub while the app is suspended; an immediate foreground check catches publications that occurred while it was away.
 
 ## Validation
 
