@@ -74,20 +74,70 @@ jobs:
       - name: Run catalog sync regression tests
         run: PYTHONPATH=src pytest tests/test_source_catalog_sync.py tests/test_url_normalization.py
 
-      - name: Sync promoted publishers into URL catalogs
+      - name: Check source-expansion gate readiness
+        id: gate
         if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          readiness="$(PYTHONPATH=src python - <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          import yaml
+
+          config = yaml.safe_load(Path('config/source_discovery.yaml').read_text(encoding='utf-8')) or {}
+          expected = int(config.get('source_gate_version') or 0)
+          observations = {
+              'aggregate': Path('output/source_expansion_all.json'),
+              'air_fryer_metrics': Path('output/source_expansion.json'),
+              'slow_cooker_metrics': Path('verticals/slow_cooker/output/source_expansion.json'),
+              'air_fryer_registry': Path('data/source_registry.json'),
+              'slow_cooker_registry': Path('verticals/slow_cooker/data/source_registry.json'),
+          }
+          versions = {}
+          for name, path in observations.items():
+              try:
+                  payload = json.loads(path.read_text(encoding='utf-8'))
+                  versions[name] = int(payload.get('source_gate_version') or 0)
+              except (OSError, ValueError, json.JSONDecodeError):
+                  versions[name] = 0
+          ready = expected > 0 and all(version == expected for version in versions.values())
+          if not ready:
+              print(
+                  f'Deferring catalog sync until Source Expansion persists gate {expected}; observed={versions}',
+                  file=sys.stderr,
+              )
+          print('true' if ready else 'false')
+          PY
+          )"
+          echo "ready=$readiness" >> "$GITHUB_OUTPUT"
+          echo "Source gate ready for catalog sync: $readiness"
+
+      - name: Explain deferred catalog sync
+        if: github.event_name != 'pull_request' && steps.gate.outputs.ready != 'true'
+        run: >-
+          echo 'Catalog sync is intentionally deferred because checked-in source-expansion evidence
+          does not yet match the configured source gate. A successful Source Expansion run on main
+          will retrigger this workflow through workflow_run.'
+
+      - name: Sync promoted publishers into URL catalogs
+        if: github.event_name != 'pull_request' && steps.gate.outputs.ready == 'true'
         run: PYTHONPATH=src python scripts/sync_promoted_source_catalogs.py --mode auto
 
       - name: Validate persistent catalogs
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && steps.gate.outputs.ready == 'true'
         run: |
           PYTHONPATH=src python - <<'PY'
           import json
+          import yaml
           from pathlib import Path
           from airfryer_rankings.models import load_sources
           from airfryer_rankings.source_registry import effective_source_configs, load_source_registry
           from airfryer_rankings.url_normalization import normalize_discovered_url
 
+          config = yaml.safe_load(Path('config/source_discovery.yaml').read_text(encoding='utf-8')) or {}
+          expected_gate = int(config.get('source_gate_version') or 0)
           checks = [
               ('air_fryer', Path('config/sources.yaml'), Path('data/source_registry.json'), Path('data/state.json'), Path('output/source_expansion.json')),
               ('slow_cooker', Path('config/verticals/slow_cooker/sources.yaml'), Path('verticals/slow_cooker/data/source_registry.json'), Path('verticals/slow_cooker/data/state.json'), Path('verticals/slow_cooker/output/source_expansion.json')),
@@ -100,6 +150,8 @@ jobs:
               state = json.loads(state_path.read_text(encoding='utf-8'))
               metrics = json.loads(metrics_path.read_text(encoding='utf-8'))
               catalog = state.get('url_catalog', {})
+              assert int(registry['source_gate_version']) == expected_gate
+              assert int(metrics['source_gate_version']) == expected_gate
               assert int(metrics['catalog_url_count']) == len(catalog)
               assert all(key == normalize_discovered_url(key) for key in catalog), (
                   vertical, 'persistent URL catalog contains non-normalized aliases'
@@ -110,6 +162,7 @@ jobs:
                   )
               print(
                   vertical,
+                  'gate=', expected_gate,
                   'effective=', len(effective),
                   'auto=', len(auto),
                   'catalog=', len(catalog),
@@ -130,7 +183,7 @@ jobs:
             verticals/slow_cooker/output/source_expansion.json
 
       - name: Commit synchronized URL catalogs
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && steps.gate.outputs.ready == 'true'
         shell: bash
         run: |
           git config user.name 'github-actions[bot]'
