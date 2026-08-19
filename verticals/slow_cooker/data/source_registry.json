@@ -1,6 +1,2054 @@
 {
-  "audit": [],
-  "candidates": {},
+  "audit": [
+    {
+      "domain": "slowcookergourmet.net",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "chatgpt_web_search_bootstrap",
+        "query": "best slow cooker recipes independent recipe publisher",
+        "url": "https://slowcookergourmet.net/slow-cooker-dinner-recipes-for-busy-weeknights/"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via chatgpt_web_search_bootstrap",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "slowcookergourmet.net",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "themagicalslowcooker.com",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "chatgpt_web_search_bootstrap",
+        "query": "slow cooker recipes dedicated recipe publisher",
+        "url": "https://www.themagicalslowcooker.com/recipes/"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via chatgpt_web_search_bootstrap",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "themagicalslowcooker.com",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "365daysofcrockpot.com",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "chatgpt_web_search_bootstrap",
+        "query": "slow cooker recipes dedicated recipe publisher",
+        "url": "https://www.365daysofcrockpot.com/category/cooking-method/slow-cooker/"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via chatgpt_web_search_bootstrap",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "365daysofcrockpot.com",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "marthastewart.com",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "chatgpt_web_search_bootstrap",
+        "query": "best slow cooker recipes editorial publisher",
+        "url": "https://www.marthastewart.com/274310/slow-cooker-recipes"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via chatgpt_web_search_bootstrap",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "marthastewart.com",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "epicurious.com",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "chatgpt_web_search_bootstrap",
+        "query": "best slow cooker recipes editorial publisher",
+        "url": "https://www.epicurious.com/recipes-menus/crock-pot-slow-cooker-recipes"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via chatgpt_web_search_bootstrap",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "epicurious.com",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "auth.tasteofhome.com",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "trusted_outbound_link",
+        "query": "https://www.tasteofhome.com/article/7-common-slow-cooker-mistakes-and-how-to-avoid-them/",
+        "url": "https://auth.tasteofhome.com/oauth2/authorize?client_id=2dfc66ec-2722-46dd-af5d-047eb8101264&response_type=code&scope=openid%20profile%20email&redirect_uri=https%3A%2F%2Fwww.tasteofhome.com%2Farticle%2F7-common-slow-cooker-mistakes-and-how-to-avoid-them%2F"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via trusted_outbound_link",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "auth.tasteofhome.com",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "amzn.to",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "trusted_outbound_link",
+        "query": "https://www.skinnytaste.com/beef-bourguignon-slow-cooker/",
+        "url": "https://amzn.to/3XbdYj3"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via trusted_outbound_link",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "amzn.to",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "yummly.com",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "trusted_outbound_link",
+        "query": "https://therecipecritic.com/10-asian-inspired-slow-cooker-meals/",
+        "url": "https://www.yummly.com/urb/verify?url=https://therecipecritic.com/10-asian-inspired-slow-cooker-meals/&title=10%20Asian%20Inspired%20Slow%20Cooker%20Meals&yumtype=button"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via trusted_outbound_link",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "yummly.com",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "amzlink.to",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "trusted_outbound_link",
+        "query": "https://www.spendwithpennies.com/15-bean-slow-cooker-chili/",
+        "url": "https://amzlink.to/az06iOav8j81r"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via trusted_outbound_link",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "amzlink.to",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "thelittlekitchen.net",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "trusted_outbound_link",
+        "query": "https://pinchofyum.com/12-easy-recipes-you-can-make-in-a-slow-cooker",
+        "url": "Http://Www.Thelittlekitchen.Net/Whole-Chicken-In-a-Slow-Cooker/"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via trusted_outbound_link",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "thelittlekitchen.net",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "crock-pot.com",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "trusted_outbound_link",
+        "query": "https://pinchofyum.com/12-easy-recipes-you-can-make-in-a-slow-cooker",
+        "url": "https://www.crock-pot.com/hook-up-connectable-entertaining-system/crock-pot-hook-up-connectable-entertaining-system-3-piece-set-metallic-charcoal/SCCPMDKIT-CH.html?gclid=CMzQw5bi5cgCFQaOaQodyH8JzA&amp%3Bkwid=productads-plaid%5E76248164530-sku%5ESCCPMDKIT%40ADL4CH-adType%5EPLA-device%5Ec-adid%5E55532499130"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via trusted_outbound_link",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "crock-pot.com",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "rstyle.me",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "trusted_outbound_link",
+        "query": "https://www.wellplated.com/best-crock-pot-recipes-meal/",
+        "url": "https://rstyle.me/n/cxuqxab8d27"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via trusted_outbound_link",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "rstyle.me",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "forktospoon.com",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "cross_vertical",
+        "query": "candidate observed in air_fryer",
+        "url": "https://forktospoon.com/method/air-fryer/"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via cross_vertical",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "forktospoon.com",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "temeculablogs.com",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "cross_vertical",
+        "query": "candidate observed in air_fryer",
+        "url": "https://temeculablogs.com/air-fryer-chicken-and-vegetables/"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via cross_vertical",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "temeculablogs.com",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "eatwell101.com",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "cross_vertical",
+        "query": "candidate observed in air_fryer",
+        "url": "https://www.eatwell101.com/air-fryer-chicken-recipe"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via cross_vertical",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "eatwell101.com",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "kelvinskitchen.com",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "cross_vertical",
+        "query": "candidate observed in air_fryer",
+        "url": "https://kelvinskitchen.com/recipe/air-fryer-recipes/"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via cross_vertical",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "kelvinskitchen.com",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "thestayathomechef.com",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "cross_vertical",
+        "query": "candidate observed in air_fryer",
+        "url": "https://thestayathomechef.com/air-fryer-chicken-recipes/"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via cross_vertical",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "thestayathomechef.com",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "theyummybowl.com",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "cross_vertical",
+        "query": "candidate observed in air_fryer",
+        "url": "https://theyummybowl.com/air-fryer-chicken-and-vegetables/"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via cross_vertical",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "theyummybowl.com",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "wayfair.com",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "cross_vertical",
+        "query": "candidate observed in air_fryer",
+        "url": "https://www.wayfair.com/Ninja--Ninja%C2%AE-Foodi%C2%AE-6in1-10qt.-XL-2Basket-Air-Fryer-with-DualZone%E2%84%A2-Technology-DZ401-L835-K~SAK10147.html"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via cross_vertical",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "wayfair.com",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "walmart.com",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "cross_vertical",
+        "query": "candidate observed in air_fryer",
+        "url": "https://www.walmart.com/ip/Ninja-Foodi-6-in-1-10-qt-XL-2-Basket-Air-Fryer-DZ401/574134807"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via cross_vertical",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "walmart.com",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "barnesandnoble.com",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "cross_vertical",
+        "query": "candidate observed in air_fryer",
+        "url": "https://www.barnesandnoble.com/w/skinnytaste-air-fryer-dinners-gina-homolka/1140439852?ean=9780593235591"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via cross_vertical",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "barnesandnoble.com",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "geni.us",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "cross_vertical",
+        "query": "candidate observed in air_fryer",
+        "url": "https://geni.us/ninja-air-fryer-pro-xl"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via cross_vertical",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "geni.us",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "share.flipboard.com",
+      "event": "SOURCE_DISCOVERED",
+      "metrics": {
+        "provider": "cross_vertical",
+        "query": "candidate observed in air_fryer",
+        "url": "https://share.flipboard.com/bookmarklet/popout?v=2&url=https://www.lecremedelacrumb.com/air-fryer-butternut-squash/&title=Air%20Fryer%20Butternut%20Squash"
+      },
+      "new_state": "DISCOVERED",
+      "previous_state": null,
+      "reason": "discovered via cross_vertical",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "share.flipboard.com",
+      "event": "SOURCE_CANDIDATE",
+      "metrics": {},
+      "new_state": "CANDIDATE",
+      "previous_state": "DISCOVERED",
+      "reason": "normalized and queued for source qualification",
+      "source_gate_version": 1,
+      "thresholds": {},
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "auth.tasteofhome.com",
+      "event": "SOURCE_QUARANTINED",
+      "metrics": {
+        "domain": "auth.tasteofhome.com",
+        "hard_failures": [],
+        "pages_fetched": 0,
+        "pages_sampled": 0,
+        "qualifying_vertical_recipe_count": 0,
+        "quality_score": 0.0,
+        "robots_status": "unavailable:HTTPError",
+        "temporary_failures": [
+          "robots_unavailable"
+        ]
+      },
+      "new_state": "QUARANTINED",
+      "previous_state": "CANDIDATE",
+      "reason": "qualification incomplete: robots_unavailable",
+      "source_gate_version": 1,
+      "thresholds": {
+        "deep_fast_track_min_pages": 10,
+        "deep_fast_track_score": 88.0,
+        "promotion_min_qualifying_attempts": 2,
+        "qualification_score": 74.0,
+        "source_gate_version": 1
+      },
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "yummly.com",
+      "event": "SOURCE_QUARANTINED",
+      "metrics": {
+        "domain": "yummly.com",
+        "hard_failures": [],
+        "pages_fetched": 0,
+        "pages_sampled": 0,
+        "qualifying_vertical_recipe_count": 0,
+        "quality_score": 0.0,
+        "robots_status": "unavailable:TooManyRedirects",
+        "temporary_failures": [
+          "robots_unavailable"
+        ]
+      },
+      "new_state": "QUARANTINED",
+      "previous_state": "CANDIDATE",
+      "reason": "qualification incomplete: robots_unavailable",
+      "source_gate_version": 1,
+      "thresholds": {
+        "deep_fast_track_min_pages": 10,
+        "deep_fast_track_score": 88.0,
+        "promotion_min_qualifying_attempts": 2,
+        "qualification_score": 74.0,
+        "source_gate_version": 1
+      },
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "amzlink.to",
+      "event": "SOURCE_REJECTED",
+      "metrics": {
+        "domain": "amzlink.to",
+        "editorial_provenance_ratio": 0.0,
+        "external_canonical_ratio": 0.0,
+        "extraction_success_rate": 0.0,
+        "fetch_success_rate": 0.0,
+        "field_completeness": 0.0,
+        "freshness_score": 50.0,
+        "hard_failures": [
+          "low_recipe_structure_yield",
+          "low_vertical_relevance",
+          "thin_recipe_content"
+        ],
+        "mean_rating_evidence_confidence": null,
+        "novelty_ratio": 0.0,
+        "pages_fetched": 0,
+        "pages_sampled": 0,
+        "qualifying_vertical_recipe_count": 0,
+        "quality_components": {
+          "crawl_stability": 0.0,
+          "editorial_provenance": 0.0,
+          "extraction_reliability": 0.0,
+          "freshness": 50.0,
+          "general_quality": 70.0,
+          "rating_integrity": 70.0,
+          "unique_contribution": 0.0,
+          "vertical_relevance": 0.0
+        },
+        "quality_score": 13.0,
+        "rating_conflict_ratio": 0.0,
+        "rating_coverage_ratio": 0.0,
+        "recipe_structure_rate": 0.0,
+        "recipes_extracted": 0,
+        "recipes_recognized": 0,
+        "robots_status": "ok",
+        "sample_recipe_yield": 0.0,
+        "substantive_recipe_ratio": 0.0,
+        "suspicious_uniform_rating_evidence": false,
+        "temporary_failures": [
+          "insufficient_sample",
+          "insufficient_fetches",
+          "insufficient_vertical_recipe_body",
+          "low_fetch_success"
+        ],
+        "trap_url_ratio": 0.0,
+        "vertical_relevance_ratio": 0.0,
+        "within_source_duplicate_ratio": 0.0
+      },
+      "new_state": "REJECTED",
+      "previous_state": "CANDIDATE",
+      "reason": "hard source gate failed: low_recipe_structure_yield, low_vertical_relevance, thin_recipe_content",
+      "source_gate_version": 1,
+      "thresholds": {
+        "deep_fast_track_min_pages": 10,
+        "deep_fast_track_score": 88.0,
+        "promotion_min_qualifying_attempts": 2,
+        "qualification_score": 74.0,
+        "source_gate_version": 1
+      },
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "rstyle.me",
+      "event": "SOURCE_REJECTED",
+      "metrics": {
+        "domain": "rstyle.me",
+        "editorial_provenance_ratio": 0.0,
+        "external_canonical_ratio": 0.0,
+        "extraction_success_rate": 0.0,
+        "fetch_success_rate": 0.0,
+        "field_completeness": 0.0,
+        "freshness_score": 50.0,
+        "hard_failures": [
+          "low_recipe_structure_yield",
+          "low_vertical_relevance",
+          "thin_recipe_content"
+        ],
+        "mean_rating_evidence_confidence": null,
+        "novelty_ratio": 0.0,
+        "pages_fetched": 0,
+        "pages_sampled": 0,
+        "qualifying_vertical_recipe_count": 0,
+        "quality_components": {
+          "crawl_stability": 0.0,
+          "editorial_provenance": 0.0,
+          "extraction_reliability": 0.0,
+          "freshness": 50.0,
+          "general_quality": 70.0,
+          "rating_integrity": 70.0,
+          "unique_contribution": 0.0,
+          "vertical_relevance": 0.0
+        },
+        "quality_score": 13.0,
+        "rating_conflict_ratio": 0.0,
+        "rating_coverage_ratio": 0.0,
+        "recipe_structure_rate": 0.0,
+        "recipes_extracted": 0,
+        "recipes_recognized": 0,
+        "robots_status": "ok",
+        "sample_recipe_yield": 0.0,
+        "substantive_recipe_ratio": 0.0,
+        "suspicious_uniform_rating_evidence": false,
+        "temporary_failures": [
+          "insufficient_sample",
+          "insufficient_fetches",
+          "insufficient_vertical_recipe_body",
+          "low_fetch_success"
+        ],
+        "trap_url_ratio": 0.0,
+        "vertical_relevance_ratio": 0.0,
+        "within_source_duplicate_ratio": 0.0
+      },
+      "new_state": "REJECTED",
+      "previous_state": "CANDIDATE",
+      "reason": "hard source gate failed: low_recipe_structure_yield, low_vertical_relevance, thin_recipe_content",
+      "source_gate_version": 1,
+      "thresholds": {
+        "deep_fast_track_min_pages": 10,
+        "deep_fast_track_score": 88.0,
+        "promotion_min_qualifying_attempts": 2,
+        "qualification_score": 74.0,
+        "source_gate_version": 1
+      },
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "slowcookergourmet.net",
+      "event": "SOURCE_REJECTED",
+      "metrics": {
+        "domain": "slowcookergourmet.net",
+        "editorial_provenance_ratio": 1.0,
+        "external_canonical_ratio": 0.0,
+        "extraction_success_rate": 0.6,
+        "fetch_success_rate": 1.0,
+        "field_completeness": 0.8333333333333334,
+        "freshness_score": 76.0,
+        "hard_failures": [
+          "low_recipe_structure_yield"
+        ],
+        "mean_rating_evidence_confidence": 0.65,
+        "novelty_ratio": 1.0,
+        "pages_fetched": 10,
+        "pages_sampled": 10,
+        "qualifying_vertical_recipe_count": 79,
+        "quality_components": {
+          "crawl_stability": 100.0,
+          "editorial_provenance": 100.0,
+          "extraction_reliability": 70.0,
+          "freshness": 76.0,
+          "general_quality": 100.0,
+          "rating_integrity": 100.0,
+          "unique_contribution": 100.0,
+          "vertical_relevance": 100.0
+        },
+        "quality_score": 92.8,
+        "rating_conflict_ratio": 0.0,
+        "rating_coverage_ratio": 0.6,
+        "recipe_structure_rate": 0.5,
+        "recipes_extracted": 3,
+        "recipes_recognized": 5,
+        "robots_status": "ok",
+        "sample_recipe_yield": 0.5,
+        "substantive_recipe_ratio": 1.0,
+        "suspicious_uniform_rating_evidence": false,
+        "temporary_failures": [],
+        "trap_url_ratio": 0.0,
+        "vertical_relevance_ratio": 1.0,
+        "within_source_duplicate_ratio": 0.0
+      },
+      "new_state": "REJECTED",
+      "previous_state": "CANDIDATE",
+      "reason": "hard source gate failed: low_recipe_structure_yield",
+      "source_gate_version": 1,
+      "thresholds": {
+        "deep_fast_track_min_pages": 10,
+        "deep_fast_track_score": 88.0,
+        "promotion_min_qualifying_attempts": 2,
+        "qualification_score": 74.0,
+        "source_gate_version": 1
+      },
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "themagicalslowcooker.com",
+      "event": "SOURCE_REJECTED",
+      "metrics": {
+        "domain": "themagicalslowcooker.com",
+        "editorial_provenance_ratio": 0.0,
+        "external_canonical_ratio": 0.0,
+        "extraction_success_rate": 0.0,
+        "fetch_success_rate": 0.0,
+        "field_completeness": 0.0,
+        "freshness_score": 50.0,
+        "hard_failures": [
+          "low_recipe_structure_yield",
+          "low_vertical_relevance",
+          "thin_recipe_content"
+        ],
+        "mean_rating_evidence_confidence": null,
+        "novelty_ratio": 0.0,
+        "pages_fetched": 0,
+        "pages_sampled": 10,
+        "qualifying_vertical_recipe_count": 238,
+        "quality_components": {
+          "crawl_stability": 0.0,
+          "editorial_provenance": 0.0,
+          "extraction_reliability": 0.0,
+          "freshness": 50.0,
+          "general_quality": 70.0,
+          "rating_integrity": 70.0,
+          "unique_contribution": 0.0,
+          "vertical_relevance": 35.0
+        },
+        "quality_score": 20.0,
+        "rating_conflict_ratio": 0.0,
+        "rating_coverage_ratio": 0.0,
+        "recipe_structure_rate": 0.0,
+        "recipes_extracted": 0,
+        "recipes_recognized": 0,
+        "robots_status": "ok",
+        "sample_recipe_yield": 0.0,
+        "substantive_recipe_ratio": 0.0,
+        "suspicious_uniform_rating_evidence": false,
+        "temporary_failures": [
+          "insufficient_fetches",
+          "low_fetch_success"
+        ],
+        "trap_url_ratio": 0.0,
+        "vertical_relevance_ratio": 0.0,
+        "within_source_duplicate_ratio": 0.0
+      },
+      "new_state": "REJECTED",
+      "previous_state": "CANDIDATE",
+      "reason": "hard source gate failed: low_recipe_structure_yield, low_vertical_relevance, thin_recipe_content",
+      "source_gate_version": 1,
+      "thresholds": {
+        "deep_fast_track_min_pages": 10,
+        "deep_fast_track_score": 88.0,
+        "promotion_min_qualifying_attempts": 2,
+        "qualification_score": 74.0,
+        "source_gate_version": 1
+      },
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "365daysofcrockpot.com",
+      "event": "SOURCE_QUARANTINED",
+      "metrics": {
+        "domain": "365daysofcrockpot.com",
+        "hard_failures": [],
+        "pages_fetched": 0,
+        "pages_sampled": 0,
+        "qualifying_vertical_recipe_count": 0,
+        "quality_score": 0.0,
+        "robots_status": "unavailable:TooManyRedirects",
+        "temporary_failures": [
+          "robots_unavailable"
+        ]
+      },
+      "new_state": "QUARANTINED",
+      "previous_state": "CANDIDATE",
+      "reason": "qualification incomplete: robots_unavailable",
+      "source_gate_version": 1,
+      "thresholds": {
+        "deep_fast_track_min_pages": 10,
+        "deep_fast_track_score": 88.0,
+        "promotion_min_qualifying_attempts": 2,
+        "qualification_score": 74.0,
+        "source_gate_version": 1
+      },
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    {
+      "domain": "marthastewart.com",
+      "event": "SOURCE_QUARANTINED",
+      "metrics": {
+        "domain": "marthastewart.com",
+        "hard_failures": [],
+        "pages_fetched": 0,
+        "pages_sampled": 0,
+        "qualifying_vertical_recipe_count": 0,
+        "quality_score": 0.0,
+        "robots_status": "unavailable:TooManyRedirects",
+        "temporary_failures": [
+          "robots_unavailable"
+        ]
+      },
+      "new_state": "QUARANTINED",
+      "previous_state": "CANDIDATE",
+      "reason": "qualification incomplete: robots_unavailable",
+      "source_gate_version": 1,
+      "thresholds": {
+        "deep_fast_track_min_pages": 10,
+        "deep_fast_track_score": 88.0,
+        "promotion_min_qualifying_attempts": 2,
+        "qualification_score": 74.0,
+        "source_gate_version": 1
+      },
+      "timestamp": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    }
+  ],
+  "candidates": {
+    "365daysofcrockpot.com": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {},
+      "discovery_count": 2,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "chatgpt_web_search_bootstrap",
+          "query": "slow cooker recipes dedicated recipe publisher",
+          "url": "https://www.365daysofcrockpot.com/category/cooking-method/slow-cooker/"
+        },
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://www.365daysofcrockpot.com/category/cooking-method/slow-cooker/"
+        }
+      ],
+      "domain": "365daysofcrockpot.com",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_evaluated_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_qualification_metrics": {
+        "domain": "365daysofcrockpot.com",
+        "hard_failures": [],
+        "pages_fetched": 0,
+        "pages_sampled": 0,
+        "qualifying_vertical_recipe_count": 0,
+        "quality_score": 0.0,
+        "robots_status": "unavailable:TooManyRedirects",
+        "temporary_failures": [
+          "robots_unavailable"
+        ]
+      },
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 1,
+      "quality_score": 0.0,
+      "rediscovery_blocked": false,
+      "status": "QUARANTINED",
+      "status_reason": "qualification incomplete: robots_unavailable",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "amzlink.to": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {
+        "allow_unmatched_discovery_links": false,
+        "delay": 0.25,
+        "discovery_urls": [],
+        "include_pattern": "(?:slow[-_ ]?cook(?:er|ing|ed)|crock[-_ ]?pot)",
+        "max_urls": 300,
+        "sitemap_urls": [
+          "https://amzlink.to/sitemap.xml"
+        ]
+      },
+      "discovery_count": 3,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "trusted_outbound_link",
+          "query": "https://www.spendwithpennies.com/15-bean-slow-cooker-chili/",
+          "url": "https://amzlink.to/az06iOav8j81r"
+        },
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "trusted_outbound_link",
+          "query": "https://downshiftology.com/best-slow-cooker-recipes/",
+          "url": "https://amzlink.to/az0cV7TAejXwL"
+        },
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://amzlink.to/az0q51AyM5TXI"
+        }
+      ],
+      "domain": "amzlink.to",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_evaluated_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_qualification_metrics": {
+        "domain": "amzlink.to",
+        "editorial_provenance_ratio": 0.0,
+        "external_canonical_ratio": 0.0,
+        "extraction_success_rate": 0.0,
+        "fetch_success_rate": 0.0,
+        "field_completeness": 0.0,
+        "freshness_score": 50.0,
+        "hard_failures": [
+          "low_recipe_structure_yield",
+          "low_vertical_relevance",
+          "thin_recipe_content"
+        ],
+        "mean_rating_evidence_confidence": null,
+        "novelty_ratio": 0.0,
+        "pages_fetched": 0,
+        "pages_sampled": 0,
+        "qualifying_vertical_recipe_count": 0,
+        "quality_components": {
+          "crawl_stability": 0.0,
+          "editorial_provenance": 0.0,
+          "extraction_reliability": 0.0,
+          "freshness": 50.0,
+          "general_quality": 70.0,
+          "rating_integrity": 70.0,
+          "unique_contribution": 0.0,
+          "vertical_relevance": 0.0
+        },
+        "quality_score": 13.0,
+        "rating_conflict_ratio": 0.0,
+        "rating_coverage_ratio": 0.0,
+        "recipe_structure_rate": 0.0,
+        "recipes_extracted": 0,
+        "recipes_recognized": 0,
+        "robots_status": "ok",
+        "sample_recipe_yield": 0.0,
+        "substantive_recipe_ratio": 0.0,
+        "suspicious_uniform_rating_evidence": false,
+        "temporary_failures": [
+          "insufficient_sample",
+          "insufficient_fetches",
+          "insufficient_vertical_recipe_body",
+          "low_fetch_success"
+        ],
+        "trap_url_ratio": 0.0,
+        "vertical_relevance_ratio": 0.0,
+        "within_source_duplicate_ratio": 0.0
+      },
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 1,
+      "quality_score": 13.0,
+      "rediscovery_blocked": false,
+      "rejection_cooldown_until": "2026-09-18T06:26:48.638461+00:00",
+      "rejection_reason": "hard source gate failed: low_recipe_structure_yield, low_vertical_relevance, thin_recipe_content",
+      "status": "REJECTED",
+      "status_reason": "hard source gate failed: low_recipe_structure_yield, low_vertical_relevance, thin_recipe_content",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "amzn.to": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {},
+      "discovery_count": 2,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "trusted_outbound_link",
+          "query": "https://www.skinnytaste.com/beef-bourguignon-slow-cooker/",
+          "url": "https://amzn.to/3XbdYj3"
+        },
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://amzn.to/2WoYi0x"
+        }
+      ],
+      "domain": "amzn.to",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 0,
+      "quality_score": null,
+      "rediscovery_blocked": false,
+      "status": "CANDIDATE",
+      "status_reason": "normalized and queued for source qualification",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "auth.tasteofhome.com": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {},
+      "discovery_count": 3,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "trusted_outbound_link",
+          "query": "https://www.tasteofhome.com/article/7-common-slow-cooker-mistakes-and-how-to-avoid-them/",
+          "url": "https://auth.tasteofhome.com/oauth2/authorize?client_id=2dfc66ec-2722-46dd-af5d-047eb8101264&response_type=code&scope=openid%20profile%20email&redirect_uri=https%3A%2F%2Fwww.tasteofhome.com%2Farticle%2F7-common-slow-cooker-mistakes-and-how-to-avoid-them%2F"
+        },
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "trusted_outbound_link",
+          "query": "https://www.tasteofhome.com/article/7-common-slow-cooker-mistakes-and-how-to-avoid-them/",
+          "url": "https://auth.tasteofhome.com/oauth2/register?client_id=2dfc66ec-2722-46dd-af5d-047eb8101264&response_type=code&scope=openid%20profile%20email&redirect_uri=https%3A%2F%2Fwww.tasteofhome.com%2Farticle%2F7-common-slow-cooker-mistakes-and-how-to-avoid-them%2F"
+        },
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://auth.tasteofhome.com/oauth2/authorize?client_id=2dfc66ec-2722-46dd-af5d-047eb8101264&response_type=code&scope=openid%20profile%20email&redirect_uri=https%3A%2F%2Fwww.tasteofhome.com%2Farticle%2Fair-fryer-burrata%2F"
+        }
+      ],
+      "domain": "auth.tasteofhome.com",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_evaluated_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_qualification_metrics": {
+        "domain": "auth.tasteofhome.com",
+        "hard_failures": [],
+        "pages_fetched": 0,
+        "pages_sampled": 0,
+        "qualifying_vertical_recipe_count": 0,
+        "quality_score": 0.0,
+        "robots_status": "unavailable:HTTPError",
+        "temporary_failures": [
+          "robots_unavailable"
+        ]
+      },
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 1,
+      "quality_score": 0.0,
+      "rediscovery_blocked": false,
+      "status": "QUARANTINED",
+      "status_reason": "qualification incomplete: robots_unavailable",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "barnesandnoble.com": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {},
+      "discovery_count": 1,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://www.barnesandnoble.com/w/skinnytaste-air-fryer-dinners-gina-homolka/1140439852?ean=9780593235591"
+        }
+      ],
+      "domain": "barnesandnoble.com",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 0,
+      "quality_score": null,
+      "rediscovery_blocked": false,
+      "status": "CANDIDATE",
+      "status_reason": "normalized and queued for source qualification",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "crock-pot.com": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {},
+      "discovery_count": 2,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "trusted_outbound_link",
+          "query": "https://pinchofyum.com/12-easy-recipes-you-can-make-in-a-slow-cooker",
+          "url": "https://www.crock-pot.com/hook-up-connectable-entertaining-system/crock-pot-hook-up-connectable-entertaining-system-3-piece-set-metallic-charcoal/SCCPMDKIT-CH.html?gclid=CMzQw5bi5cgCFQaOaQodyH8JzA&amp%3Bkwid=productads-plaid%5E76248164530-sku%5ESCCPMDKIT%40ADL4CH-adType%5EPLA-device%5Ec-adid%5E55532499130"
+        },
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://www.crock-pot.com/hook-up-connectable-entertaining-system/crock-pot-hook-up-connectable-entertaining-system-3-piece-set-metallic-charcoal/SCCPMDKIT-CH.html?gclid=CMzQw5bi5cgCFQaOaQodyH8JzA&amp%3Bkwid=productads-plaid%5E76248164530-sku%5ESCCPMDKIT%40ADL4CH-adType%5EPLA-device%5Ec-adid%5E55532499130"
+        }
+      ],
+      "domain": "crock-pot.com",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 0,
+      "quality_score": null,
+      "rediscovery_blocked": false,
+      "status": "CANDIDATE",
+      "status_reason": "normalized and queued for source qualification",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "eatwell101.com": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {},
+      "discovery_count": 1,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://www.eatwell101.com/air-fryer-chicken-recipe"
+        }
+      ],
+      "domain": "eatwell101.com",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 0,
+      "quality_score": null,
+      "rediscovery_blocked": false,
+      "status": "CANDIDATE",
+      "status_reason": "normalized and queued for source qualification",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "epicurious.com": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {},
+      "discovery_count": 2,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "chatgpt_web_search_bootstrap",
+          "query": "best slow cooker recipes editorial publisher",
+          "url": "https://www.epicurious.com/recipes-menus/crock-pot-slow-cooker-recipes"
+        },
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://www.epicurious.com/recipes-menus/crock-pot-slow-cooker-recipes"
+        }
+      ],
+      "domain": "epicurious.com",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 0,
+      "quality_score": null,
+      "rediscovery_blocked": false,
+      "status": "CANDIDATE",
+      "status_reason": "normalized and queued for source qualification",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "forktospoon.com": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {},
+      "discovery_count": 1,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://forktospoon.com/method/air-fryer/"
+        }
+      ],
+      "domain": "forktospoon.com",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 0,
+      "quality_score": null,
+      "rediscovery_blocked": false,
+      "status": "CANDIDATE",
+      "status_reason": "normalized and queued for source qualification",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "geni.us": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {},
+      "discovery_count": 1,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://geni.us/ninja-air-fryer-pro-xl"
+        }
+      ],
+      "domain": "geni.us",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 0,
+      "quality_score": null,
+      "rediscovery_blocked": false,
+      "status": "CANDIDATE",
+      "status_reason": "normalized and queued for source qualification",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "kelvinskitchen.com": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {},
+      "discovery_count": 1,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://kelvinskitchen.com/recipe/air-fryer-recipes/"
+        }
+      ],
+      "domain": "kelvinskitchen.com",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 0,
+      "quality_score": null,
+      "rediscovery_blocked": false,
+      "status": "CANDIDATE",
+      "status_reason": "normalized and queued for source qualification",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "marthastewart.com": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {},
+      "discovery_count": 2,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "chatgpt_web_search_bootstrap",
+          "query": "best slow cooker recipes editorial publisher",
+          "url": "https://www.marthastewart.com/274310/slow-cooker-recipes"
+        },
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://www.marthastewart.com/274310/slow-cooker-recipes"
+        }
+      ],
+      "domain": "marthastewart.com",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_evaluated_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_qualification_metrics": {
+        "domain": "marthastewart.com",
+        "hard_failures": [],
+        "pages_fetched": 0,
+        "pages_sampled": 0,
+        "qualifying_vertical_recipe_count": 0,
+        "quality_score": 0.0,
+        "robots_status": "unavailable:TooManyRedirects",
+        "temporary_failures": [
+          "robots_unavailable"
+        ]
+      },
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 1,
+      "quality_score": 0.0,
+      "rediscovery_blocked": false,
+      "status": "QUARANTINED",
+      "status_reason": "qualification incomplete: robots_unavailable",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "rstyle.me": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {
+        "allow_unmatched_discovery_links": false,
+        "delay": 0.25,
+        "discovery_urls": [],
+        "include_pattern": "(?:slow[-_ ]?cook(?:er|ing|ed)|crock[-_ ]?pot)",
+        "max_urls": 300,
+        "sitemap_urls": [
+          "https://rstyle.me/sitemap.xml"
+        ]
+      },
+      "discovery_count": 3,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "trusted_outbound_link",
+          "query": "https://www.wellplated.com/best-crock-pot-recipes-meal/",
+          "url": "https://rstyle.me/n/cxuqxab8d27"
+        },
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "trusted_outbound_link",
+          "query": "https://www.wellplated.com/best-crock-pot-recipes-meal/",
+          "url": "https://rstyle.me/n/cxuqzhb8d27"
+        },
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://rstyle.me/n/cxuqxab8d27"
+        }
+      ],
+      "domain": "rstyle.me",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_evaluated_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_qualification_metrics": {
+        "domain": "rstyle.me",
+        "editorial_provenance_ratio": 0.0,
+        "external_canonical_ratio": 0.0,
+        "extraction_success_rate": 0.0,
+        "fetch_success_rate": 0.0,
+        "field_completeness": 0.0,
+        "freshness_score": 50.0,
+        "hard_failures": [
+          "low_recipe_structure_yield",
+          "low_vertical_relevance",
+          "thin_recipe_content"
+        ],
+        "mean_rating_evidence_confidence": null,
+        "novelty_ratio": 0.0,
+        "pages_fetched": 0,
+        "pages_sampled": 0,
+        "qualifying_vertical_recipe_count": 0,
+        "quality_components": {
+          "crawl_stability": 0.0,
+          "editorial_provenance": 0.0,
+          "extraction_reliability": 0.0,
+          "freshness": 50.0,
+          "general_quality": 70.0,
+          "rating_integrity": 70.0,
+          "unique_contribution": 0.0,
+          "vertical_relevance": 0.0
+        },
+        "quality_score": 13.0,
+        "rating_conflict_ratio": 0.0,
+        "rating_coverage_ratio": 0.0,
+        "recipe_structure_rate": 0.0,
+        "recipes_extracted": 0,
+        "recipes_recognized": 0,
+        "robots_status": "ok",
+        "sample_recipe_yield": 0.0,
+        "substantive_recipe_ratio": 0.0,
+        "suspicious_uniform_rating_evidence": false,
+        "temporary_failures": [
+          "insufficient_sample",
+          "insufficient_fetches",
+          "insufficient_vertical_recipe_body",
+          "low_fetch_success"
+        ],
+        "trap_url_ratio": 0.0,
+        "vertical_relevance_ratio": 0.0,
+        "within_source_duplicate_ratio": 0.0
+      },
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 1,
+      "quality_score": 13.0,
+      "rediscovery_blocked": false,
+      "rejection_cooldown_until": "2026-09-18T06:26:48.638461+00:00",
+      "rejection_reason": "hard source gate failed: low_recipe_structure_yield, low_vertical_relevance, thin_recipe_content",
+      "status": "REJECTED",
+      "status_reason": "hard source gate failed: low_recipe_structure_yield, low_vertical_relevance, thin_recipe_content",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "share.flipboard.com": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {},
+      "discovery_count": 1,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://share.flipboard.com/bookmarklet/popout?v=2&url=https://www.lecremedelacrumb.com/air-fryer-butternut-squash/&title=Air%20Fryer%20Butternut%20Squash"
+        }
+      ],
+      "domain": "share.flipboard.com",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 0,
+      "quality_score": null,
+      "rediscovery_blocked": false,
+      "status": "CANDIDATE",
+      "status_reason": "normalized and queued for source qualification",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "slowcookergourmet.net": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {
+        "allow_unmatched_discovery_links": false,
+        "delay": 0.25,
+        "discovery_urls": [
+          "https://slowcookergourmet.net/slow-cooker-dinner-recipes-for-busy-weeknights/",
+          "https://slowcookergourmet.net/category/recipes/slow-cooker-recipes/pork-recipes/",
+          "https://slowcookergourmet.net/category/recipes/slow-cooker-recipes/lunch-recipes-slow-cooker-recipes/",
+          "https://slowcookergourmet.net/chili-seasoning-recipe/",
+          "https://slowcookergourmet.net/slow-cooker-spicy-taco-casserole/"
+        ],
+        "include_pattern": "(?:slow[-_ ]?cook(?:er|ing|ed)|crock[-_ ]?pot)",
+        "max_urls": 300,
+        "sitemap_urls": [
+          "http://slowcookergourmet.net/sitemap19.xml"
+        ]
+      },
+      "discovery_count": 2,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "chatgpt_web_search_bootstrap",
+          "query": "best slow cooker recipes independent recipe publisher",
+          "url": "https://slowcookergourmet.net/slow-cooker-dinner-recipes-for-busy-weeknights/"
+        },
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://slowcookergourmet.net/slow-cooker-dinner-recipes-for-busy-weeknights/"
+        }
+      ],
+      "domain": "slowcookergourmet.net",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_evaluated_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_qualification_metrics": {
+        "domain": "slowcookergourmet.net",
+        "editorial_provenance_ratio": 1.0,
+        "external_canonical_ratio": 0.0,
+        "extraction_success_rate": 0.6,
+        "fetch_success_rate": 1.0,
+        "field_completeness": 0.8333333333333334,
+        "freshness_score": 76.0,
+        "hard_failures": [
+          "low_recipe_structure_yield"
+        ],
+        "mean_rating_evidence_confidence": 0.65,
+        "novelty_ratio": 1.0,
+        "pages_fetched": 10,
+        "pages_sampled": 10,
+        "qualifying_vertical_recipe_count": 79,
+        "quality_components": {
+          "crawl_stability": 100.0,
+          "editorial_provenance": 100.0,
+          "extraction_reliability": 70.0,
+          "freshness": 76.0,
+          "general_quality": 100.0,
+          "rating_integrity": 100.0,
+          "unique_contribution": 100.0,
+          "vertical_relevance": 100.0
+        },
+        "quality_score": 92.8,
+        "rating_conflict_ratio": 0.0,
+        "rating_coverage_ratio": 0.6,
+        "recipe_structure_rate": 0.5,
+        "recipes_extracted": 3,
+        "recipes_recognized": 5,
+        "robots_status": "ok",
+        "sample_recipe_yield": 0.5,
+        "substantive_recipe_ratio": 1.0,
+        "suspicious_uniform_rating_evidence": false,
+        "temporary_failures": [],
+        "trap_url_ratio": 0.0,
+        "vertical_relevance_ratio": 1.0,
+        "within_source_duplicate_ratio": 0.0
+      },
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 1,
+      "quality_score": 92.8,
+      "rediscovery_blocked": false,
+      "rejection_cooldown_until": "2026-09-18T06:26:48.638461+00:00",
+      "rejection_reason": "hard source gate failed: low_recipe_structure_yield",
+      "status": "REJECTED",
+      "status_reason": "hard source gate failed: low_recipe_structure_yield",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "temeculablogs.com": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {},
+      "discovery_count": 1,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://temeculablogs.com/air-fryer-chicken-and-vegetables/"
+        }
+      ],
+      "domain": "temeculablogs.com",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 0,
+      "quality_score": null,
+      "rediscovery_blocked": false,
+      "status": "CANDIDATE",
+      "status_reason": "normalized and queued for source qualification",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "thelittlekitchen.net": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {},
+      "discovery_count": 2,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "trusted_outbound_link",
+          "query": "https://pinchofyum.com/12-easy-recipes-you-can-make-in-a-slow-cooker",
+          "url": "Http://Www.Thelittlekitchen.Net/Whole-Chicken-In-a-Slow-Cooker/"
+        },
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "Http://Www.Thelittlekitchen.Net/Whole-Chicken-In-a-Slow-Cooker/"
+        }
+      ],
+      "domain": "thelittlekitchen.net",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 0,
+      "quality_score": null,
+      "rediscovery_blocked": false,
+      "status": "CANDIDATE",
+      "status_reason": "normalized and queued for source qualification",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "themagicalslowcooker.com": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {
+        "allow_unmatched_discovery_links": false,
+        "delay": 0.25,
+        "discovery_urls": [
+          "https://www.themagicalslowcooker.com/recipes/",
+          "https://www.themagicalslowcooker.com/slow-cooker-cranberry-citrus-tea/",
+          "https://www.themagicalslowcooker.com/slow-cooker-cajun-15-bean-soup-with-turkey/",
+          "https://www.themagicalslowcooker.com/alabama-chicken-sandwiches/",
+          "https://www.themagicalslowcooker.com/slow-cooker-gingerbread-cake/"
+        ],
+        "include_pattern": "(?:slow[-_ ]?cook(?:er|ing|ed)|crock[-_ ]?pot)",
+        "max_urls": 300,
+        "sitemap_urls": [
+          "https://www.themagicalslowcooker.com/sitemap_index.xml"
+        ]
+      },
+      "discovery_count": 2,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "chatgpt_web_search_bootstrap",
+          "query": "slow cooker recipes dedicated recipe publisher",
+          "url": "https://www.themagicalslowcooker.com/recipes/"
+        },
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://www.themagicalslowcooker.com/recipes/"
+        }
+      ],
+      "domain": "themagicalslowcooker.com",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_evaluated_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_qualification_metrics": {
+        "domain": "themagicalslowcooker.com",
+        "editorial_provenance_ratio": 0.0,
+        "external_canonical_ratio": 0.0,
+        "extraction_success_rate": 0.0,
+        "fetch_success_rate": 0.0,
+        "field_completeness": 0.0,
+        "freshness_score": 50.0,
+        "hard_failures": [
+          "low_recipe_structure_yield",
+          "low_vertical_relevance",
+          "thin_recipe_content"
+        ],
+        "mean_rating_evidence_confidence": null,
+        "novelty_ratio": 0.0,
+        "pages_fetched": 0,
+        "pages_sampled": 10,
+        "qualifying_vertical_recipe_count": 238,
+        "quality_components": {
+          "crawl_stability": 0.0,
+          "editorial_provenance": 0.0,
+          "extraction_reliability": 0.0,
+          "freshness": 50.0,
+          "general_quality": 70.0,
+          "rating_integrity": 70.0,
+          "unique_contribution": 0.0,
+          "vertical_relevance": 35.0
+        },
+        "quality_score": 20.0,
+        "rating_conflict_ratio": 0.0,
+        "rating_coverage_ratio": 0.0,
+        "recipe_structure_rate": 0.0,
+        "recipes_extracted": 0,
+        "recipes_recognized": 0,
+        "robots_status": "ok",
+        "sample_recipe_yield": 0.0,
+        "substantive_recipe_ratio": 0.0,
+        "suspicious_uniform_rating_evidence": false,
+        "temporary_failures": [
+          "insufficient_fetches",
+          "low_fetch_success"
+        ],
+        "trap_url_ratio": 0.0,
+        "vertical_relevance_ratio": 0.0,
+        "within_source_duplicate_ratio": 0.0
+      },
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 1,
+      "quality_score": 20.0,
+      "rediscovery_blocked": false,
+      "rejection_cooldown_until": "2026-09-18T06:26:48.638461+00:00",
+      "rejection_reason": "hard source gate failed: low_recipe_structure_yield, low_vertical_relevance, thin_recipe_content",
+      "status": "REJECTED",
+      "status_reason": "hard source gate failed: low_recipe_structure_yield, low_vertical_relevance, thin_recipe_content",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "thestayathomechef.com": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {},
+      "discovery_count": 1,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://thestayathomechef.com/air-fryer-chicken-recipes/"
+        }
+      ],
+      "domain": "thestayathomechef.com",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 0,
+      "quality_score": null,
+      "rediscovery_blocked": false,
+      "status": "CANDIDATE",
+      "status_reason": "normalized and queued for source qualification",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "theyummybowl.com": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {},
+      "discovery_count": 1,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://theyummybowl.com/air-fryer-chicken-and-vegetables/"
+        }
+      ],
+      "domain": "theyummybowl.com",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 0,
+      "quality_score": null,
+      "rediscovery_blocked": false,
+      "status": "CANDIDATE",
+      "status_reason": "normalized and queued for source qualification",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "walmart.com": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {},
+      "discovery_count": 1,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://www.walmart.com/ip/Ninja-Foodi-6-in-1-10-qt-XL-2-Basket-Air-Fryer-DZ401/574134807"
+        }
+      ],
+      "domain": "walmart.com",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 0,
+      "quality_score": null,
+      "rediscovery_blocked": false,
+      "status": "CANDIDATE",
+      "status_reason": "normalized and queued for source qualification",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "wayfair.com": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {},
+      "discovery_count": 1,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://www.wayfair.com/Ninja--Ninja%C2%AE-Foodi%C2%AE-6in1-10qt.-XL-2Basket-Air-Fryer-with-DualZone%E2%84%A2-Technology-DZ401-L835-K~SAK10147.html"
+        }
+      ],
+      "domain": "wayfair.com",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 0,
+      "quality_score": null,
+      "rediscovery_blocked": false,
+      "status": "CANDIDATE",
+      "status_reason": "normalized and queued for source qualification",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    },
+    "yummly.com": {
+      "consecutive_degraded_runs": 0,
+      "consecutive_healthy_runs": 0,
+      "consecutive_qualifying_attempts": 0,
+      "crawl_config": {},
+      "discovery_count": 3,
+      "discovery_evidence": [
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "trusted_outbound_link",
+          "query": "https://therecipecritic.com/10-asian-inspired-slow-cooker-meals/",
+          "url": "https://www.yummly.com/urb/verify?url=https://therecipecritic.com/10-asian-inspired-slow-cooker-meals/&title=10%20Asian%20Inspired%20Slow%20Cooker%20Meals&yumtype=button"
+        },
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "trusted_outbound_link",
+          "query": "https://www.spendwithpennies.com/15-bean-slow-cooker-chili/",
+          "url": "https://www.yummly.com/urb/verify?url=https://www.spendwithpennies.com/15-bean-slow-cooker-chili/&title=15%20Bean%20Slow%20Cooker%20Chili&yumtype=button"
+        },
+        {
+          "first_seen_at": "2026-08-19T06:26:48.638461+00:00",
+          "provider": "cross_vertical",
+          "query": "candidate observed in air_fryer",
+          "url": "https://www.yummly.com/urb/verify?url=https://therecipecritic.com/air-fryer-apple-chips/&title=Air%20Fryer%20Apple%20Chips&yumtype=button"
+        }
+      ],
+      "domain": "yummly.com",
+      "first_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_discovered_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_evaluated_at": "2026-08-19T06:26:48.638461+00:00",
+      "last_qualification_metrics": {
+        "domain": "yummly.com",
+        "hard_failures": [],
+        "pages_fetched": 0,
+        "pages_sampled": 0,
+        "qualifying_vertical_recipe_count": 0,
+        "quality_score": 0.0,
+        "robots_status": "unavailable:TooManyRedirects",
+        "temporary_failures": [
+          "robots_unavailable"
+        ]
+      },
+      "origin": "discovered",
+      "pinned": false,
+      "promotion_eligible": false,
+      "qualification_attempts": 1,
+      "quality_score": 0.0,
+      "rediscovery_blocked": false,
+      "status": "QUARANTINED",
+      "status_reason": "qualification incomplete: robots_unavailable",
+      "updated_at": "2026-08-19T06:26:48.638461+00:00",
+      "vertical": "slow_cooker"
+    }
+  },
   "manual_overrides": {},
   "schema_version": 1,
   "source_gate_version": 1,
