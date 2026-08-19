@@ -1,0 +1,8 @@
+label_id,source,fixture,expected_status,observed_status,expected_rating,observed_rating,expected_rating_count,observed_rating_count,correct
+allrecipes-pork-chops,allrecipes.com,tests/fixtures/real_pages/allrecipes_air_fryer_pork_chops.html,verified,verified,4.8,4.8,361,361,True
+budgetbytes-cinnamon-toast,budgetbytes.com,tests/fixtures/real_pages/budgetbytes_air_fryer_cinnamon_toast.html,schema_only,schema_only,5.0,5.0,5,5,True
+pinchofyum-salmon,pinchofyum.com,tests/fixtures/real_pages/pinchofyum_air_fryer_salmon.html,schema_only,schema_only,5.0,5.0,101,101,True
+natasha-wings,natashaskitchen.com,tests/fixtures/real_pages/natashaskitchen_air_fryer_wings.html,verified,verified,4.99,4.99,1028,1028,True
+feelgoodfoodie-salmon,feelgoodfoodie.net,tests/fixtures/real_pages/feelgoodfoodie_air_fryer_salmon.html,schema_only,schema_only,5.0,5.0,37443,37443,True
+loveandlemons-fries,loveandlemons.com,tests/fixtures/real_pages/loveandlemons_air_fryer_fries.html,schema_only,schema_only,4.98,4.98,248,248,True
+downshiftology-salmon,downshiftology.com,tests/fixtures/real_pages/downshiftology_air_fryer_salmon.html,verified,verified,5.0,5.0,139,139,True

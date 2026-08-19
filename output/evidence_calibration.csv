@@ -1,0 +1,6 @@
+evidence_status,sample_count,correct_count,empirical_accuracy,wilson_95_low,wilson_95_high,assigned_confidence,calibration_error,ready,minimum_samples
+conflict,0,0,,,,0.25,,False,30
+legacy_unverified,0,0,,,,0.6,,False,30
+schema_only,4,4,1.0,0.5100999795960008,1.0,0.65,0.35,False,30
+verified,3,3,1.0,0.43849391955098227,1.0,1.0,0.0,False,30
+visible_only,0,0,,,,0.65,,False,30

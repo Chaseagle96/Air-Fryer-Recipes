@@ -1,0 +1,39 @@
+{
+  "contracts": [
+    {
+      "authoritative": true,
+      "description": "Immutable fetched rating evidence. This is the primary longitudinal source of truth.",
+      "location": "data/observations/YYYY/MM/DD/*.ndjson",
+      "name": "raw_observation",
+      "version": 2
+    },
+    {
+      "authoritative": false,
+      "description": "Validated current recipe state reconstructed from raw observations and crawler metadata.",
+      "location": "data/state.json",
+      "name": "clean_recipe",
+      "version": 5
+    },
+    {
+      "authoritative": false,
+      "description": "Versioned model outputs and rank snapshots derived from clean evidence.",
+      "location": "data/rankings/YYYY/MM/DD/*.ndjson",
+      "name": "ranking",
+      "version": 5
+    },
+    {
+      "authoritative": false,
+      "description": "Human- and machine-facing CSV, Excel, DuckDB, JSON, and web presentation artifacts.",
+      "location": "output/ and docs/",
+      "name": "serving",
+      "version": 3
+    }
+  ],
+  "lineage": [
+    "raw_observation -> clean_recipe",
+    "clean_recipe -> ranking",
+    "ranking -> serving"
+  ],
+  "manifest_version": 1,
+  "rule": "Derived layers may be rebuilt; immutable raw observations must never be rewritten to match a model output."
+}

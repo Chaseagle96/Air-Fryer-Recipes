@@ -1,0 +1,2 @@
+{"detail": "RetryError", "recipe_id": "", "severity": "medium", "source": "airfryingfoodie.com", "timestamp": "2026-08-19T00:34:06.688272+00:00", "title": "", "type": "fetch_error", "url": "https://airfryingfoodie.com/air-fryer-pepperoni-chips/"}
+{"detail": "RetryError", "recipe_id": "", "severity": "medium", "source": "airfryingfoodie.com", "timestamp": "2026-08-19T00:34:06.688272+00:00", "title": "", "type": "fetch_error", "url": "https://airfryingfoodie.com/air-fryer-peppers-and-onions/"}
