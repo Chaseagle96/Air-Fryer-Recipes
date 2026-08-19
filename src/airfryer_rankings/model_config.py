@@ -6,7 +6,6 @@ from typing import Any
 
 import yaml
 
-
 DEFAULT_MODEL_VERSION = 5
 DEFAULT_MODEL_SEMVER = "5.2.0"
 DEFAULT_COMPONENT_VERSIONS = {
