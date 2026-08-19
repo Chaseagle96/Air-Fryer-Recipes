@@ -1,1 +1,9 @@
-
+timestamp,severity,type,recipe_id,title,source,url,detail
+2026-08-19T05:02:49.320697+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/238445/slow-cooker-roast-beef-in-its-own-gravy/,publisher markup contract changed
+2026-08-19T05:02:49.320697+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/slow-cooker-chicken-enchilada-casserole-recipe-8788263,publisher markup contract changed
+2026-08-19T05:02:49.320697+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/261337/slow-cooker-zuppa-toscana/,publisher markup contract changed
+2026-08-19T05:02:49.320697+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/163894/slow-cooker-venison-stroganoff-meal/,publisher markup contract changed
+2026-08-19T05:02:49.320697+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/222427/sandys-sweet-slow-cooker-sauerkraut/,publisher markup contract changed
+2026-08-19T05:02:49.320697+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/275943/slow-cooker-chicken-bone-broth/,publisher markup contract changed
+2026-08-19T05:02:49.320697+00:00,medium,dom_structure_changed,,,pinchofyum.com,https://pinchofyum.com/crockpot-chicken-bowls-with-yellow-rice-and-cilantro-pesto,publisher markup contract changed
+2026-08-19T05:02:49.320697+00:00,medium,publisher_dom_contract_changes,,,,,dom_structure_changes=7 threshold=0 above

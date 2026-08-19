@@ -1,24 +1,24 @@
 {
   "failures": [],
   "metrics": {
-    "anomalies": 0,
-    "crawl_success_rate": 0.75,
+    "anomalies": 7,
+    "crawl_success_rate": 0.89,
     "crawl_targets": 100,
     "current_deduplicated_count": 0,
     "current_model_semver": "5.2.0",
     "current_model_version": 5,
-    "current_ranked_recipes": 317,
-    "dom_structure_changes": 0,
-    "extract_success_rate": 0.75,
+    "current_ranked_recipes": 374,
+    "dom_structure_changes": 7,
+    "extract_success_rate": 0.89,
     "model_identity_changed": false,
     "previous_deduplicated_count": 0,
     "previous_model_semver": "5.2.0",
     "previous_model_version": 5,
-    "previous_ranked_recipes": 274,
-    "ranked_recipe_retention": 1.1569343065693432,
+    "previous_ranked_recipes": 317,
+    "ranked_recipe_retention": 1.1798107255520505,
     "ranking_eligible_rate": 1.0,
     "sources_stale_24h": 0,
-    "top50_overlap_previous": 1.0
+    "top50_overlap_previous": 0.98
   },
   "mode": "hourly",
   "model_semver": "5.2.0",
@@ -48,7 +48,7 @@
     "top50_overlap_warn_below": 0.5
   },
   "warnings": [
-    "crawl success rate is degraded at 75.0%",
-    "extraction success rate is degraded at 75.0%"
+    "crawl success rate is degraded at 89.0%",
+    "extraction success rate is degraded at 89.0%"
   ]
 }
