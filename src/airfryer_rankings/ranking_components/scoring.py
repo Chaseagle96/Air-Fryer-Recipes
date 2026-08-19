@@ -15,12 +15,29 @@ def fresh(item: dict, now: datetime, stale_days: int) -> bool:
     return bool(observed and observed >= now - timedelta(days=stale_days))
 
 
-def eligible_current(state: dict, stale_days: int, now: datetime | None = None) -> list[dict]:
+def eligible_current(
+    state: dict,
+    stale_days: int,
+    now: datetime | None = None,
+    allowed_sources: set[str] | None = None,
+) -> list[dict]:
+    """Return only current, rankable recipes from the effective source set.
+
+    ``allowed_sources`` is intentionally optional for the public library surface, but
+    production orchestration passes the effective source domains loaded from the
+    source registry. This makes a source suspension or block an immediate ranking
+    eviction instead of waiting for the recipe's normal freshness window to expire.
+    """
+
     now = now or datetime.now(timezone.utc)
+    normalized_sources = None
+    if allowed_sources is not None:
+        normalized_sources = {str(source).lower().strip() for source in allowed_sources if str(source).strip()}
     return [
         dict(item)
         for item in state.get("recipes", {}).values()
         if fresh(item, now, stale_days)
+        and (normalized_sources is None or str(item.get("source") or "").lower().strip() in normalized_sources)
         and int(item.get("rating_count", 0)) > 0
         and float(item.get("evidence_confidence", 0.60)) >= 0.60
         and item.get("evidence_status") != "conflict"
