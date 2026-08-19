@@ -110,6 +110,18 @@ jobs:
           echo "production=$production" >> "$GITHUB_OUTPUT"
           echo "Resolved source-expansion mode: $mode"
 
+      - name: Assert configured source gate adapter
+        run: |
+          PYTHONPATH=src python - <<'PY'
+          from pathlib import Path
+          from airfryer_rankings.source_expansion_v2 import SOURCE_GATE_VERSION, load_source_discovery_config
+
+          config = load_source_discovery_config(Path('config/source_discovery.yaml'))
+          configured = int(config.get('source_gate_version') or 0)
+          assert configured == SOURCE_GATE_VERSION, (configured, SOURCE_GATE_VERSION)
+          print('source_gate_version=', configured, 'adapter=source_expansion_v2')
+          PY
+
       - name: Validate source-expansion configuration
         if: steps.mode.outputs.production != 'true'
         run: |
