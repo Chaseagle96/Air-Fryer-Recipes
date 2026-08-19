@@ -1,0 +1,74 @@
+name: Recipe Intelligence Authority Self-Heal
+
+on:
+  workflow_run:
+    workflows:
+      - Recipe Intelligence Authority Invalidation
+    types: [completed]
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/authority-self-heal.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: recipe-intelligence-authority-self-heal-main
+  cancel-in-progress: true
+
+jobs:
+  heal:
+    if: >-
+      github.event_name == 'push' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout current production state
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+
+      - name: Restore any non-authoritative vertical
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          has_active_run() {
+            local workflow="$1"
+            gh run list \
+              --repo "$GITHUB_REPOSITORY" \
+              --workflow "$workflow" \
+              --branch main \
+              --limit 20 \
+              --json status \
+              --jq 'any(.[]; .status == "queued" or .status == "in_progress" or .status == "waiting" or .status == "pending")'
+          }
+
+          dispatch_if_stale() {
+            local authority_file="$1"
+            local workflow="$2"
+            local label="$3"
+
+            if jq -e '.authoritative == true and .status == "authoritative"' "$authority_file" >/dev/null; then
+              echo "$label authority is current."
+              return
+            fi
+
+            if [ "$(has_active_run "$workflow")" = "true" ]; then
+              echo "$label is non-authoritative, but a ranking run is already active."
+              return
+            fi
+
+            echo "$label is non-authoritative. Dispatching a full daily recovery refresh."
+            gh workflow run "$workflow" --repo "$GITHUB_REPOSITORY" --ref main -f mode=daily
+          }
+
+          dispatch_if_stale docs/api/authority.json hourly.yml 'Air Fryer'
+          dispatch_if_stale verticals/slow_cooker/docs/api/authority.json slow-cooker.yml 'Slow Cooker'
