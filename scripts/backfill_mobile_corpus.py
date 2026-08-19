@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from airfryer_rankings.app_feed import write_app_feed
+from airfryer_rankings.authority import AUTHORITY_CONTRACT_VERSION
 from airfryer_rankings.core import load_sources
 from airfryer_rankings.models import now_iso
 
@@ -63,16 +64,37 @@ def _read_ranked(path: Path, recipes: dict[str, dict]) -> list[dict]:
         return rows
 
 
-def _generated_at(summary_path: Path) -> str:
-    if summary_path.exists():
-        try:
-            payload = json.loads(summary_path.read_text(encoding="utf-8"))
-            value = payload.get("generated_at")
-            if value:
-                return str(value)
-        except (OSError, json.JSONDecodeError):
-            pass
-    return now_iso()
+def _read_summary(path: Path) -> dict:
+    if not path.exists():
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def _generated_at(summary: dict) -> str:
+    value = summary.get("generated_at")
+    return str(value) if value else now_iso()
+
+
+def _authority(summary: dict, generated_at: str) -> dict:
+    value = summary.get("authority")
+    if (
+        isinstance(value, dict)
+        and value.get("authority_contract_version") == AUTHORITY_CONTRACT_VERSION
+        and value.get("authoritative") is True
+        and value.get("ranking_generated_at") == generated_at
+    ):
+        return dict(value)
+    return {
+        "authority_contract_version": AUTHORITY_CONTRACT_VERSION,
+        "authoritative": False,
+        "status": "refresh_required",
+        "reason": "ranking_generation_requires_certification",
+        "ranking_generated_at": generated_at,
+    }
 
 
 def main() -> None:
@@ -96,7 +118,9 @@ def main() -> None:
     recipes = {str(key): dict(value) for key, value in recipes_raw.items() if isinstance(value, dict)}
     ranked = _read_ranked(Path(args.leaderboard), recipes)
     sources = load_sources(args.sources)
-    generated_at = _generated_at(Path(args.summary))
+    summary = _read_summary(Path(args.summary))
+    generated_at = _generated_at(summary)
+    authority = _authority(summary, generated_at)
     catalog = state.get("url_catalog", {})
     catalog_count = len(catalog) if isinstance(catalog, dict) else None
 
@@ -110,7 +134,12 @@ def main() -> None:
         catalog_url_count=catalog_count,
         page_size=args.page_size,
     )
-    manifest = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
+    manifest_target = Path(manifest_path)
+    manifest = json.loads(manifest_target.read_text(encoding="utf-8"))
+    manifest["authority"] = authority
+    manifest["ranked_serving_available"] = authority.get("authoritative") is True
+    manifest["ranked_serving_status"] = authority.get("status")
+    manifest_target.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     print(
         json.dumps(
             {
@@ -120,6 +149,8 @@ def main() -> None:
                 "corpus_recipe_count": manifest.get("corpus_recipe_count"),
                 "corpus_status_counts": manifest.get("corpus_status_counts"),
                 "catalog_url_count": manifest.get("catalog_url_count"),
+                "authoritative": authority.get("authoritative"),
+                "authority_status": authority.get("status"),
             },
             sort_keys=True,
         )

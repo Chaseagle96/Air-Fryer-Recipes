@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import csv
 import hashlib
 import html
 import json
@@ -91,6 +92,30 @@ def _leaderboard_fingerprint(path: str | Path) -> str:
     if not target.exists():
         raise AuthorityError(f"leaderboard missing: {target}")
     return hashlib.sha256(target.read_bytes()).hexdigest()
+
+
+def _leaderboard_sources(path: str | Path) -> tuple[set[str], int]:
+    """Independently prove every published row belongs to an effective source."""
+
+    target = Path(path)
+    if not target.exists():
+        raise AuthorityError(f"leaderboard missing: {target}")
+    sources: set[str] = set()
+    row_count = 0
+    try:
+        with target.open("r", encoding="utf-8", newline="") as handle:
+            reader = csv.DictReader(handle)
+            if not reader.fieldnames or "source" not in reader.fieldnames:
+                raise AuthorityError("leaderboard is missing required source column")
+            for row in reader:
+                row_count += 1
+                source = str(row.get("source") or "").strip()
+                if not source:
+                    raise AuthorityError("leaderboard contains a row without a source")
+                sources.add(source)
+    except UnicodeDecodeError as exc:
+        raise AuthorityError(f"leaderboard is not valid UTF-8 CSV: {target}") from exc
+    return sources, row_count
 
 
 def _validate_public_manifest(
@@ -228,6 +253,18 @@ def publish_authority(
             f"ranking={persisted_source_domains} current={source_domains}"
         )
 
+    leaderboard_sources, leaderboard_row_count = _leaderboard_sources(leaderboard_path)
+    unauthorized_sources = sorted(leaderboard_sources - allowed_sources)
+    if unauthorized_sources:
+        raise AuthorityError(
+            "leaderboard contains non-effective sources: " + ", ".join(unauthorized_sources)
+        )
+    summary_ranked_count = int(summary.get("ranked_recipes") or 0)
+    if leaderboard_row_count != summary_ranked_count:
+        raise AuthorityError(
+            f"leaderboard row count mismatch: csv={leaderboard_row_count} summary={summary_ranked_count}"
+        )
+
     source_gate_version = int(registry.get("source_gate_version") or 0)
     metrics_gate_version = int(metrics.get("source_gate_version") or 0)
     if source_gate_version <= 0 or metrics_gate_version != source_gate_version:
@@ -309,6 +346,8 @@ def publish_authority(
         "effective_sources": source_domains,
         "effective_catalog_url_count": effective_catalog_count,
         "raw_catalog_url_count": raw_catalog_count,
+        "leaderboard_sources": sorted(leaderboard_sources),
+        "leaderboard_row_count": leaderboard_row_count,
         "source_fingerprint_sha256": source_hash,
         "catalog_fingerprint_sha256": catalog_hash,
         "input_fingerprint_sha256": input_fingerprint,
@@ -320,7 +359,7 @@ def publish_authority(
         "ranking_mode": run_mode,
         "targets_this_run": targets_this_run,
         "full_catalog_baseline": not inherited_input_authority,
-        "ranked_recipe_count": int(summary.get("ranked_recipes") or 0),
+        "ranked_recipe_count": summary_ranked_count,
         "model_version": summary.get("model_version"),
         "model_semver": summary.get("model_semver"),
     }

@@ -82,7 +82,7 @@ def _fixture(tmp_path: Path) -> dict[str, Path]:
         },
     )
     leaderboard = tmp_path / "leaderboard.csv"
-    leaderboard.write_text("rank,title\n1,Air Fryer Chicken\n", encoding="utf-8")
+    leaderboard.write_text("rank,title,source\n1,Air Fryer Chicken,trusted.example\n", encoding="utf-8")
     authority = tmp_path / "authority.json"
     public_authority = tmp_path / "docs" / "api" / "authority.json"
     manifest = tmp_path / "docs" / "api" / "manifest.json"
@@ -126,6 +126,8 @@ def test_publish_authority_certifies_matching_generation(tmp_path: Path) -> None
     assert payload["authority_contract_version"] == 2
     assert payload["effective_source_count"] == 1
     assert payload["effective_catalog_url_count"] == 1
+    assert payload["leaderboard_sources"] == ["trusted.example"]
+    assert payload["leaderboard_row_count"] == 1
     assert payload["ranking_mode"] == "daily"
     assert payload["full_catalog_baseline"] is True
     assert len(payload["generation_fingerprint_sha256"]) == 64
@@ -136,6 +138,36 @@ def test_publish_authority_certifies_matching_generation(tmp_path: Path) -> None
     assert manifest["ranked_serving_status"] == "authoritative"
     assert manifest["ranked_recipe_count"] == 1
     assert manifest["pages"]
+
+
+def test_publish_authority_rejects_non_effective_leaderboard_source(tmp_path: Path) -> None:
+    paths = _fixture(tmp_path)
+    paths["leaderboard"].write_text(
+        "rank,title,source\n1,Air Fryer Chicken,retired.example\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(AuthorityError, match="non-effective sources"):
+        _publish(paths)
+
+
+def test_publish_authority_rejects_missing_leaderboard_source_column(tmp_path: Path) -> None:
+    paths = _fixture(tmp_path)
+    paths["leaderboard"].write_text("rank,title\n1,Air Fryer Chicken\n", encoding="utf-8")
+
+    with pytest.raises(AuthorityError, match="required source column"):
+        _publish(paths)
+
+
+def test_publish_authority_rejects_leaderboard_row_count_drift(tmp_path: Path) -> None:
+    paths = _fixture(tmp_path)
+    paths["leaderboard"].write_text(
+        "rank,title,source\n1,Air Fryer Chicken,trusted.example\n2,Air Fryer Fries,trusted.example\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(AuthorityError, match="row count mismatch"):
+        _publish(paths)
 
 
 def test_publish_authority_rejects_ranking_older_than_catalog_sync(tmp_path: Path) -> None:
@@ -270,7 +302,10 @@ def test_hourly_refresh_inherits_authority_when_inputs_are_unchanged(tmp_path: P
     summary["mode"] = "hourly"
     summary["targets_this_run"] = 0
     _write(paths["summary"], summary)
-    paths["leaderboard"].write_text("rank,title\n1,Air Fryer Potatoes\n", encoding="utf-8")
+    paths["leaderboard"].write_text(
+        "rank,title,source\n1,Air Fryer Potatoes,trusted.example\n",
+        encoding="utf-8",
+    )
     manifest = _manifest_payload()
     manifest["generated_at"] = "2026-08-19T11:10:00+00:00"
     _write(paths["manifest"], manifest)

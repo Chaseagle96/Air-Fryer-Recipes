@@ -103,6 +103,8 @@ jobs:
             production=false
           elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             mode="${{ inputs.mode }}"
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            mode=daily
           elif [ "${{ github.event.schedule }}" = "43 8 * * *" ]; then
             mode=daily
           elif [ "${{ github.event.schedule }}" = "13 9 * * 0" ]; then

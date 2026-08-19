@@ -28,9 +28,6 @@ on:
 permissions:
   contents: write
 
-# This intentionally shares a repository-level concurrency group with Source
-# Expansion. Both workflows update source-expansion diagnostics, so serializing
-# them prevents cross-workflow git/rebase races on main.
 concurrency:
   group: recipe-intelligence-source-network-${{ github.ref }}
   cancel-in-progress: false
@@ -170,6 +167,26 @@ jobs:
               )
           PY
 
+      - name: Invalidate ranked serving before catalog commit
+        if: github.event_name != 'pull_request' && steps.gate.outputs.ready == 'true'
+        run: |
+          PYTHONPATH=src python scripts/ranking_authority.py invalidate \
+            --vertical air_fryer \
+            --metrics output/source_expansion.json \
+            --summary output/summary.json \
+            --authority output/authority.json \
+            --public-authority docs/api/authority.json \
+            --manifest docs/api/manifest.json \
+            --reason source_catalog_generation_advanced
+          PYTHONPATH=src python scripts/ranking_authority.py invalidate \
+            --vertical slow_cooker \
+            --metrics verticals/slow_cooker/output/source_expansion.json \
+            --summary verticals/slow_cooker/output/summary.json \
+            --authority verticals/slow_cooker/output/authority.json \
+            --public-authority verticals/slow_cooker/docs/api/authority.json \
+            --manifest verticals/slow_cooker/docs/api/manifest.json \
+            --reason source_catalog_generation_advanced
+
       - name: Upload catalog sync diagnostics
         if: always() && github.event_name != 'pull_request'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -181,6 +198,8 @@ jobs:
             output/source_expansion.json
             output/source_expansion_all.json
             verticals/slow_cooker/output/source_expansion.json
+            output/authority.json
+            verticals/slow_cooker/output/authority.json
 
       - name: Commit synchronized URL catalogs
         if: github.event_name != 'pull_request' && steps.gate.outputs.ready == 'true'
@@ -191,8 +210,21 @@ jobs:
           git add data/state.json verticals/slow_cooker/data/state.json
           git add output/source_expansion.json output/source_expansion_all.json
           git add verticals/slow_cooker/output/source_expansion.json
+          for file in \
+            output/summary.json \
+            output/authority.json \
+            docs/index.html \
+            docs/api/manifest.json \
+            docs/api/authority.json \
+            verticals/slow_cooker/output/summary.json \
+            verticals/slow_cooker/output/authority.json \
+            verticals/slow_cooker/docs/index.html \
+            verticals/slow_cooker/docs/api/manifest.json \
+            verticals/slow_cooker/docs/api/authority.json; do
+            [ ! -e "$file" ] || git add "$file"
+          done
           if git diff --cached --quiet; then
-            echo 'No promoted-source catalog changes to commit.'
+            echo 'No promoted-source catalog or authority changes to commit.'
             exit 0
           fi
           git commit -m 'Normalize promoted recipe URL catalogs'
