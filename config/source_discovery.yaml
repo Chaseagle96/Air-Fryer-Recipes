@@ -1,4 +1,4 @@
-source_gate_version: 1
+source_gate_version: 2
 aggregate_output_path: output/source_expansion_all.json
 
 providers:
@@ -89,6 +89,8 @@ quality_gate:
     min_recipe_structure_rate: 0.55
     min_vertical_relevance_ratio: 0.40
     min_substantive_recipe_ratio: 0.55
+    min_ranking_evidence_pages_for_extraction_gate: 3
+    min_extraction_success_rate: 0.60
     max_external_canonical_ratio: 0.25
     max_within_source_duplicate_ratio: 0.65
     max_trap_url_ratio: 0.30
