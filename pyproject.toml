@@ -56,6 +56,10 @@ ignore = ["B008"]
 # Legacy monolithic regression module retains a harmless compatibility import;
 # new V5 tests are held to the normal F401 rule.
 "tests/test_core.py" = ["B011", "F401"]
+# Source expansion intentionally groups lifecycle constants alongside imports in
+# gate order; the unused normalization import remains reserved for provider plugins.
+"src/airfryer_rankings/source_expansion.py" = ["I001", "F401"]
+"src/airfryer_rankings/source_registry.py" = ["F401"]
 
 [tool.mypy]
 python_version = "3.12"
