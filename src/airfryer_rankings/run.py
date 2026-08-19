@@ -31,7 +31,13 @@ from .media import enrich_ambiguous_perceptual_hashes
 from .model_config import load_model_config
 from .observability import build_pipeline_metrics
 from .qa import temporal_anomalies
-from .quality_gate import assert_publishable, evaluate_publish_gate, load_previous_serving_snapshot, write_quality_gate
+from .quality_gate import (
+    assert_publishable,
+    evaluate_publish_gate,
+    load_previous_serving_snapshot,
+    load_quality_gate_policy,
+    write_quality_gate,
+)
 from .reporting import write_csv_outputs, write_dashboard, write_workbook
 from .schemas import validate_observation_record, validate_ranked_recipe, validate_records, validate_source_health
 
@@ -86,6 +92,7 @@ def main() -> None:
     parser.add_argument("--state", default="data/state.json")
     parser.add_argument("--model-config", default="config/model.yaml")
     parser.add_argument("--storage-config", default="config/storage.yaml")
+    parser.add_argument("--slo-config", default="config/slo.yaml")
     parser.add_argument("--mode", choices=("hourly", "daily", "deep", "smoke", "backfill"), default="hourly")
     parser.add_argument("--max-urls", type=int, default=None, help="Per-source fetch cap override")
     parser.add_argument("--hourly-limit", type=int, default=100, help="Global hourly refresh target cap")
@@ -109,6 +116,7 @@ def main() -> None:
     sources = load_sources(args.sources)
     model_params, model_payload = load_model_config(args.model_config)
     storage_policy = load_storage_policy(args.storage_config)
+    quality_policy = load_quality_gate_policy(args.slo_config)
     migration = state.get("migration", {})
     requested_mode = args.mode
     effective_mode = args.mode
@@ -243,6 +251,10 @@ def main() -> None:
     if effective_mode == "deep":
         history_archive = write_history_parquet("output/history_archive.parquet", all_observations)
 
+    model_version = int(method.get("model_version") or model_payload.get("model_version", 5))
+    model_semver = str(model_payload.get("model_semver") or f"{model_version}.0.0")
+    component_versions = model_payload.get("component_versions") or {}
+
     observation_file = write_run_records("data/observations", observations, run_at)
     anomaly_file = write_run_records("data/anomalies", anomalies, run_at)
     coverage_file = write_run_records("data/coverage", coverage, run_at)
@@ -250,7 +262,8 @@ def main() -> None:
         {
             "timestamp": run_at,
             "schema_version": 5,
-            "model_version": method.get("model_version", 5),
+            "model_version": model_version,
+            "model_semver": model_semver,
             **{
                 key: row.get(key)
                 for key in (
@@ -279,12 +292,13 @@ def main() -> None:
     calibration_ready = sum(1 for row in uncertainty_calibration.values() if row.get("ready"))
     evidence_calibration_ready = sum(1 for row in evidence_calibration.values() if row.get("ready"))
     migration_after = state.get("migration", {})
-    model_version = int(method.get("model_version") or model_payload.get("model_version", 5))
     method_row = {
         "generated_at": run_at,
         "requested_mode": requested_mode,
         "mode": effective_mode,
         "model_version": model_version,
+        "model_semver": model_semver,
+        "component_versions": json.dumps(component_versions, sort_keys=True),
         "active_parameters": json.dumps(method.get("active_parameters", model_params.to_dict()), sort_keys=True),
         "observations_this_run": len(observations),
         "ranked_recipes": len(ranked),
@@ -325,7 +339,9 @@ def main() -> None:
         pipeline_metrics,
         mode=effective_mode,
         model_version=model_version,
+        model_semver=model_semver,
         deduplicated_count=int(method.get("deduplicated_count") or 0),
+        policy=quality_policy,
     )
     write_quality_gate("output/quality_gate.json", quality_gate)
     _write_json("output/pipeline_metrics.json", pipeline_metrics)
