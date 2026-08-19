@@ -87,6 +87,55 @@ final class RecipeIntelligenceTests: XCTestCase {
         XCTAssertFalse(shopping.isEmpty)
     }
 
+    func testFeedRefreshPinsVisibleCardAndRefreshesSavedMetadata() async throws {
+        let visibleV1 = makeRecipe(id: "visible", title: "Visible Recipe", rank: 1, score: 4.90, rating: 4.8, ratingCount: 100)
+        let savedV1 = makeRecipe(id: "saved", title: "Saved Recipe", rank: 2, score: 4.60, rating: 4.6, ratingCount: 40)
+        let client = RefreshingTestClient(version: "v1", recipes: [visibleV1, savedV1])
+        let container = try makeContainer()
+        let context = container.mainContext
+        let model = AppModel(modelContext: context, client: client)
+
+        await model.bootstrap()
+        XCTAssertEqual(model.currentFeedGeneratedAt, "v1")
+        XCTAssertEqual(model.deck.first?.recipeID, "visible")
+        model.saveFromDetail(savedV1)
+
+        let newLeader = makeRecipe(id: "new", title: "New Leader", rank: 1, score: 5.00, rating: 4.9, ratingCount: 900)
+        let visibleV2 = makeRecipe(id: "visible", title: "Visible Recipe", rank: 2, score: 4.80, rating: 4.8, ratingCount: 130)
+        let savedV2 = makeRecipe(id: "saved", title: "Saved Recipe", rank: 3, score: 4.55, rating: 4.7, ratingCount: 75)
+        await client.advance(version: "v2", recipes: [newLeader, visibleV2, savedV2])
+
+        await model.refreshCurrentFeed(trigger: .manual)
+
+        XCTAssertEqual(model.currentFeedGeneratedAt, "v2")
+        XCTAssertEqual(model.deck.first?.recipeID, "visible", "The card already under the user's finger should stay in place.")
+        XCTAssertEqual(model.deck.first?.rank, 2, "Pinned cards should still receive fresh ranking metadata.")
+        XCTAssertTrue(model.deck.dropFirst().contains(where: { $0.recipeID == "new" }))
+        XCTAssertEqual(model.feedStatusMessage, "Rankings updated from Recipe Intelligence.")
+
+        let saved = try XCTUnwrap(context.fetch(FetchDescriptor<SavedRecipeRecord>()).first(where: { $0.recipeID == "saved" }))
+        XCTAssertEqual(saved.status, .wantToTry, "Remote refreshes must not rewrite personal lifecycle state.")
+        XCTAssertEqual(saved.rank, 3)
+        XCTAssertEqual(saved.rating, 4.7)
+        XCTAssertEqual(saved.ratingCount, 75)
+    }
+
+    func testManualRefreshReportsUnchangedFeedWithoutReordering() async throws {
+        let first = makeRecipe(id: "first", title: "First", rank: 1, score: 4.9, rating: 4.8, ratingCount: 100)
+        let second = makeRecipe(id: "second", title: "Second", rank: 2, score: 4.7, rating: 4.7, ratingCount: 80)
+        let client = RefreshingTestClient(version: "same", recipes: [first, second])
+        let container = try makeContainer()
+        let model = AppModel(modelContext: container.mainContext, client: client)
+
+        await model.bootstrap()
+        let before = model.deck.map(\.recipeID)
+        await model.refreshCurrentFeed(trigger: .manual)
+
+        XCTAssertEqual(model.deck.map(\.recipeID), before)
+        XCTAssertEqual(model.feedStatusMessage, "Recipe Intelligence is up to date.")
+        XCTAssertNotNil(model.lastFeedRefreshAt)
+    }
+
     private func makeContainer() throws -> ModelContainer {
         let schema = Schema([
             RecipeCacheRecord.self,
@@ -101,5 +150,91 @@ final class RecipeIntelligenceTests: XCTestCase {
             ShoppingListItem.self
         ])
         return try ModelContainer(for: schema, configurations: [ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)])
+    }
+
+    private func makeRecipe(
+        id: String,
+        title: String,
+        rank: Int,
+        score: Double,
+        rating: Double,
+        ratingCount: Int
+    ) -> RemoteRecipe {
+        RemoteRecipe(
+            recipeID: id,
+            verticalID: "air_fryer",
+            verticalName: "Air Fryer",
+            title: title,
+            source: "example.com",
+            combinedSources: "example.com",
+            url: "https://example.com/\(id)",
+            canonicalURL: "https://example.com/\(id)",
+            imageURL: "https://example.com/\(id).jpg",
+            author: "Chef",
+            categories: ["Dinner"],
+            ingredients: ["1 onion"],
+            hasInstructions: true,
+            instructionCount: 4,
+            rank: rank,
+            rating: rating,
+            ratingCount: ratingCount,
+            hierarchicalScore: score,
+            evidenceConfidence: 0.9,
+            evidenceGrade: "A",
+            evidenceStatus: "verified",
+            rankConfidence: 0.95,
+            rankRangeLow: rank,
+            rankRangeHigh: rank,
+            rankProvenance: "test"
+        )
+    }
+}
+
+private actor RefreshingTestClient: RecipeIntelligenceClient {
+    private var version: String
+    private var recipes: [RemoteRecipe]
+    private let vertical = RecipeVertical(
+        id: "air_fryer",
+        name: "Air Fryer",
+        icon: "wind",
+        available: true,
+        manifestURL: URL(string: "https://example.com/manifest.json")!
+    )
+
+    init(version: String, recipes: [RemoteRecipe]) {
+        self.version = version
+        self.recipes = recipes
+    }
+
+    func advance(version: String, recipes: [RemoteRecipe]) {
+        self.version = version
+        self.recipes = recipes
+    }
+
+    func fetchVerticals(forceRefresh: Bool) async throws -> [RecipeVertical] {
+        [vertical]
+    }
+
+    func fetchFeedManifest(vertical: RecipeVertical, forceRefresh: Bool) async throws -> FeedManifest {
+        FeedManifest(
+            schemaVersion: 1,
+            generatedAt: version,
+            vertical: FeedVerticalDescriptor(id: vertical.id, name: vertical.name, sourceCount: 1),
+            recipeCount: recipes.count,
+            pageSize: max(recipes.count, 1),
+            pages: recipes.isEmpty ? [] : [FeedPageReference(index: 1, path: "recipes/0001.json", count: recipes.count)]
+        )
+    }
+
+    func fetchRecipePage(vertical: RecipeVertical, pageIndex: Int) async throws -> RecipePageEnvelope {
+        guard pageIndex == 0 else { throw RecipeIntelligenceClientError.pageOutOfRange }
+        return RecipePageEnvelope(
+            schemaVersion: 1,
+            generatedAt: version,
+            verticalID: vertical.id,
+            verticalName: vertical.name,
+            page: 1,
+            recipes: recipes
+        )
     }
 }

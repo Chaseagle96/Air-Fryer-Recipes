@@ -5,35 +5,66 @@ struct DiscoverView: View {
     @State private var detailRecipe: RemoteRecipe?
 
     var body: some View {
-        VStack(spacing: 12) {
-            verticalSelector
+        GeometryReader { proxy in
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: 12) {
+                    verticalSelector
+                    refreshStatus
 
-            if appModel.isLoading && appModel.deck.isEmpty {
-                Spacer()
-                ProgressView("Finding great recipes…")
-                Spacer()
-            } else if let recipe = appModel.deck.first {
-                deck(recipe)
-                    .task(id: recipe.recipeID) { await appModel.prefetchIfNeeded(recipe) }
-            } else {
-                emptyState
+                    if appModel.isLoading && appModel.deck.isEmpty {
+                        Spacer(minLength: 120)
+                        ProgressView("Finding great recipes…")
+                        Spacer(minLength: 120)
+                    } else if let recipe = appModel.deck.first {
+                        deck(recipe)
+                            .frame(height: max(520, proxy.size.height - 90))
+                            .task(id: recipe.recipeID) { await appModel.prefetchIfNeeded(recipe) }
+                    } else {
+                        emptyState
+                            .frame(minHeight: max(460, proxy.size.height - 110))
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .frame(minHeight: proxy.size.height, alignment: .top)
+                .padding(.horizontal)
+            }
+            .refreshable {
+                await appModel.refreshCurrentFeed(trigger: .manual)
             }
         }
-        .padding(.horizontal)
         .navigationTitle("Discover")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            if appModel.canUndo {
-                ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                if appModel.canUndo {
                     Button("Undo", systemImage: "arrow.uturn.backward") { appModel.undoLastDecision() }
                         .accessibilityIdentifier("discover.undo")
                 }
+                Button {
+                    Task { await appModel.refreshCurrentFeed(trigger: .manual) }
+                } label: {
+                    Label("Refresh rankings", systemImage: "arrow.clockwise")
+                }
+                .disabled(appModel.isRefreshingFeed || appModel.isLoading)
+                .accessibilityIdentifier("discover.refresh")
+                .accessibilityValue(appModel.isRefreshingFeed ? "Refreshing" : "")
             }
         }
         .sheet(item: $detailRecipe) { recipe in
             NavigationStack { RemoteRecipeDetailView(recipe: recipe) }
         }
         .animation(.snappy, value: appModel.deck.first?.recipeID)
+    }
+
+    @ViewBuilder
+    private var refreshStatus: some View {
+        if appModel.isRefreshingFeed {
+            Label("Checking for new rankings…", systemImage: "arrow.triangle.2.circlepath")
+                .accessibilityIdentifier("discover.refreshStatus")
+        } else if let message = appModel.feedStatusMessage {
+            Text(message)
+                .accessibilityIdentifier("discover.refreshStatus")
+        }
     }
 
     private var verticalSelector: some View {

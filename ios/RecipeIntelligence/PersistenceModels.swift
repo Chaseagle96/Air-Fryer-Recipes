@@ -125,6 +125,23 @@ final class SavedRecipeRecord {
     var ingredients: [String] { JSONStorage.decode([String].self, from: ingredientsJSON, fallback: []) }
     var sourceURL: URL? { URL(string: sourceURLString) }
     var imageURL: URL? { imageURLString.isEmpty ? nil : URL(string: imageURLString) }
+
+    func updateRemoteMetadata(from recipe: RemoteRecipe) {
+        guard recipeID == recipe.recipeID, verticalID == recipe.verticalID else { return }
+        verticalName = recipe.verticalName
+        title = recipe.title
+        source = recipe.source
+        sourceURLString = recipe.canonicalURL.isEmpty ? recipe.url : recipe.canonicalURL
+        imageURLString = recipe.imageURL
+        author = recipe.author
+        categoriesJSON = JSONStorage.encode(recipe.categories)
+        ingredientsJSON = JSONStorage.encode(recipe.ingredients)
+        rank = recipe.rank
+        rating = recipe.rating
+        ratingCount = recipe.ratingCount
+        evidenceConfidence = recipe.evidenceConfidence
+        rankConfidence = recipe.rankConfidence
+    }
 }
 
 @Model

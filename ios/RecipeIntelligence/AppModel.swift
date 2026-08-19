@@ -1,12 +1,22 @@
 import Foundation
 import SwiftData
 
+enum FeedRefreshTrigger {
+    case manual
+    case foreground
+    case periodic
+}
+
 @MainActor
 final class AppModel: ObservableObject {
     @Published private(set) var verticals: [RecipeVertical] = []
     @Published var selectedVertical: RecipeVertical?
     @Published private(set) var deck: [RemoteRecipe] = []
     @Published private(set) var isLoading = false
+    @Published private(set) var isRefreshingFeed = false
+    @Published private(set) var feedStatusMessage: String?
+    @Published private(set) var currentFeedGeneratedAt: String?
+    @Published private(set) var lastFeedRefreshAt: Date?
     @Published var errorMessage: String?
     @Published private(set) var canUndo = false
     @Published var activeProfileID: UUID?
@@ -19,6 +29,8 @@ final class AppModel: ObservableObject {
     private var nextPageIndex = 0
     private var reachedEnd = false
     private var lastUndo: UndoState?
+    private var loadedFeedGeneratedAt: [String: String] = [:]
+    private var selectionGeneration = UUID()
 
     private struct UndoState {
         let recipe: RemoteRecipe
@@ -40,7 +52,7 @@ final class AppModel: ObservableObject {
         ensureDefaultProfile()
         guard verticals.isEmpty else { return }
         do {
-            verticals = try await client.fetchVerticals()
+            verticals = try await client.fetchVerticals(forceRefresh: true)
         } catch {
             verticals = RecipeVertical.fallbacks
             errorMessage = "The vertical catalog is offline. Using the last-known Recipe Intelligence verticals."
@@ -52,31 +64,132 @@ final class AppModel: ObservableObject {
 
     func selectVertical(_ vertical: RecipeVertical) async {
         guard selectedVertical?.id != vertical.id || fetchedRecipes.isEmpty else { return }
+        selectionGeneration = UUID()
+        let generation = selectionGeneration
         selectedVertical = vertical
         UserDefaults.standard.set(vertical.id, forKey: "selectedVerticalID")
         fetchedRecipes = []
         deck = []
         nextPageIndex = 0
         reachedEnd = false
+        isLoading = false
+        currentFeedGeneratedAt = loadedFeedGeneratedAt[vertical.id]
+        feedStatusMessage = nil
         errorMessage = nil
-        await loadNextPage()
+
+        do {
+            let manifest = try await client.fetchFeedManifest(vertical: vertical, forceRefresh: true)
+            guard generation == selectionGeneration, selectedVertical?.id == vertical.id else { return }
+            if manifest.pages.isEmpty {
+                loadedFeedGeneratedAt[vertical.id] = manifest.generatedAt
+                currentFeedGeneratedAt = manifest.generatedAt
+                reachedEnd = true
+                lastFeedRefreshAt = .now
+                rebuildDeck()
+                return
+            }
+        } catch {
+            // loadNextPage can still use a previously cached manifest or the local
+            // SwiftData recipe cache, so defer user-facing error handling to it.
+        }
+        await loadNextPage(generation: generation)
     }
 
     func retry() async {
         if let selectedVertical {
+            selectionGeneration = UUID()
+            let generation = selectionGeneration
             fetchedRecipes = []
             deck = []
             nextPageIndex = 0
             reachedEnd = false
-            await loadNextPage()
+            isLoading = false
+            feedStatusMessage = nil
+            _ = try? await client.fetchFeedManifest(vertical: selectedVertical, forceRefresh: true)
+            guard generation == selectionGeneration else { return }
+            await loadNextPage(generation: generation)
         } else {
             await bootstrap()
         }
     }
 
+    func refreshCurrentFeed(trigger: FeedRefreshTrigger) async {
+        guard !isRefreshingFeed, !isLoading, var vertical = selectedVertical else { return }
+        isRefreshingFeed = true
+        defer { isRefreshingFeed = false }
+
+        let generation = selectionGeneration
+        let pinnedAtStart = deck.first
+
+        // Refresh the catalog too, so newly added verticals appear without an app
+        // update or relaunch. A catalog failure should not prevent the current
+        // vertical from checking its own feed.
+        if let refreshedVerticals = try? await client.fetchVerticals(forceRefresh: true), !refreshedVerticals.isEmpty {
+            guard generation == selectionGeneration else { return }
+            verticals = refreshedVerticals
+            if let refreshedSelection = refreshedVerticals.first(where: { $0.id == vertical.id }) {
+                selectedVertical = refreshedSelection
+                vertical = refreshedSelection
+            }
+        }
+
+        do {
+            let manifest = try await client.fetchFeedManifest(vertical: vertical, forceRefresh: true)
+            guard generation == selectionGeneration, selectedVertical?.id == vertical.id else { return }
+
+            let previousVersion = loadedFeedGeneratedAt[vertical.id]
+            lastFeedRefreshAt = .now
+            if previousVersion == manifest.generatedAt {
+                if trigger == .manual {
+                    feedStatusMessage = "Recipe Intelligence is up to date."
+                } else {
+                    feedStatusMessage = nil
+                }
+                return
+            }
+
+            let pagesToReload = min(max(nextPageIndex, 1), manifest.pages.count)
+            var refreshedRecipes: [RemoteRecipe] = []
+            if pagesToReload > 0 {
+                for pageIndex in 0..<pagesToReload {
+                    let page = try await client.fetchRecipePage(vertical: vertical, pageIndex: pageIndex)
+                    guard generation == selectionGeneration, selectedVertical?.id == vertical.id else { return }
+                    refreshedRecipes.append(contentsOf: page.recipes)
+                }
+            }
+
+            fetchedRecipes = uniqueRecipes(refreshedRecipes)
+            nextPageIndex = pagesToReload
+            reachedEnd = pagesToReload >= manifest.pages.count
+            loadedFeedGeneratedAt[vertical.id] = manifest.generatedAt
+            currentFeedGeneratedAt = manifest.generatedAt
+            cache(fetchedRecipes)
+            synchronizeSavedMetadata(fetchedRecipes)
+
+            // If the user made a decision while the network request was in flight,
+            // do not resurrect that card. Otherwise pin the currently visible card
+            // while replacing and re-ranking the unseen pool beneath it.
+            let pinnedNow: RemoteRecipe?
+            if let pinnedAtStart, deck.first?.recipeID == pinnedAtStart.recipeID {
+                pinnedNow = pinnedAtStart
+            } else {
+                pinnedNow = nil
+            }
+            rebuildDeck(preserving: pinnedNow)
+            errorMessage = nil
+            feedStatusMessage = "Rankings updated from Recipe Intelligence."
+        } catch {
+            if deck.isEmpty { errorMessage = error.localizedDescription }
+            feedStatusMessage = "Couldn’t check for new rankings. Showing current recipes."
+        }
+    }
+
     func prefetchIfNeeded(_ recipe: RemoteRecipe) async {
+        guard !isRefreshingFeed else { return }
         guard let index = deck.firstIndex(where: { $0.recipeID == recipe.recipeID }) else { return }
-        if index <= 4 && deck.count < 12 && !reachedEnd { await loadNextPage() }
+        if index <= 4 && deck.count < 12 && !reachedEnd {
+            await loadNextPage(preservingTop: deck.first, generation: selectionGeneration)
+        }
     }
 
     func handleDecision(_ decision: RecipeDecision, recipe: RemoteRecipe) {
@@ -269,29 +382,42 @@ final class AppModel: ObservableObject {
         rebuildDeck()
     }
 
-    private func loadNextPage() async {
+    private func loadNextPage(preservingTop: RemoteRecipe? = nil, generation: UUID? = nil) async {
+        let requestGeneration = generation ?? selectionGeneration
+        guard requestGeneration == selectionGeneration else { return }
         guard !isLoading, !reachedEnd, let vertical = selectedVertical else { return }
         isLoading = true
-        defer { isLoading = false }
+        defer {
+            if requestGeneration == selectionGeneration { isLoading = false }
+        }
         do {
             let page = try await client.fetchRecipePage(vertical: vertical, pageIndex: nextPageIndex)
+            guard requestGeneration == selectionGeneration, selectedVertical?.id == vertical.id else { return }
             nextPageIndex += 1
             reachedEnd = page.recipes.isEmpty
+            loadedFeedGeneratedAt[vertical.id] = page.generatedAt
+            currentFeedGeneratedAt = page.generatedAt
+            lastFeedRefreshAt = .now
             let existing = Set(fetchedRecipes.map(\.recipeID))
             let fresh = page.recipes.filter { !existing.contains($0.recipeID) }
             fetchedRecipes.append(contentsOf: fresh)
             cache(fresh)
-            rebuildDeck()
+            synchronizeSavedMetadata(fresh)
+            rebuildDeck(preserving: preservingTop)
             errorMessage = nil
-            if deck.count < 8 && !reachedEnd { await loadNextPage() }
+            if deck.count < 8 && !reachedEnd {
+                await loadNextPage(preservingTop: deck.first, generation: requestGeneration)
+            }
         } catch RecipeIntelligenceClientError.pageOutOfRange {
+            guard requestGeneration == selectionGeneration else { return }
             reachedEnd = true
         } catch {
+            guard requestGeneration == selectionGeneration, selectedVertical?.id == vertical.id else { return }
             let cached = cachedRecipes(verticalID: vertical.id)
             if fetchedRecipes.isEmpty && !cached.isEmpty {
                 fetchedRecipes = cached
                 reachedEnd = true
-                rebuildDeck()
+                rebuildDeck(preserving: preservingTop)
                 errorMessage = "Offline: showing cached recipes."
             } else {
                 errorMessage = error.localizedDescription
@@ -299,17 +425,34 @@ final class AppModel: ObservableObject {
         }
     }
 
-    private func rebuildDeck() {
-        guard let profileID = activeProfileID else { deck = fetchedRecipes; return }
+    private func rebuildDeck(preserving pinnedRecipe: RemoteRecipe? = nil) {
+        guard let profileID = activeProfileID else {
+            deck = fetchedRecipes
+            return
+        }
         let saved = Set(fetchAll(SavedRecipeRecord.self).filter { $0.profileID == profileID && $0.status != .archived }.map(\.recipeID))
         let events = fetchAll(BehaviorEventRecord.self).filter { $0.profileID == profileID && !$0.isUndone }
         let skipped = Set(events.filter { $0.eventType == .swipeSkip }.map(\.recipeID))
         let notNowCutoff = Date.now.addingTimeInterval(-24 * 3600)
         let notNow = Set(events.filter { $0.eventType == .swipeNotNow && $0.timestamp >= notNowCutoff }.map(\.recipeID))
-        deck = recommendationService.recommendations(
+        var recommendations = recommendationService.recommendations(
             from: fetchedRecipes,
             signals: RecommendationSignals(savedRecipeIDs: saved, skippedRecipeIDs: skipped, notNowRecipeIDs: notNow)
         )
+
+        if let pinnedRecipe,
+           !saved.contains(pinnedRecipe.recipeID),
+           !skipped.contains(pinnedRecipe.recipeID),
+           !notNow.contains(pinnedRecipe.recipeID) {
+            if let freshIndex = recommendations.firstIndex(where: { $0.recipeID == pinnedRecipe.recipeID }) {
+                let refreshedPinned = recommendations.remove(at: freshIndex)
+                recommendations.insert(refreshedPinned, at: 0)
+            } else {
+                recommendations.insert(pinnedRecipe, at: 0)
+            }
+        }
+
+        deck = recommendations
         recordImpressionForTopCard()
     }
 
@@ -346,6 +489,25 @@ final class AppModel: ObservableObject {
             }
         }
         try? modelContext.save()
+    }
+
+    private func synchronizeSavedMetadata(_ recipes: [RemoteRecipe]) {
+        guard !recipes.isEmpty else { return }
+        let recipesByKey = Dictionary(uniqueKeysWithValues: recipes.map { ("\($0.verticalID)|\($0.recipeID)", $0) })
+        var changed = false
+        for saved in fetchAll(SavedRecipeRecord.self) {
+            let key = "\(saved.verticalID)|\(saved.recipeID)"
+            if let recipe = recipesByKey[key] {
+                saved.updateRemoteMetadata(from: recipe)
+                changed = true
+            }
+        }
+        if changed { try? modelContext.save() }
+    }
+
+    private func uniqueRecipes(_ recipes: [RemoteRecipe]) -> [RemoteRecipe] {
+        var seen: Set<String> = []
+        return recipes.filter { seen.insert("\($0.verticalID)|\($0.recipeID)").inserted }
     }
 
     private func cachedRecipes(verticalID: String) -> [RemoteRecipe] {

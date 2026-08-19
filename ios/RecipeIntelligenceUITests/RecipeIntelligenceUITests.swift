@@ -34,4 +34,16 @@ final class RecipeIntelligenceUITests: XCTestCase {
         XCTAssertTrue(app.buttons["discover.save"].exists)
         XCTAssertTrue(app.buttons["discover.undo"].exists)
     }
+
+    func testAccessibleManualRefreshReportsCurrentFeed() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing"]
+        app.launch()
+
+        XCTAssertTrue(app.navigationBars["Discover"].waitForExistence(timeout: 8))
+        let refresh = app.buttons["discover.refresh"]
+        XCTAssertTrue(refresh.waitForExistence(timeout: 5))
+        refresh.tap()
+        XCTAssertTrue(app.staticTexts["Recipe Intelligence is up to date."].waitForExistence(timeout: 5))
+    }
 }
