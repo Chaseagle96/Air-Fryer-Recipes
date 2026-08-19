@@ -6,7 +6,7 @@ from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
 
-from .http import get, iter_sitemap_records, make_session, robots_and_sitemaps
+from .http import get_for_source, iter_sitemap_records, make_session, robots_and_sitemaps
 from .models import UA, SourceConfig
 
 
@@ -87,7 +87,13 @@ def discover_source_urls(
     match_cap = 20000 if mode == "deep" and global_max_urls is None else max(2000, (global_max_urls or cfg.max_urls) * (12 if mode == "deep" else 6))
 
     for sitemap in sitemaps:
-        for record in iter_sitemap_records(session, sitemap, seen=seen_sitemaps, max_docs=max_docs):
+        for record in iter_sitemap_records(
+            session,
+            sitemap,
+            seen=seen_sitemaps,
+            max_docs=max_docs,
+            safe=cfg.origin == "discovered",
+        ):
             url = record["url"]
             if not _same_domain(url, cfg.domain) or not include_re.search(url):
                 continue
@@ -110,7 +116,7 @@ def discover_source_urls(
         except Exception:
             pass
         try:
-            response = get(session, discovery_url, 25)
+            response = get_for_source(session, discovery_url, cfg, 25)
             soup = BeautifulSoup(response.text, "lxml")
         except Exception:
             continue
