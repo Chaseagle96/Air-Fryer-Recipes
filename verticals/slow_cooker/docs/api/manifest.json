@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-19T04:46:36.227580+00:00",
+  "generated_at": "2026-08-19T04:57:33.534748+00:00",
   "vertical": {
     "id": "slow_cooker",
     "name": "Slow Cooker",
     "source_count": 38
   },
-  "recipe_count": 274,
-  "ranked_recipe_count": 274,
+  "recipe_count": 317,
+  "ranked_recipe_count": 317,
   "page_size": 100,
   "pages": [
     {
@@ -23,10 +23,15 @@
     {
       "index": 3,
       "path": "recipes/0003.json",
-      "count": 74
+      "count": 100
+    },
+    {
+      "index": 4,
+      "path": "recipes/0004.json",
+      "count": 17
     }
   ],
-  "corpus_recipe_count": 216,
+  "corpus_recipe_count": 317,
   "corpus_pages": [
     {
       "index": 1,
@@ -41,11 +46,16 @@
     {
       "index": 3,
       "path": "corpus/0003.json",
-      "count": 16
+      "count": 100
+    },
+    {
+      "index": 4,
+      "path": "corpus/0004.json",
+      "count": 17
     }
   ],
   "corpus_status_counts": {
-    "discover": 216
+    "discover": 317
   },
   "catalog_url_count": 3692,
   "content_policy": {
