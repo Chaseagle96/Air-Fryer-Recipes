@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "airfryer-rankings"
-version = "5.0.0"
+version = "5.2.0"
 description = "Auditable air-fryer recipe ranking and evidence pipeline"
 requires-python = ">=3.12"
 
