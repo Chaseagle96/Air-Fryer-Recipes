@@ -12,7 +12,6 @@ on:
       - 'src/airfryer_rankings/source_catalog_sync.py'
       - 'src/airfryer_rankings/url_normalization.py'
       - 'src/airfryer_rankings/discovery.py'
-      - 'config/source_discovery.yaml'
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
@@ -29,8 +28,11 @@ on:
 permissions:
   contents: write
 
+# This intentionally shares a repository-level concurrency group with Source
+# Expansion. Both workflows update source-expansion diagnostics, so serializing
+# them prevents cross-workflow git/rebase races on main.
 concurrency:
-  group: recipe-intelligence-source-catalog-sync-${{ github.ref }}
+  group: recipe-intelligence-source-network-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
