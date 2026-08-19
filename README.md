@@ -1,32 +1,47 @@
-# Air Fryer Recipe Rankings
+# Recipe Intelligence
 
-[![Air Fryer Rankings](https://github.com/Chaseagle96/Air-Fryer-Recipes/actions/workflows/hourly.yml/badge.svg)](https://github.com/Chaseagle96/Air-Fryer-Recipes/actions/workflows/hourly.yml)
-[![CodeQL](https://github.com/Chaseagle96/Air-Fryer-Recipes/actions/workflows/codeql.yml/badge.svg)](https://github.com/Chaseagle96/Air-Fryer-Recipes/actions/workflows/codeql.yml)
-[![Release](https://img.shields.io/github/v/release/Chaseagle96/Air-Fryer-Recipes)](https://github.com/Chaseagle96/Air-Fryer-Recipes/releases/latest)
+[![Recipe Intelligence](https://github.com/Chaseagle96/Recipe-Intelligence/actions/workflows/hourly.yml/badge.svg)](https://github.com/Chaseagle96/Recipe-Intelligence/actions/workflows/hourly.yml)
+[![CodeQL](https://github.com/Chaseagle96/Recipe-Intelligence/actions/workflows/codeql.yml/badge.svg)](https://github.com/Chaseagle96/Recipe-Intelligence/actions/workflows/codeql.yml)
+[![Release](https://img.shields.io/github/v/release/Chaseagle96/Recipe-Intelligence)](https://github.com/Chaseagle96/Recipe-Intelligence/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Current release: 5.2.0**
+**Current release: 5.2.0**  
+**Current production vertical: Air Fryer**
 
-An auditable, continuously refreshed leaderboard of highly rated air-fryer recipes from public recipe publishers.
+Recipe Intelligence is an auditable, evidence-driven recipe research and ranking platform. It verifies public recipe-rating evidence, normalizes publisher behavior, applies Bayesian ranking with explicit uncertainty, detects duplicate/syndicated recipes, tracks longitudinal changes, and publishes reproducible ranking artifacts.
 
-The project does not simply sort displayed star averages. It combines rating quality and volume, category-aware publisher normalization, Bayesian shrinkage, uncertainty, extraction evidence, duplicate detection, freshness, longitudinal behavior, source health, and ranking robustness.
+Air Fryer is the first production vertical. The repository identity is intentionally broader so additional cooking-method verticals such as Slow Cooker can reuse the same research, evidence, QA, storage, and ranking infrastructure while retaining vertical-specific discovery, calibration, and outputs.
 
-## V5 architecture
+## Platform architecture
 
-V5 treats the repository as a research and production data pipeline with four explicit contracts:
+Recipe Intelligence treats recipe ranking as a research and production data pipeline with four explicit contracts:
 
 1. **Raw evidence**: immutable observations under `data/observations/`. This is the longitudinal source of truth.
 2. **Clean state**: validated current recipe evidence in `data/state.json`. Individual clean recipe records are schema-versioned independently from the state envelope.
 3. **Model outputs**: immutable ranking snapshots under `data/rankings/`, generated from a frozen versioned model configuration.
-4. **Serving outputs**: CSV, Excel, DuckDB, JSON, and GitHub Pages artifacts under `output/` and `docs/`.
+4. **Serving outputs**: CSV, Excel, DuckDB, JSON, and dashboard artifacts under `output/` and `docs/`.
 
 Derived layers can be regenerated. Raw observation history is never rewritten to make it agree with a later model.
+
+### Vertical model
+
+The platform identity is broader than the current corpus. In release 5.2.0, **Air Fryer is the only production ranking vertical**.
+
+Future verticals should share platform infrastructure while preserving their own:
+
+- discovery/source configuration;
+- recipe eligibility rules;
+- calibration and category baselines where needed;
+- historical validation context;
+- serving/output namespace.
+
+This prevents a Slow Cooker population, for example, from being naively mixed into Air Fryer priors or publisher/category expectations while still avoiding duplicated infrastructure.
 
 ### Ranking model
 
 The active model is versioned in `config/model.yaml`. Production parameters never self-modify.
 
-For each eligible recipe, V5:
+For each eligible recipe, the current model:
 
 1. normalizes the publisher rating to a five-star scale;
 2. estimates a square-root-volume-weighted global prior;
@@ -48,45 +63,25 @@ Popularity growth is descriptive and does not directly boost the primary quality
 
 Every leaderboard is stress-tested across 36 nearby parameter configurations. The system reports:
 
-- Top-200 Spearman correlation
-- Top-100 Kendall correlation
-- Top-10 and Top-50 overlap
-- per-recipe rank standard deviation
-- likely rank range
-- Top-10 and Top-50 frequency
-- `rank_confidence` from 0 to 1
+- Top-200 Spearman correlation;
+- Top-100 Kendall correlation;
+- Top-10 and Top-50 overlap;
+- per-recipe rank standard deviation;
+- likely rank range;
+- Top-10 and Top-50 frequency;
+- `rank_confidence` from 0 to 1.
 
 A deterministic golden-ranking fixture ensures scoring changes create a reviewable CI diff rather than silent rank drift.
 
 ### Historical predictive backtesting
 
-V5 can evaluate ranking models against later high-volume evidence rather than judging parameters only by plausibility.
+Daily/deep runs can evaluate frozen candidate configurations over 30-, 60-, and 90-day horizons against later high-volume evidence and report future-quality rank correlation, posterior/final-score error, and future Top-10 overlap.
 
-Daily/deep runs can test frozen candidate configurations over 30-, 60-, and 90-day horizons and report:
-
-- future-quality rank correlation
-- posterior mean absolute error
-- final-score mean absolute error
-- future Top-10 overlap
-
-Backtesting remains disabled until enough longitudinal history exists. `config/model.yaml` requires minimum history/windows/recipe coverage, and `automatic_parameter_promotion` is explicitly false. A recommended configuration is advisory until changed through a reviewed model-version update.
+Backtesting remains disabled until enough longitudinal history exists. `config/model.yaml` defines minimum history/windows/recipe coverage, and `automatic_parameter_promotion` is explicitly false. Recommendations remain advisory until changed through a reviewed model-version update.
 
 ### Time-aware diagnostics
 
-Observation history supports:
-
-- 7-day and 30-day review growth
-- 30-day rating slope
-- 30-day review-count slope
-- 7-day velocity
-- 14-day review acceleration
-- page-change count and last material page change
-- recent rating change-point detection
-- peak rank
-- days in Top 10 and Top 50
-- rank volatility
-
-These signals aid interpretation and anomaly detection without turning virality into quality.
+Observation history supports review growth, rating/review slopes, velocity, acceleration, material page changes, change-point detection, peak rank, time in Top 10/Top 50, and rank volatility. These signals aid interpretation and anomaly detection without turning virality into quality.
 
 ## Evidence integrity
 
@@ -104,92 +99,47 @@ Conflicted/sub-threshold evidence is quarantined. Legacy evidence is explicitly 
 
 ### Structural publisher contracts
 
-Every fetched page records:
-
-- page content hash
-- structural DOM fingerprint
-- JSON-LD schema signature
-- visible rating-evidence shape
-
-Changes to publisher markup generate QA/observability events even when HTTP requests still succeed.
+Every fetched page records its page content hash, structural DOM fingerprint, JSON-LD schema signature, and visible rating-evidence shape. Publisher markup changes therefore generate QA/observability events even when the HTTP request itself succeeds.
 
 ### Reviewed real-page fixtures
 
-`tests/fixtures/real_pages/` contains sanitized structural snapshots tied to real publisher pages. They preserve only the fields necessary to test extraction behavior.
-
-Weekly deep runs can capture candidate fixtures from configured publishers into an Actions artifact. Candidates never overwrite checked-in fixtures automatically; promotion requires a reviewed code change so broken publisher markup cannot redefine the regression test.
+`tests/fixtures/real_pages/` contains sanitized structural snapshots tied to real publisher pages. Weekly deep runs can capture candidate fixtures from configured publishers into an Actions artifact, but candidates never overwrite checked-in fixtures automatically.
 
 ### Evidence-confidence calibration
 
-`data/benchmarks/evidence_labels.json` contains reviewed fixture expectations. V5 estimates extraction correctness and Wilson intervals by evidence class, but empirical confidence replacement does not activate until a class has at least the configured minimum reviewed sample size. Small seed samples therefore cannot masquerade as calibrated probabilities.
+`data/benchmarks/evidence_labels.json` contains reviewed fixture expectations. Empirical evidence confidence activates only after the configured minimum reviewed sample size is reached, so small seed samples cannot masquerade as calibrated probabilities.
 
 ## Duplicate detection
 
-Cross-site dedupe is deliberately precision-oriented. Signals include:
-
-- canonical URL
-- normalized title similarity
-- normalized ingredient overlap
-- instruction-token overlap
-- instruction SimHash
-- author agreement
-- image URL fingerprint
-- bounded actual image-content perceptual hashing for ambiguous candidates
+Cross-site dedupe is deliberately precision-oriented. Signals include canonical URL, normalized title, ingredient overlap, instruction similarity/SimHash, author agreement, image URL fingerprint, and bounded perceptual image hashing for ambiguous candidates.
 
 Cross-site review counts are **never summed** because syndicated pages may share a review population.
 
-### Dedupe benchmark
-
-`data/benchmarks/dedupe_pairs.json` is a versioned adjudicated validation set. V5 reports:
-
-- precision, recall, and F1
-- TP/FP/TN/FN
-- positive/negative similarity distributions
-- threshold precision/recall curve
-- metrics by labeled pair type
-- pair-level outcomes
-
-CI currently requires at least 95% precision and 90% recall. The benchmark policy targets at least 500 manually adjudicated pairs. `output/dedupe_label_queue.csv` surfaces ambiguous real-corpus candidates nearest the production threshold for review.
+`data/benchmarks/dedupe_pairs.json` is the versioned adjudicated validation set. CI enforces benchmark quality floors, while `output/dedupe_label_queue.csv` surfaces ambiguous real-corpus candidates nearest the production threshold for human review.
 
 ## Observability and fail-closed publishing
 
-Source health distinguishes “not checked” from “failed.” Pipeline metrics include:
+Pipeline metrics include crawl/extraction success, ranking eligibility, evidence-conflict rate, robots denials, HTTP 403/429 counts, fetch latency, source freshness, structural publisher changes, legacy-evidence backlog, and anomaly volume.
 
-- crawl/extraction success
-- ranking eligibility
-- evidence-conflict rate
-- robots denials
-- HTTP 403/429 counts
-- mean/p95 fetch time
-- source freshness
-- structural publisher changes
-- legacy-evidence backlog
-- anomaly volume
+Before a production result is committed, a versioned publication gate checks for catastrophic regressions such as an empty leaderboard, major corpus collapse, inability to produce a Top 50, severe evidence conflicts, unexplained rank collapse, or implausible dedupe expansion.
 
-Before a production result is committed, a publication gate checks for catastrophic regressions such as:
-
-- empty leaderboard
-- major corpus-size collapse
-- inability to produce a Top 50
-- catastrophic evidence-conflict rate
-- unexplained Top-50 collapse without a model-version change
-- implausible dedupe explosion
-
-If the gate fails, the workflow fails before state is persisted or public output is committed. Diagnostic artifacts are still uploaded so the failed candidate run can be inspected while the prior public leaderboard remains intact.
+Warnings expose degraded-but-publishable runs. Failures stop production publication and preserve the prior serving state while diagnostic artifacts remain available.
 
 ## Historical storage
 
 `config/storage.yaml` defines the storage contract.
 
 - Git-backed NDJSON remains authoritative today.
-- `output/air_fryer_analytics.duckdb` is a regenerable analytical cache.
+- `output/air_fryer_analytics.duckdb` is the current Air Fryer vertical's regenerable analytical cache.
 - Weekly deep runs can generate a compressed Parquet history archive artifact.
 - Storage health reports NDJSON records/bytes and recommends archival migration once configured thresholds are crossed.
-- External object-storage upload is disabled unless explicitly configured in the environment and policy.
+- External object-storage upload remains disabled unless explicitly configured.
 
-This gives the project a migration path away from unbounded Git history without prematurely introducing external infrastructure.
+The platform therefore has a path away from unbounded Git history without prematurely introducing external infrastructure.
 
-## Outputs
+## Current Air Fryer outputs
+
+The existing output namespace remains Air Fryer-specific until a second production vertical is introduced. This is intentional migration safety, not repository branding.
 
 ### Repository/current data
 
@@ -218,41 +168,45 @@ This gives the project a migration path away from unbounded Git history without 
 
 ### Excel artifact
 
-The workbook includes the Top 50, all rankings, rank explainability, source coverage/health/reliability, rating history/trends, time signals, uncertainty calibration, evidence calibration, evidence labels, robustness simulations, historical backtests, hyperparameter evaluation, pipeline metrics, publication gate, storage health, data contracts, movers, entrants, QA anomalies, duplicate groups, dedupe benchmark/label queue, methodology, and category leaderboards.
+The workbook includes Top 50, all rankings, rank explainability, source coverage/health/reliability, rating history/trends, time signals, uncertainty/evidence calibration, robustness simulations, historical backtests, hyperparameter evaluation, pipeline metrics, publication gate, storage health, data contracts, movers, entrants, QA anomalies, duplicate groups, dedupe benchmark/label queue, methodology, and category leaderboards.
 
 ### Analytical artifacts
 
-- `air_fryer_analytics.duckdb`: queryable current/history/research tables and Top-10/Top-50 views
+- `air_fryer_analytics.duckdb`: current Air Fryer vertical analytical database
 - `history_archive.parquet`: compressed deep-run historical archive when generated
 - `sbom.json`: CycloneDX software bill of materials
 - `fixture-candidates`: sanitized publisher regression-fixture candidates from deep runs
 
 ## Continuous integration and supply-chain controls
 
-The primary workflow runs:
+The primary Recipe Intelligence workflow runs:
 
 1. pinned dependency installation;
 2. vulnerability audit and CycloneDX SBOM generation;
 3. Ruff linting;
 4. mypy static analysis;
 5. pytest with branch coverage gate;
-6. bounded live three-publisher PR crawl;
+6. bounded live publisher smoke crawl;
 7. Excel/DuckDB generation;
 8. publication-gate evaluation.
 
-GitHub Actions are pinned to exact commit SHAs. CodeQL runs independently. Dependabot monitors both Python dependencies and Actions references.
+GitHub Actions are pinned to exact commit SHAs. CodeQL runs independently. Dependabot monitors Python dependencies and Actions references.
 
 The test suite combines deterministic unit/regression tests, reviewed real-page fixture tests, Hypothesis property tests, benchmark quality floors, and golden model-output tests.
 
 ## Refresh cadence
 
+For the current Air Fryer vertical:
+
 - `17 * * * *`: hourly incremental refresh
 - `43 8 * * *`: daily discovery/full-known-catalog refresh plus backtest evaluation
-- `13 9 * * 0`: weekly deep discovery/refresh, storage archive and candidate fixture capture
+- `13 9 * * 0`: weekly deep discovery/refresh, storage archive, and candidate fixture capture
 - manual: `hourly`, `daily`, `deep`, or `backfill`
 - pull requests: static/security/test gates plus bounded live smoke crawl without production writes
 
 ## Running locally
+
+The distribution is now branded **Recipe Intelligence**. The internal `airfryer_rankings` Python namespace remains in release 5.2.x because it represents the existing Air Fryer implementation and avoids a high-risk import migration solely for branding.
 
 ```bash
 python -m pip install -r requirements-dev.txt
@@ -268,14 +222,8 @@ For a complete deep refresh:
 PYTHONPATH=src python -m airfryer_rankings.run --mode deep
 ```
 
-For a legacy-evidence revalidation pass:
-
-```bash
-PYTHONPATH=src python -m airfryer_rankings.run --mode backfill
-```
-
 ## Scope and caveat
 
-No crawler can prove complete coverage of every air-fryer recipe on the public internet. Publishers can block crawlers, change markup, remove recipes, expose incomplete ratings, or use rating systems with different behavioral biases.
+No crawler can prove complete coverage of every recipe on the public internet. Publishers can block crawlers, change markup, remove recipes, expose incomplete ratings, or use rating systems with different behavioral biases.
 
-The project therefore reports coverage, evidence confidence, source health, uncertainty, model robustness, benchmark quality, historical validation, and explicit data-quality gates alongside the leaderboard. The objective is not to erase uncertainty; it is to make the assumptions, evidence, failure modes, and model behavior measurable and reproducible.
+Recipe Intelligence therefore reports coverage, evidence confidence, source health, uncertainty, model robustness, benchmark quality, historical validation, and explicit data-quality gates alongside each production leaderboard. The objective is not to erase uncertainty; it is to make assumptions, evidence, failure modes, and model behavior measurable and reproducible.

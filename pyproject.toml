@@ -3,9 +3,9 @@ requires = ["setuptools>=75"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "airfryer-rankings"
+name = "recipe-intelligence"
 version = "5.2.0"
-description = "Auditable air-fryer recipe ranking and evidence pipeline"
+description = "Auditable evidence-driven recipe ranking and research platform"
 requires-python = ">=3.12"
 
 [tool.setuptools]

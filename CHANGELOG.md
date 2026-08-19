@@ -2,6 +2,17 @@
 
 All notable ranking-engine and repository-governance changes are recorded here.
 
+## Unreleased
+
+### Changed
+- Repository/platform identity renamed from Air Fryer Recipe Rankings to **Recipe Intelligence**.
+- Python distribution metadata renamed to `recipe-intelligence`; the internal `airfryer_rankings` namespace remains for 5.2.x compatibility.
+- Primary GitHub Actions workflow, artifact labels, README badges, governance documentation, and generated dashboard now use the Recipe Intelligence identity.
+- Air Fryer is explicitly documented as the first production vertical rather than the long-term platform boundary.
+
+### Compatibility
+- Existing Air Fryer raw evidence, state, ranking history, output filenames, Python import namespace, model version, and scoring behavior are unchanged by the rebrand.
+
 ## 5.2.0 - 2026-08-18
 
 ### Added
