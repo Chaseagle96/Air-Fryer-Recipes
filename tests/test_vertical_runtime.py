@@ -7,7 +7,7 @@ import pytest
 import yaml
 
 from airfryer_rankings.dashboard import _dashboard_html
-from airfryer_rankings.discovery import _compile_include_pattern
+from airfryer_rankings.discovery import _compile_include_pattern, _looks_recipe_link
 from airfryer_rankings.models import SourceConfig, load_sources
 from airfryer_rankings.runtime import vertical_name, vertical_output_path, vertical_slug
 
@@ -15,6 +15,7 @@ from airfryer_rankings.runtime import vertical_name, vertical_output_path, verti
 def test_slow_cooker_registry_has_independent_discovery_pattern() -> None:
     sources = load_sources("config/verticals/slow_cooker/sources.yaml")
     assert len(sources) >= 30
+    assert all(not source.allow_unmatched_discovery_links for source in sources)
     pattern = re.compile(sources[0].include_pattern, re.I)
     assert pattern.search("slow-cooker chicken")
     assert pattern.search("Slow Cooker Beef Stew")
@@ -25,9 +26,36 @@ def test_slow_cooker_registry_has_independent_discovery_pattern() -> None:
 
 def test_air_fryer_registry_keeps_existing_default_pattern() -> None:
     source = load_sources("config/sources.yaml")[0]
+    assert source.allow_unmatched_discovery_links is True
     pattern = re.compile(source.include_pattern, re.I)
     assert pattern.search("air fryer chicken")
     assert not pattern.search("slow cooker chicken")
+
+
+def test_slow_cooker_category_links_fail_closed_when_semantics_do_not_match() -> None:
+    source = load_sources("config/verticals/slow_cooker/sources.yaml")[0]
+    pattern = _compile_include_pattern(source)
+    assert _looks_recipe_link(
+        "https://example.com/recipes/slow-cooker-chicken",
+        "Chicken Dinner",
+        "example.com",
+        pattern,
+        allow_unmatched=False,
+    )
+    assert _looks_recipe_link(
+        "https://example.com/recipes/chicken-dinner",
+        "Slow Cooker Chicken Dinner",
+        "example.com",
+        pattern,
+        allow_unmatched=False,
+    )
+    assert not _looks_recipe_link(
+        "https://example.com/recipes/oven-chicken",
+        "Oven Chicken Dinner",
+        "example.com",
+        pattern,
+        allow_unmatched=False,
+    )
 
 
 def test_invalid_vertical_pattern_fails_closed() -> None:
