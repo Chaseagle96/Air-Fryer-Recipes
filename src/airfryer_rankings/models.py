@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -262,7 +263,7 @@ def load_sources(path: str | Path, *, include_discovered: bool = True) -> list[S
                 pinned=True,
             )
         )
-    if not include_discovered:
+    if not include_discovered or os.getenv("RECIPE_INTELLIGENCE_BASE_SOURCES_ONLY") == "1":
         return output
     registry_path = _registry_path_for_source_file(source_path)
     if registry_path is None or not registry_path.exists():
