@@ -134,6 +134,24 @@ jobs:
             PYTHONPATH=src python -m airfryer_rankings.run --mode "${{ steps.mode.outputs.mode }}"
           fi
 
+      - name: Rebuild complete Air Fryer mobile corpus from saved state
+        shell: bash
+        run: |
+          PYTHONPATH=src python scripts/backfill_mobile_corpus.py
+          PYTHONPATH=src python - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(Path('docs/api/manifest.json').read_text(encoding='utf-8'))
+          ranked = int(manifest['ranked_recipe_count'])
+          corpus = int(manifest['corpus_recipe_count'])
+          assert corpus >= ranked, (ranked, corpus)
+          assert sum(int(page['count']) for page in manifest['pages']) == ranked
+          assert sum(int(page['count']) for page in manifest['corpus_pages']) == corpus
+          assert int(manifest['corpus_status_counts'].get('discover', 0)) == ranked
+          print('Air Fryer mobile corpus:', 'ranked=', ranked, 'corpus=', corpus, 'statuses=', manifest['corpus_status_counts'])
+          PY
+
       - name: Capture sanitized publisher fixture candidates
         if: steps.mode.outputs.mode == 'deep' && steps.mode.outputs.production == 'true'
         run: PYTHONPATH=src python -m airfryer_rankings.fixture_capture --output output/fixture_candidates

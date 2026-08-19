@@ -39,7 +39,8 @@ jobs:
           RECIPE_INTELLIGENCE_VERTICAL='Slow Cooker' \
           RECIPE_INTELLIGENCE_VERTICAL_SLUG='slow_cooker' \
           PYTHONPATH=../../src \
-          python ../../scripts/backfill_mobile_corpus.py
+          python ../../scripts/backfill_mobile_corpus.py \
+            --sources ../../config/verticals/slow_cooker/sources.yaml
 
       - name: Validate corpus manifests without crawling
         run: |
