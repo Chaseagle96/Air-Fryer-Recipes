@@ -44,6 +44,17 @@ def _resolved_mode(config: dict[str, Any], requested: str) -> str:
     return mode if mode in {"daily", "deep"} else "daily"
 
 
+def _reconcile_activation_diagnostics(payload: dict[str, Any]) -> None:
+    evaluations = payload.get("evaluations", []) or []
+    if not isinstance(evaluations, list):
+        return
+    for row in evaluations:
+        if isinstance(row, dict) and row.get("production_activation"):
+            row["production_activation"] = (
+                "effective allowlist immediately; persistent URL catalog synchronized after successful source expansion"
+            )
+
+
 def sync_promoted_source_catalogs(
     config_path: str | Path = "config/source_discovery.yaml",
     *,
@@ -144,6 +155,7 @@ def sync_promoted_source_catalogs(
         metrics_path = output_dir / "source_expansion.json"
         metrics = _read_json(metrics_path)
         if metrics:
+            _reconcile_activation_diagnostics(metrics)
             metrics["catalog_url_count"] = after_count
             metrics["catalog_urls_added_after_promotion"] = added
             metrics["catalog_urls_coalesced"] = coalesced
@@ -156,6 +168,7 @@ def sync_promoted_source_catalogs(
 
         aggregate_vertical = aggregate_verticals.get(str(slug))
         if isinstance(aggregate_vertical, dict):
+            _reconcile_activation_diagnostics(aggregate_vertical)
             aggregate_vertical["catalog_url_count"] = after_count
             aggregate_vertical["catalog_urls_added_after_promotion"] = added
             aggregate_vertical["catalog_urls_coalesced"] = coalesced
