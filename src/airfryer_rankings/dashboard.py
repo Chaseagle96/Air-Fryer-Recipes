@@ -50,14 +50,25 @@ function render(){
  document.querySelector('#stats').textContent=`Showing ${rows.length} of ${DATA.leaderboard.length} ranked recipes`;
  document.querySelector('#rows').innerHTML=rows.map(r=>`<tr><td>${r.rank}</td><td><a href="${esc(r.url)}" rel="noopener noreferrer">${esc(r.title)}</a><br><small>${esc(r.categories||'')}</small>${r.rank_provenance?`<details class="provenance"><summary>Why this rank?</summary>${esc(r.rank_provenance)}</details>`:''}</td><td>${esc(r.combined_sources||r.source)}</td><td class="score">${Number(r.hierarchical_score).toFixed(4)}</td><td>${Number(r.rating).toFixed(2)}</td><td>${Number(r.rating_count).toLocaleString()}</td><td class="badge"><span class="grade">${esc(r.evidence_grade||'—')}</span><br><small>${Number(r.evidence_confidence||0).toFixed(2)} ${esc(r.evidence_status||'')}</small></td><td>${pct(r.rank_confidence)}</td><td class="range">${r.rank_range_low==null?'—':`${r.rank_range_low}–${r.rank_range_high}`}</td><td>${r.review_growth_7d==null?'—':Number(r.review_growth_7d).toLocaleString()}</td><td>${r.review_velocity_per_day==null?'—':Number(r.review_velocity_per_day).toFixed(1)}</td><td>${r.movement==null?'New':(r.movement>0?'▲ '+r.movement:r.movement<0?'▼ '+Math.abs(r.movement):'—')}</td></tr>`).join('');
 }
-fetch('data.json',{cache:'no-store'}).then(r=>r.json()).then(data=>{
+Promise.all([
+ fetch('api/authority.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('authority unavailable');return r.json()}),
+ fetch('data.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('leaderboard unavailable');return r.json()})
+]).then(([authority,data])=>{
+ if(authority.authoritative!==true){
+  DATA={leaderboard:[],categories:[],methodology:{authority}};
+  document.querySelector('#generated').textContent='Ranking refresh in progress · uncertified generation hidden';
+  document.querySelector('#stats').textContent='No ranked list is displayed until Recipe Intelligence certifies the current source and catalog generation.';
+  document.querySelector('#rows').innerHTML='';
+  document.querySelector('#methodology').textContent=JSON.stringify({authority},null,2);
+  return;
+ }
  DATA=data;
- document.querySelector('#generated').textContent=`Generated ${data.generated_at} · ${data.source_count} configured publishers`;
+ document.querySelector('#generated').textContent=`Generated ${data.generated_at} · ${data.source_count} configured publishers · authority certified`;
  const categories=[...new Set(data.leaderboard.flatMap(r=>(r.categories||'').split(' | ').filter(Boolean)))].sort();
  document.querySelector('#category').innerHTML='<option value="">All categories</option>'+categories.map(c=>`<option>${esc(c)}</option>`).join('');
- document.querySelector('#methodology').textContent=JSON.stringify(data.methodology,null,2);
+ document.querySelector('#methodology').textContent=JSON.stringify({...data.methodology,authority},null,2);
  render();
-}).catch(e=>{document.querySelector('#generated').textContent='Could not load leaderboard data';document.querySelector('#stats').textContent=String(e)});
+}).catch(e=>{document.querySelector('#generated').textContent='Authoritative leaderboard unavailable';document.querySelector('#stats').textContent='Recipe Intelligence could not verify the current ranking certificate. No ranked list is displayed.';document.querySelector('#rows').innerHTML='';document.querySelector('#methodology').textContent=String(e)});
 for(const id of ['search','category','confidence','rankconfidence'])document.querySelector('#'+id).addEventListener('input',render);
 </script>
 </body></html>"""
