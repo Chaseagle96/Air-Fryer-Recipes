@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import csv
 import hashlib
 import html
 import json
+import re
 from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -91,6 +93,61 @@ def _leaderboard_fingerprint(path: str | Path) -> str:
     if not target.exists():
         raise AuthorityError(f"leaderboard missing: {target}")
     return hashlib.sha256(target.read_bytes()).hexdigest()
+
+
+def _validate_leaderboard(
+    path: str | Path,
+    *,
+    sources: list[SourceConfig],
+    expected_count: int,
+) -> set[str]:
+    """Verify that every published row belongs to the current source and vertical scope."""
+
+    target = Path(path)
+    if not target.exists():
+        raise AuthorityError(f"leaderboard missing: {target}")
+    source_map = {source.domain.lower().strip(): source for source in sources}
+    leaderboard_sources: set[str] = set()
+    vertical_mismatches: list[str] = []
+    row_count = 0
+    try:
+        with target.open("r", encoding="utf-8", newline="") as handle:
+            reader = csv.DictReader(handle)
+            if not reader.fieldnames or "source" not in reader.fieldnames:
+                raise AuthorityError("leaderboard is missing required source column")
+            for row in reader:
+                row_count += 1
+                source = str(row.get("source") or "").lower().strip()
+                if not source:
+                    raise AuthorityError(f"leaderboard row {row_count} is missing source")
+                config = source_map.get(source)
+                if config is None:
+                    raise AuthorityError(f"leaderboard contains non-effective source: {source}")
+                leaderboard_sources.add(source)
+                if config.allow_unmatched_discovery_links or not config.include_pattern:
+                    continue
+                haystack = f"{row.get('title', '')} {row.get('url', '')}"
+                try:
+                    matches_vertical = bool(re.search(config.include_pattern, haystack, re.I))
+                except re.error as exc:
+                    raise AuthorityError(f"invalid strict vertical include pattern for {source}: {exc}") from exc
+                if not matches_vertical:
+                    vertical_mismatches.append(
+                        f"{source}:{str(row.get('title') or row.get('url') or '')[:100]}"
+                    )
+    except UnicodeDecodeError as exc:
+        raise AuthorityError(f"leaderboard is not valid UTF-8 CSV: {target}") from exc
+
+    if row_count != expected_count:
+        raise AuthorityError(
+            f"leaderboard row count does not match ranking summary: leaderboard={row_count} summary={expected_count}"
+        )
+    if vertical_mismatches:
+        raise AuthorityError(
+            "leaderboard contains recipes outside strict vertical policy: "
+            + ", ".join(vertical_mismatches[:10])
+        )
+    return leaderboard_sources
 
 
 def _validate_public_manifest(
@@ -213,6 +270,7 @@ def publish_authority(
 
     summary_source_count = int(summary.get("configured_sources") or 0)
     summary_catalog_count = int(summary.get("catalog_urls") or 0)
+    ranked_recipe_count = int(summary.get("ranked_recipes") or 0)
     if summary_source_count != len(sources):
         raise AuthorityError(f"source mismatch: summary={summary_source_count} current={len(sources)}")
     if summary_catalog_count != raw_catalog_count:
@@ -227,6 +285,12 @@ def publish_authority(
             "ranking source scope does not match current effective allowlist: "
             f"ranking={persisted_source_domains} current={source_domains}"
         )
+
+    leaderboard_sources = _validate_leaderboard(
+        leaderboard_path,
+        sources=sources,
+        expected_count=ranked_recipe_count,
+    )
 
     source_gate_version = int(registry.get("source_gate_version") or 0)
     metrics_gate_version = int(metrics.get("source_gate_version") or 0)
@@ -307,6 +371,7 @@ def publish_authority(
         "source_gate_version": source_gate_version,
         "effective_source_count": len(sources),
         "effective_sources": source_domains,
+        "leaderboard_sources": sorted(leaderboard_sources),
         "effective_catalog_url_count": effective_catalog_count,
         "raw_catalog_url_count": raw_catalog_count,
         "source_fingerprint_sha256": source_hash,
@@ -320,7 +385,7 @@ def publish_authority(
         "ranking_mode": run_mode,
         "targets_this_run": targets_this_run,
         "full_catalog_baseline": not inherited_input_authority,
-        "ranked_recipe_count": int(summary.get("ranked_recipes") or 0),
+        "ranked_recipe_count": ranked_recipe_count,
         "model_version": summary.get("model_version"),
         "model_semver": summary.get("model_semver"),
     }
