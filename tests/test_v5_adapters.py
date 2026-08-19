@@ -275,7 +275,10 @@ def test_observability_and_quality_gate_emit_actionable_failures():
         [{"url": "a"}, {"url": "b"}],
         "2026-08-18T20:00:00+00:00",
     )
-    assert metrics["crawl_success_rate"] == 0.5
+    assert metrics["crawl_success_rate"] == 1.0
+    assert metrics["fetch_success_rate"] == 1.0
+    assert metrics["recipe_verification_rate"] == 0.5
+    assert metrics["extract_success_rate"] == 0.5
     assert metrics["http_429"] == 1
     assert rows
     assert any(alert["type"] == "publisher_dom_contract_changes" for alert in alerts)
