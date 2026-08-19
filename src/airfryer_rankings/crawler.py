@@ -52,9 +52,6 @@ def select_refresh_targets(
                 value += min(5000, growth * 10)
         age = _entry_age_hours(entry, "last_checked", now)
         if entry.get("last_status") == "no_verified_rating" and age < 24 * 7:
-            # A newly discovered URL that produced no rankable rating evidence
-            # should be revisited eventually, but it must not monopolize every
-            # hourly refresh while the rest of the corpus goes stale.
             value -= 12000
         value += min(4000, age * 10)
         return value, age
@@ -74,31 +71,41 @@ def select_refresh_targets(
         if not ranked:
             return []
 
-        # Preserve the global priority score while preventing one newly promoted
-        # publisher from consuming the entire bounded hourly budget. We balance
-        # across up to ten publishers, then use overflow only when the catalog
-        # does not contain enough source diversity to fill the requested budget.
-        domains = {str(entry.get("source") or "") for entry in ranked if entry.get("source")}
-        diversity_slots = max(1, min(10, len(domains), hourly_limit))
-        per_source_cap = max(1, (hourly_limit + diversity_slots - 1) // diversity_slots)
-        selected: list[dict] = []
-        overflow: list[dict] = []
-        selected_by_source: dict[str, int] = defaultdict(int)
+        validated = [entry for entry in ranked if entry.get("recipe_id") or entry.get("recipe_recognized")]
+        exploratory = [entry for entry in ranked if not (entry.get("recipe_id") or entry.get("recipe_recognized"))]
+        exploration_limit = 0
+        if exploratory:
+            exploration_limit = min(len(exploratory), max(1, hourly_limit // 10))
+        validated_limit = min(len(validated), max(0, hourly_limit - exploration_limit))
 
-        for entry in ranked:
-            domain = str(entry.get("source") or "")
-            if selected_by_source[domain] < per_source_cap:
-                selected.append(dict(entry))
-                selected_by_source[domain] += 1
-                if len(selected) >= hourly_limit:
-                    return selected
-            else:
-                overflow.append(entry)
+        def take_balanced(entries: list[dict], limit: int, *, allow_overflow: bool, cap: int | None = None) -> list[dict]:
+            if limit <= 0 or not entries:
+                return []
+            domains = {str(entry.get("source") or "") for entry in entries if entry.get("source")}
+            diversity_slots = max(1, min(10, len(domains), limit))
+            per_source_cap = cap if cap is not None else max(1, (limit + diversity_slots - 1) // diversity_slots)
+            selected: list[dict] = []
+            overflow: list[dict] = []
+            selected_by_source: dict[str, int] = defaultdict(int)
+            for entry in entries:
+                domain = str(entry.get("source") or "")
+                if selected_by_source[domain] < per_source_cap:
+                    selected.append(dict(entry))
+                    selected_by_source[domain] += 1
+                    if len(selected) >= limit:
+                        return selected
+                else:
+                    overflow.append(entry)
+            if allow_overflow:
+                for entry in overflow:
+                    if len(selected) >= limit:
+                        break
+                    selected.append(dict(entry))
+            return selected
 
-        for entry in overflow:
-            if len(selected) >= hourly_limit:
-                break
-            selected.append(dict(entry))
+        selected = take_balanced(validated, validated_limit, allow_overflow=True)
+        remaining = min(exploration_limit, max(0, hourly_limit - len(selected)))
+        selected.extend(take_balanced(exploratory, remaining, allow_overflow=False, cap=2))
         return selected
 
     targets: list[dict] = []
@@ -208,11 +215,19 @@ def crawl_targets(
                         rows.append(row)
                         metrics["recognized_recipes"] += 1
                         metrics["verified_recipes"] += 1
-                    entry.update({"last_checked": run_at, "last_status": "not_modified", "priority": "stable"})
+                    entry.update(
+                        {
+                            "last_checked": run_at,
+                            "last_status": "not_modified",
+                            "priority": "stable",
+                            "recipe_recognized": bool(row),
+                        }
+                    )
                     continue
                 metrics["fetched"] += 1
                 row, parse_meta = extract_recipe_from_html(response.text, url, domain, cfg, dict(response.headers))
-                if parse_meta.get("recipe_recognized"):
+                recognized = bool(parse_meta.get("recipe_recognized"))
+                if recognized:
                     metrics["recognized_recipes"] += 1
                 page_hash = parse_meta.get("page_hash", "")
                 dom_fingerprint = parse_meta.get("dom_fingerprint", "")
@@ -229,10 +244,11 @@ def crawl_targets(
                     and entry.get("schema_signature") != schema_signature
                 )
                 priority = "contract_changed" if dom_changed or schema_changed else "changed" if content_changed else "stable"
+                entry_status = "ok" if row else "recognized_no_verified_rating" if recognized else "no_verified_rating"
                 entry.update(
                     {
                         "last_checked": run_at,
-                        "last_status": "ok" if row else "no_verified_rating",
+                        "last_status": entry_status,
                         "etag": str(response.headers.get("ETag") or ""),
                         "last_modified": str(response.headers.get("Last-Modified") or ""),
                         "page_hash": page_hash,
@@ -240,6 +256,7 @@ def crawl_targets(
                         "schema_signature": schema_signature,
                         "priority": priority,
                         "missing_count": 0,
+                        "recipe_recognized": recognized,
                     }
                 )
                 if content_changed:
@@ -261,22 +278,23 @@ def crawl_targets(
                     if row.evidence_status == "conflict":
                         metrics["conflicts"] += 1
                 else:
-                    events.append({"type": "no_verified_rating", "source": domain, "url": url, "timestamp": run_at})
+                    event_type = "recipe_without_verified_rating" if recognized else "no_verified_rating"
+                    events.append({"type": event_type, "source": domain, "url": url, "timestamp": run_at})
             except requests.HTTPError as exc:
-                status = getattr(exc.response, "status_code", None)
+                http_status = getattr(exc.response, "status_code", None)
                 entry["last_checked"] = run_at
-                entry["last_status"] = f"http_{status}" if status else "http_error"
-                if status == 403:
+                entry["last_status"] = f"http_{http_status}" if http_status else "http_error"
+                if http_status == 403:
                     metrics["http_403"] += 1
-                if status == 429:
+                if http_status == 429:
                     metrics["http_429"] += 1
-                if status in (404, 410):
+                if http_status in (404, 410):
                     metrics["missing"] += 1
                     entry["missing_count"] = int(entry.get("missing_count", 0)) + 1
-                    events.append({"type": "recipe_disappeared", "source": domain, "url": url, "status": status, "timestamp": run_at})
+                    events.append({"type": "recipe_disappeared", "source": domain, "url": url, "status": http_status, "timestamp": run_at})
                 else:
                     metrics["errors"] += 1
-                    events.append({"type": "fetch_error", "source": domain, "url": url, "status": status, "timestamp": run_at})
+                    events.append({"type": "fetch_error", "source": domain, "url": url, "status": http_status, "timestamp": run_at})
             except Exception as exc:
                 metrics["errors"] += 1
                 entry.update({"last_checked": run_at, "last_status": f"error:{type(exc).__name__}"})
