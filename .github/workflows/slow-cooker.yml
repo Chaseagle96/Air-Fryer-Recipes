@@ -133,12 +133,10 @@ jobs:
         working-directory: verticals/slow_cooker
         run: |
           sources="../../config/verticals/slow_cooker/sources.yaml"
-          max_urls=250
-          hourly_limit=100
+          extra_args=(--hourly-limit 100)
           if [ "${{ steps.mode.outputs.mode }}" = "smoke" ]; then
             sources=/tmp/slow-cooker-smoke-sources.yaml
-            max_urls=2
-            hourly_limit=6
+            extra_args=(--max-urls 2 --hourly-limit 6)
           fi
           PYTHONPATH=../../src python -m airfryer_rankings.run \
             --mode "${{ steps.mode.outputs.mode }}" \
@@ -147,8 +145,7 @@ jobs:
             --model-config ../../config/verticals/slow_cooker/model.yaml \
             --storage-config ../../config/verticals/slow_cooker/storage.yaml \
             --slo-config ../../config/slo.yaml \
-            --max-urls "$max_urls" \
-            --hourly-limit "$hourly_limit"
+            "${extra_args[@]}"
           if [ -f output/air_fryer_rankings.xlsx ]; then
             mv output/air_fryer_rankings.xlsx output/slow_cooker_rankings.xlsx
           fi
