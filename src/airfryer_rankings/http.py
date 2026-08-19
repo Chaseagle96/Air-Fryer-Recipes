@@ -10,6 +10,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 from .models import HEADERS, SourceConfig
+from .source_security import safe_get
 
 
 def make_session() -> requests.Session:
@@ -40,12 +41,24 @@ def get(session: requests.Session, url: str, timeout: int = 20, headers: dict | 
     return response
 
 
+def get_for_source(
+    session: requests.Session,
+    url: str,
+    cfg: SourceConfig,
+    timeout: int = 20,
+    headers: dict | None = None,
+) -> requests.Response:
+    if cfg.origin == "discovered":
+        return safe_get(session, url, timeout, headers)
+    return get(session, url, timeout, headers)
+
+
 def robots_and_sitemaps(session: requests.Session, cfg: SourceConfig) -> tuple[RobotFileParser, list[str], str, str]:
     robots_url = f"https://{cfg.domain}/robots.txt"
     robots_text = ""
     robots_status = "ok"
     try:
-        robots_text = get(session, robots_url, 15).text
+        robots_text = get_for_source(session, robots_url, cfg, 15).text
     except Exception as exc:
         robots_status = f"unavailable:{type(exc).__name__}"
 
@@ -88,13 +101,15 @@ def iter_sitemap_records(
     sitemap_url: str,
     seen: set[str] | None = None,
     max_docs: int = 150,
+    *,
+    safe: bool = False,
 ) -> Iterator[dict]:
     seen = seen if seen is not None else set()
     if sitemap_url in seen or len(seen) >= max_docs:
         return
     seen.add(sitemap_url)
     try:
-        response = get(session, sitemap_url, 30)
+        response = safe_get(session, sitemap_url, 30) if safe else get(session, sitemap_url, 30)
         root = ET.fromstring(_xml_bytes(response, sitemap_url))
     except Exception:
         return
@@ -108,7 +123,7 @@ def iter_sitemap_records(
                     loc = elem.text.strip()
                     break
             if loc:
-                yield from iter_sitemap_records(session, loc, seen, max_docs=max_docs)
+                yield from iter_sitemap_records(session, loc, seen, max_docs=max_docs, safe=safe)
     else:
         for child in list(root):
             loc = ""
