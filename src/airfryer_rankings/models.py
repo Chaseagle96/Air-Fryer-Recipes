@@ -127,6 +127,8 @@ class SourceConfig:
     count_selector: str = ""
     include_pattern: str = AIR_FRYER_PATTERN
     allow_unmatched_discovery_links: bool = True
+    origin: str = "manual"
+    pinned: bool = True
 
 
 def now_iso() -> str:
@@ -235,6 +237,8 @@ def load_sources(path: str | Path) -> list[SourceConfig]:
                         defaults.get("allow_unmatched_discovery_links", True),
                     )
                 ),
+                origin="manual",
+                pinned=True,
             )
         )
     return output
