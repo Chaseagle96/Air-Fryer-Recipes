@@ -99,6 +99,7 @@ struct DiscoverView: View {
         }
     }
 
+    @ViewBuilder
     private func actionButton(
         _ title: String,
         systemImage: String,
@@ -106,15 +107,27 @@ struct DiscoverView: View {
         prominent: Bool = false,
         action: @escaping () -> Void
     ) -> some View {
-        Button(action: action) {
-            VStack(spacing: 5) {
-                Image(systemName: systemImage).font(.title2)
-                Text(title).font(.caption.weight(.semibold))
+        if prominent {
+            Button(action: action) {
+                actionButtonLabel(title, systemImage: systemImage)
             }
-            .frame(maxWidth: .infinity, minHeight: 56)
+            .buttonStyle(.borderedProminent)
+            .accessibilityIdentifier(identifier)
+        } else {
+            Button(action: action) {
+                actionButtonLabel(title, systemImage: systemImage)
+            }
+            .buttonStyle(.bordered)
+            .accessibilityIdentifier(identifier)
         }
-        .buttonStyle(prominent ? .borderedProminent : .bordered)
-        .accessibilityIdentifier(identifier)
+    }
+
+    private func actionButtonLabel(_ title: String, systemImage: String) -> some View {
+        VStack(spacing: 5) {
+            Image(systemName: systemImage).font(.title2)
+            Text(title).font(.caption.weight(.semibold))
+        }
+        .frame(maxWidth: .infinity, minHeight: 56)
     }
 
     private var emptyState: some View {
@@ -196,7 +209,7 @@ private struct RecipeCardView: View {
             .rotationEffect(.degrees(isTop ? Double(offset.width / 24) : 0))
             .contentShape(Rectangle())
             .onTapGesture { if isTop { onDetails() } }
-            .gesture(isTop ? dragGesture : nil)
+            .gesture(dragGesture, including: isTop ? .all : .none)
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(recipe.title). Recipe Intelligence rank \(recipe.rank) in \(recipe.verticalName). Rating \(String(format: "%.1f", recipe.rating)) from \(recipe.ratingCount) ratings. \(recipe.confidenceLabel).")
