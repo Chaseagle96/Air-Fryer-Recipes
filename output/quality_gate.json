@@ -2,11 +2,11 @@
   "failures": [],
   "metrics": {
     "current_deduplicated_count": 8,
-    "current_ranked_recipes": 967,
-    "previous_deduplicated_count": 6,
-    "previous_ranked_recipes": 909,
-    "ranked_recipe_retention": 1.0638063806380638,
-    "top50_overlap_previous": 1.0
+    "current_ranked_recipes": 1019,
+    "previous_deduplicated_count": 8,
+    "previous_ranked_recipes": 967,
+    "ranked_recipe_retention": 1.0537745604963806,
+    "top50_overlap_previous": 0.56
   },
   "mode": "hourly",
   "model_version": 5,

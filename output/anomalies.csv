@@ -1,3 +1,24 @@
 timestamp,severity,type,recipe_id,title,source,url,detail
-2026-08-19T00:34:06.688272+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-pepperoni-chips/,RetryError
-2026-08-19T00:34:06.688272+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-peppers-and-onions/,RetryError
+2026-08-19T00:46:47.191808+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/8453018/easy-air-fryer-whole-chicken/,publisher markup contract changed
+2026-08-19T00:46:47.191808+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/270194/air-fryer-buffalo-chicken-wings/,publisher markup contract changed
+2026-08-19T00:46:47.191808+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/275390/air-fryer-sausage-patties/,publisher markup contract changed
+2026-08-19T00:46:47.191808+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/275253/easy-air-fryer-baked-potatoes/,publisher markup contract changed
+2026-08-19T00:46:47.191808+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/272859/keto-lemon-garlic-chicken-thighs-in-the-air-fryer/,publisher markup contract changed
+2026-08-19T00:46:47.191808+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/286358/air-fryer-buttermilk-biscuits/,publisher markup contract changed
+2026-08-19T00:46:47.191808+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/278581/air-fryer-french-fries/,publisher markup contract changed
+2026-08-19T00:46:47.191808+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/279399/homemade-croutons-in-the-air-fryer/,publisher markup contract changed
+2026-08-19T00:46:47.191808+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/8381341/air-fryer-grilled-cheese/,publisher markup contract changed
+2026-08-19T00:46:47.191808+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/280419/air-fryer-artichoke-hearts/,publisher markup contract changed
+2026-08-19T00:46:47.191808+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/275991/air-fryer-baba-ganoush/,publisher markup contract changed
+2026-08-19T00:46:47.191808+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/8375342/air-fryer-lemon-pepper-wings/,publisher markup contract changed
+2026-08-19T00:46:47.191808+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/air-fryer-chicken-legs-recipe-8553696,publisher markup contract changed
+2026-08-19T00:46:47.191808+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/277358/keto-air-fryer-jalapeno-poppers/,publisher markup contract changed
+2026-08-19T00:46:47.191808+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/284657/air-fryer-blueberry-crisp/,publisher markup contract changed
+2026-08-19T00:46:47.191808+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/air-fryer-smashed-potatoes-recipe-8644582,publisher markup contract changed
+2026-08-19T00:46:47.191808+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-sesame-chicken/,RetryError
+2026-08-19T00:46:47.191808+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-shake-and-bake-chicken/,RetryError
+2026-08-19T00:46:47.191808+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-shake-n-bake-pork-chops/,RetryError
+2026-08-19T00:46:47.191808+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-shishito-peppers/,RetryError
+2026-08-19T00:46:47.191808+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-shrimp-egg-rolls/,RetryError
+2026-08-19T00:46:47.191808+00:00,medium,fetch_error,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-shrimp-fajitas/,RetryError
+2026-08-19T00:46:47.191808+00:00,medium,publisher_dom_contract_changes,,,,,dom_structure_changes=16 threshold=0 above

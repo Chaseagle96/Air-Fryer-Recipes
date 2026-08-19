@@ -1,2 +1,2 @@
 passed,mode,model_version,failures,warnings,metrics
-True,hourly,5,[],[],"{'previous_ranked_recipes': 909, 'current_ranked_recipes': 967, 'ranked_recipe_retention': 1.0638063806380638, 'top50_overlap_previous': 1.0, 'previous_deduplicated_count': 6, 'current_deduplicated_count': 8}"
+True,hourly,5,[],[],"{'previous_ranked_recipes': 967, 'current_ranked_recipes': 1019, 'ranked_recipe_retention': 1.0537745604963806, 'top50_overlap_previous': 0.56, 'previous_deduplicated_count': 8, 'current_deduplicated_count': 8}"
