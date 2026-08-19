@@ -1,0 +1,127 @@
+source_gate_version: 1
+aggregate_output_path: output/source_expansion_all.json
+
+providers:
+  brave_search:
+    enabled: true
+  google_cse:
+    enabled: true
+
+blocked_domain_suffixes:
+  - medium.com
+  - substack.com
+  - wordpress.com
+
+budgets:
+  daily:
+    max_search_queries_per_run: 12
+    search_results_per_query: 8
+    max_candidate_domains_per_run: 12
+    max_candidate_domains_evaluated: 6
+    max_candidate_pages_per_domain: 8
+    max_total_qualification_pages: 48
+    max_candidate_sitemap_docs: 25
+    candidate_url_scan_cap: 120
+    max_outbound_pages_per_run: 12
+    max_new_promotions_per_run: 2
+    max_discovery_seconds: 600
+    candidate_page_delay: 0.10
+    auto_source_max_urls: 200
+    auto_source_delay: 0.25
+    promotion_catalog_discovery_cap: 200
+  deep:
+    max_search_queries_per_run: 32
+    search_results_per_query: 10
+    max_candidate_domains_per_run: 30
+    max_candidate_domains_evaluated: 10
+    max_candidate_pages_per_domain: 12
+    max_total_qualification_pages: 120
+    max_candidate_sitemap_docs: 60
+    candidate_url_scan_cap: 300
+    max_outbound_pages_per_run: 30
+    max_new_promotions_per_run: 5
+    max_discovery_seconds: 1800
+    candidate_page_delay: 0.10
+    auto_source_max_urls: 300
+    auto_source_delay: 0.25
+    promotion_catalog_discovery_cap: 300
+  smoke:
+    max_search_queries_per_run: 0
+    max_candidate_domains_per_run: 0
+    max_candidate_domains_evaluated: 0
+    max_candidate_pages_per_domain: 0
+    max_total_qualification_pages: 0
+    max_outbound_pages_per_run: 0
+    max_new_promotions_per_run: 0
+    max_discovery_seconds: 30
+
+quality_gate:
+  qualification_score: 74.0
+  promotion_min_qualifying_attempts: 2
+  deep_fast_track_score: 88.0
+  deep_fast_track_min_pages: 10
+  target_vertical_recipe_count: 20
+  automatic_rejection_cooldown_days: 30
+  suspended_recovery_qualifying_attempts: 2
+  weights:
+    vertical_relevance: 0.20
+    extraction_reliability: 0.20
+    editorial_provenance: 0.15
+    crawl_stability: 0.15
+    rating_integrity: 0.10
+    unique_contribution: 0.10
+    freshness: 0.05
+    general_quality: 0.05
+  hard_gates:
+    min_pages_sampled: 5
+    min_pages_fetched: 4
+    min_vertical_recipe_count: 5
+    min_fetch_success_rate: 0.70
+    min_recipe_structure_rate: 0.55
+    min_vertical_relevance_ratio: 0.40
+    min_substantive_recipe_ratio: 0.55
+    max_external_canonical_ratio: 0.25
+    max_within_source_duplicate_ratio: 0.65
+    max_trap_url_ratio: 0.30
+    max_rating_conflict_ratio: 0.50
+
+lifecycle:
+  degrade_after_consecutive_failures: 3
+  suspend_after_consecutive_failures: 5
+  recover_after_consecutive_successes: 2
+
+verticals:
+  air_fryer:
+    name: Air Fryer
+    base_sources_path: config/sources.yaml
+    state_path: data/state.json
+    registry_path: data/source_registry.json
+    output_dir: output
+    events_dir: data/source_events
+    include_pattern: '(?:air[-_ ]?fry(?:er|ing|ed)|airfry(?:er|ing|ed))'
+    allow_unmatched_discovery_links: false
+    query_terms:
+      - air fryer recipes
+      - air frying recipes
+    proteins: [chicken, beef, pork, salmon, shrimp, tofu]
+    cuisines: [mexican, italian, asian, mediterranean, indian]
+    meal_types: [dinner, breakfast, appetizer, snack, dessert]
+    categories: [vegetables, potatoes, wings, meatballs, frozen foods]
+    ingredients: [cauliflower, zucchini, chickpeas, sweet potato]
+  slow_cooker:
+    name: Slow Cooker
+    base_sources_path: config/verticals/slow_cooker/sources.yaml
+    state_path: verticals/slow_cooker/data/state.json
+    registry_path: verticals/slow_cooker/data/source_registry.json
+    output_dir: verticals/slow_cooker/output
+    events_dir: verticals/slow_cooker/data/source_events
+    include_pattern: '(?:slow[-_ ]?cook(?:er|ing|ed)|crock[-_ ]?pot)'
+    allow_unmatched_discovery_links: false
+    query_terms:
+      - slow cooker recipes
+      - crock pot recipes
+    proteins: [chicken, beef, pork, turkey, beans]
+    cuisines: [mexican, italian, asian, mediterranean, indian]
+    meal_types: [dinner, breakfast, soup, appetizer, dessert]
+    categories: [stew, chili, soup, casserole, roast]
+    ingredients: [potatoes, lentils, chickpeas, vegetables]
