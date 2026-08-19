@@ -73,7 +73,19 @@ def _fixture(tmp_path: Path) -> dict[str, Path]:
     authority = tmp_path / "authority.json"
     public_authority = tmp_path / "docs" / "api" / "authority.json"
     manifest = tmp_path / "docs" / "api" / "manifest.json"
-    _write(manifest, {"ranked_recipe_count": 1})
+    _write(
+        manifest,
+        {
+            "generated_at": "2026-08-19T10:10:00+00:00",
+            "recipe_count": 1,
+            "ranked_recipe_count": 1,
+            "pages": [{"index": 1, "path": "recipes/0001.json", "count": 1}],
+            "corpus_recipe_count": 1,
+            "corpus_pages": [{"index": 1, "path": "corpus/0001.json", "count": 1}],
+        },
+    )
+    dashboard = tmp_path / "docs" / "index.html"
+    dashboard.write_text("<html><body>old leaderboard</body></html>\n", encoding="utf-8")
     return {
         "sources": sources,
         "state": state,
@@ -84,6 +96,7 @@ def _fixture(tmp_path: Path) -> dict[str, Path]:
         "authority": authority,
         "public_authority": public_authority,
         "manifest": manifest,
+        "dashboard": dashboard,
     }
 
 
@@ -114,7 +127,12 @@ def test_publish_authority_certifies_matching_generation(tmp_path: Path) -> None
     assert payload["full_catalog_baseline"] is True
     assert len(payload["generation_fingerprint_sha256"]) == 64
     assert json.loads(paths["summary"].read_text(encoding="utf-8"))["authority"]["authoritative"] is True
-    assert json.loads(paths["manifest"].read_text(encoding="utf-8"))["authority"]["authoritative"] is True
+    manifest = json.loads(paths["manifest"].read_text(encoding="utf-8"))
+    assert manifest["authority"]["authoritative"] is True
+    assert manifest["ranked_serving_available"] is True
+    assert manifest["ranked_serving_status"] == "authoritative"
+    assert manifest["ranked_recipe_count"] == 1
+    assert manifest["pages"]
 
 
 def test_publish_authority_rejects_ranking_older_than_catalog_sync(tmp_path: Path) -> None:
@@ -219,6 +237,33 @@ def test_hourly_refresh_inherits_authority_when_inputs_are_unchanged(tmp_path: P
     assert hourly["leaderboard_fingerprint_sha256"] != baseline["leaderboard_fingerprint_sha256"]
 
 
+def test_invalidation_removes_public_ranked_serving_pointers(tmp_path: Path) -> None:
+    paths = _fixture(tmp_path)
+    payload = invalidate_authority(
+        vertical="air_fryer",
+        metrics_path=paths["metrics"],
+        summary_path=paths["summary"],
+        authority_path=paths["authority"],
+        public_authority_path=paths["public_authority"],
+        manifest_path=paths["manifest"],
+        invalidated_at="2026-08-19T10:06:00+00:00",
+    )
+
+    assert payload["authoritative"] is False
+    manifest = json.loads(paths["manifest"].read_text(encoding="utf-8"))
+    assert manifest["ranked_serving_available"] is False
+    assert manifest["ranked_serving_status"] == "refresh_required"
+    assert manifest["recipe_count"] == 0
+    assert manifest["ranked_recipe_count"] == 0
+    assert manifest["pages"] == []
+    assert manifest["corpus_recipe_count"] == 1
+    assert manifest["corpus_pages"]
+    dashboard = paths["dashboard"].read_text(encoding="utf-8")
+    assert "Rankings temporarily unavailable" in dashboard
+    assert "refresh_required" in dashboard
+    assert "old leaderboard" not in dashboard
+
+
 def test_invalidation_is_fail_closed_but_ignores_late_race(tmp_path: Path) -> None:
     paths = _fixture(tmp_path)
     first = invalidate_authority(
@@ -232,6 +277,16 @@ def test_invalidation_is_fail_closed_but_ignores_late_race(tmp_path: Path) -> No
     )
     assert first["authoritative"] is False
 
+    # A real ranking run regenerates the public feed before authority publication.
+    _write(
+        paths["manifest"],
+        {
+            "generated_at": "2026-08-19T10:10:00+00:00",
+            "recipe_count": 1,
+            "ranked_recipe_count": 1,
+            "pages": [{"index": 1, "path": "recipes/0001.json", "count": 1}],
+        },
+    )
     _publish(paths)
     late = invalidate_authority(
         vertical="air_fryer",
