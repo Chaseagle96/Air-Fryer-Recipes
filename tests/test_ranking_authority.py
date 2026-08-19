@@ -61,13 +61,15 @@ def _fixture(tmp_path: Path) -> dict[str, Path]:
             "mode": "daily",
             "configured_sources": 1,
             "catalog_urls": 1,
+            "eligible_catalog_urls": 1,
+            "targets_this_run": 1,
             "ranked_recipes": 1,
             "model_version": 5,
             "model_semver": "5.2.0",
         },
     )
     leaderboard = tmp_path / "leaderboard.csv"
-    leaderboard.write_text("rank,title\n1,Air Fryer Chicken\n", encoding="utf-8")
+    leaderboard.write_text("rank,title,source\n1,Air Fryer Chicken,trusted.example\n", encoding="utf-8")
     authority = tmp_path / "authority.json"
     public_authority = tmp_path / "docs" / "api" / "authority.json"
     manifest = tmp_path / "docs" / "api" / "manifest.json"
@@ -107,6 +109,8 @@ def test_publish_authority_certifies_matching_generation(tmp_path: Path) -> None
     assert payload["authoritative"] is True
     assert payload["effective_source_count"] == 1
     assert payload["catalog_url_count"] == 1
+    assert payload["eligible_catalog_url_count"] == 1
+    assert payload["leaderboard_sources"] == ["trusted.example"]
     assert payload["ranking_mode"] == "daily"
     assert len(payload["generation_fingerprint_sha256"]) == 64
     assert json.loads(paths["summary"].read_text(encoding="utf-8"))["authority"]["authoritative"] is True
@@ -142,7 +146,7 @@ def test_new_generation_requires_full_refresh_before_certification(tmp_path: Pat
     summary["mode"] = "hourly"
     _write(paths["summary"], summary)
 
-    with pytest.raises(AuthorityError, match="daily, deep, or backfill"):
+    with pytest.raises(AuthorityError, match="daily or deep"):
         _publish(paths)
 
 
@@ -153,8 +157,12 @@ def test_hourly_refresh_inherits_authority_when_inputs_are_unchanged(tmp_path: P
     summary.pop("authority", None)
     summary["generated_at"] = "2026-08-19T11:10:00+00:00"
     summary["mode"] = "hourly"
+    summary["targets_this_run"] = 1
     _write(paths["summary"], summary)
-    paths["leaderboard"].write_text("rank,title\n1,Air Fryer Potatoes\n", encoding="utf-8")
+    paths["leaderboard"].write_text(
+        "rank,title,source\n1,Air Fryer Potatoes,trusted.example\n",
+        encoding="utf-8",
+    )
 
     hourly = _publish(paths)
     assert hourly["authoritative"] is True
