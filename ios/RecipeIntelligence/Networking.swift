@@ -74,7 +74,10 @@ actor LiveRecipeIntelligenceClient: RecipeIntelligenceClient {
     }
 
     func fetchFeedManifest(vertical: RecipeVertical, forceRefresh: Bool) async throws -> FeedManifest {
-        if !forceRefresh, let cached = manifestCache[vertical.id] { return cached }
+        if !forceRefresh, let cached = manifestCache[vertical.id] {
+            try await assertAuthoritative(vertical: vertical, manifest: cached)
+            return cached
+        }
 
         let requestURL = forceRefresh
             ? cacheBustedURL(vertical.manifestURL, token: UUID().uuidString)
@@ -86,18 +89,7 @@ actor LiveRecipeIntelligenceClient: RecipeIntelligenceClient {
         guard manifest.vertical.id == vertical.id else {
             throw RecipeIntelligenceClientError.badResponse
         }
-
-        guard let authorityURL = URL(string: "authority.json", relativeTo: vertical.manifestURL)?.absoluteURL else {
-            throw RecipeIntelligenceClientError.badResponse
-        }
-        let versionedAuthorityURL = cacheBustedURL(authorityURL, token: manifest.generatedAt)
-        let authority: FeedAuthorityEnvelope = try await request(versionedAuthorityURL, forceRefresh: true)
-        guard authority.authoritative else {
-            throw RecipeIntelligenceClientError.nonAuthoritativeFeed(authority.status)
-        }
-        guard authority.rankingGeneratedAt == manifest.generatedAt else {
-            throw RecipeIntelligenceClientError.inconsistentSnapshot
-        }
+        try await assertAuthoritative(vertical: vertical, manifest: manifest)
 
         manifestCache[vertical.id] = manifest
         return manifest
@@ -121,6 +113,20 @@ actor LiveRecipeIntelligenceClient: RecipeIntelligenceClient {
             references: manifest.effectiveCorpusPages,
             manifest: manifest
         )
+    }
+
+    private func assertAuthoritative(vertical: RecipeVertical, manifest: FeedManifest) async throws {
+        guard let authorityURL = URL(string: "authority.json", relativeTo: vertical.manifestURL)?.absoluteURL else {
+            throw RecipeIntelligenceClientError.badResponse
+        }
+        let versionedAuthorityURL = cacheBustedURL(authorityURL, token: UUID().uuidString)
+        let authority: FeedAuthorityEnvelope = try await request(versionedAuthorityURL, forceRefresh: true)
+        guard authority.authoritative else {
+            throw RecipeIntelligenceClientError.nonAuthoritativeFeed(authority.status)
+        }
+        guard authority.rankingGeneratedAt == manifest.generatedAt else {
+            throw RecipeIntelligenceClientError.inconsistentSnapshot
+        }
     }
 
     private func fetchPage(
