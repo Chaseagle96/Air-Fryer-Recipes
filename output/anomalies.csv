@@ -1,18 +1,7 @@
 timestamp,severity,type,recipe_id,title,source,url,detail
-2026-08-19T17:13:33.959417+00:00,high,source_failure,,,spendwithpennies.com,,degraded
-2026-08-19T17:13:33.959417+00:00,high,source_failure,,,platedcravings.com,,degraded
-2026-08-19T17:13:33.959417+00:00,medium,dom_structure_changed,,,natashaskitchen.com,https://natashaskitchen.com/air-fryer-chicken-wings/,publisher markup contract changed
-2026-08-19T17:13:33.959417+00:00,medium,dom_structure_changed,,,natashaskitchen.com,https://natashaskitchen.com/air-fryer-baked-potatoes/,publisher markup contract changed
-2026-08-19T17:13:33.959417+00:00,medium,dom_structure_changed,,,natashaskitchen.com,https://natashaskitchen.com/air-fryer-bacon/,publisher markup contract changed
-2026-08-19T17:13:33.959417+00:00,medium,dom_structure_changed,,,natashaskitchen.com,https://natashaskitchen.com/air-fryer-pork-chops-recipe/,publisher markup contract changed
-2026-08-19T17:13:33.959417+00:00,medium,dom_structure_changed,,,natashaskitchen.com,https://natashaskitchen.com/air-fryer-potatoes/,publisher markup contract changed
-2026-08-19T17:13:33.959417+00:00,medium,dom_structure_changed,,,natashaskitchen.com,https://natashaskitchen.com/air-fryer-sweet-potato-fries/,publisher markup contract changed
-2026-08-19T17:13:33.959417+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/278702/air-fryer-chimichangas/,publisher markup contract changed
-2026-08-19T17:13:33.959417+00:00,medium,fetch_error,,,spendwithpennies.com,https://www.spendwithpennies.com/air-fryer-hamburgers/,403
-2026-08-19T17:13:33.959417+00:00,medium,fetch_error,,,spendwithpennies.com,https://www.spendwithpennies.com/air-fryer-whole-chicken/,403
-2026-08-19T17:13:33.959417+00:00,medium,fetch_error,,,spendwithpennies.com,https://www.spendwithpennies.com/air-fryer-meatloaf/,403
-2026-08-19T17:13:33.959417+00:00,medium,fetch_error,,,spendwithpennies.com,https://www.spendwithpennies.com/juicy-air-fryer-meatballs/,403
-2026-08-19T17:13:33.959417+00:00,medium,fetch_error,,,spendwithpennies.com,https://www.spendwithpennies.com/air-fryer-zucchini/,403
-2026-08-19T17:13:33.959417+00:00,medium,fetch_error,,,spendwithpennies.com,https://www.spendwithpennies.com/crispy-air-fryer-pork-chops/,403
-2026-08-19T17:13:33.959417+00:00,medium,fetch_error,,,platedcravings.com,https://platedcravings.com/air-fryer-chicken-wings/,403
-2026-08-19T17:13:33.959417+00:00,medium,publisher_dom_contract_changes,,,,,dom_structure_changes=7 threshold=0 above
+2026-08-19T17:38:42.865858+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/275253/easy-air-fryer-baked-potatoes/,publisher markup contract changed
+2026-08-19T17:38:42.865858+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/275548/air-fryer-meatballs/,publisher markup contract changed
+2026-08-19T17:38:42.865858+00:00,medium,dom_structure_changed,,,spendwithpennies.com,https://www.spendwithpennies.com/air-fryer-whole-chicken/,publisher markup contract changed
+2026-08-19T17:38:42.865858+00:00,medium,dom_structure_changed,,,spendwithpennies.com,https://www.spendwithpennies.com/crispy-air-fryer-pork-chops/,publisher markup contract changed
+2026-08-19T17:38:42.865858+00:00,medium,dom_structure_changed,,,platedcravings.com,https://platedcravings.com/air-fryer-chicken-wings/,publisher markup contract changed
+2026-08-19T17:38:42.865858+00:00,medium,publisher_dom_contract_changes,,,,,dom_structure_changes=5 threshold=0 above
