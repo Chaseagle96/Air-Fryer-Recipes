@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-19T03:38:50.932867+00:00",
+  "vertical": {
+    "id": "slow_cooker",
+    "name": "Slow Cooker",
+    "source_count": 38
+  },
+  "recipe_count": 150,
+  "page_size": 100,
+  "pages": [
+    {
+      "index": 1,
+      "path": "recipes/0001.json",
+      "count": 100
+    },
+    {
+      "index": 2,
+      "path": "recipes/0002.json",
+      "count": 50
+    }
+  ],
+  "content_policy": {
+    "ingredients": "factual structured ingredient lines",
+    "instructions": "publisher prose not republished; open canonical_url for full directions"
+  }
+}
