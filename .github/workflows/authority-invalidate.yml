@@ -80,12 +80,19 @@ jobs:
             output/authority.json \
             docs/api/manifest.json \
             docs/api/authority.json \
+            docs/index.html \
             verticals/slow_cooker/output/summary.json \
             verticals/slow_cooker/output/authority.json \
             verticals/slow_cooker/docs/api/manifest.json \
-            verticals/slow_cooker/docs/api/authority.json; do
+            verticals/slow_cooker/docs/api/authority.json \
+            verticals/slow_cooker/docs/index.html; do
             [ ! -e "$file" ] || git add "$file"
           done
+          if ! git diff --quiet; then
+            echo 'Unexpected unstaged tracked changes remain after authority invalidation staging:' >&2
+            git status --short >&2
+            exit 1
+          fi
           if git diff --cached --quiet; then
             echo 'Serving authority already reflects current input generation.'
           else
