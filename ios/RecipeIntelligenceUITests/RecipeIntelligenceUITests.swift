@@ -45,6 +45,24 @@ final class RecipeIntelligenceUITests: XCTestCase {
         XCTAssertNotEqual(nextCard.label, beforeLabel)
     }
 
+    func testCardFlipsToScrollableRecipeDetails() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing"]
+        app.launch()
+
+        XCTAssertTrue(app.navigationBars["Discover"].waitForExistence(timeout: 8))
+        let card = app.descendants(matching: .any)["discover.card"]
+        XCTAssertTrue(card.waitForExistence(timeout: 5))
+        card.tap()
+
+        let ingredients = app.descendants(matching: .any)["discover.ingredients"]
+        XCTAssertTrue(ingredients.waitForExistence(timeout: 5), "Flipping the card should reveal ingredients inside the card.")
+        XCTAssertTrue(app.descendants(matching: .any)["discover.directions"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.descendants(matching: .any)["discover.recipeScroll"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["discover.flipBack"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.navigationBars["Discover"].exists, "Recipe details should stay inside the static Discover screen.")
+    }
+
     func testAccessibleManualRefreshReportsCurrentFeed() {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-testing"]
