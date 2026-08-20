@@ -3,34 +3,34 @@
   "automatic_upload_enabled": false,
   "by_root": [
     {
-      "bytes": 7978649,
-      "files": 17,
-      "records": 7729,
+      "bytes": 14949248,
+      "files": 28,
+      "records": 14212,
       "root": "data/observations"
     },
     {
-      "bytes": 1648412,
-      "files": 17,
-      "records": 3400,
+      "bytes": 2865735,
+      "files": 28,
+      "records": 5600,
       "root": "data/rankings"
     },
     {
-      "bytes": 114108,
-      "files": 17,
-      "records": 715,
+      "bytes": 238584,
+      "files": 28,
+      "records": 1210,
       "root": "data/coverage"
     },
     {
-      "bytes": 104615,
-      "files": 13,
-      "records": 379,
+      "bytes": 651865,
+      "files": 24,
+      "records": 2292,
       "root": "data/anomalies"
     }
   ],
   "bytes_threshold": 536870912,
-  "ndjson_bytes": 9845784,
-  "ndjson_files": 64,
-  "ndjson_records": 12223,
+  "ndjson_bytes": 18705432,
+  "ndjson_files": 108,
+  "ndjson_records": 23314,
   "object_storage_configured": false,
   "record_threshold": 750000
 }
