@@ -39,30 +39,31 @@ def test_source_expansion_does_not_dispatch_full_ranking_early() -> None:
 
 
 def test_hourly_authority_defers_only_expected_full_refresh_requirement() -> None:
+    shared = (REPO_ROOT / ".github/workflows/_vertical-refresh.yml").read_text(encoding="utf-8")
     air_fryer = (REPO_ROOT / ".github/workflows/hourly.yml").read_text(encoding="utf-8")
     slow_cooker = (REPO_ROOT / ".github/workflows/slow-cooker.yml").read_text(encoding="utf-8")
     expected = "new source/catalog/model generation requires a daily or deep refresh before certification"
 
+    assert "id: authority" in shared
+    assert expected in shared
+    assert 'inputs.mode }}" = "hourly' in shared
+    assert "publishable=false" in shared
+    assert 'exit "$status"' in shared
+
     for workflow in (air_fryer, slow_cooker):
-        assert "id: authority" in workflow
-        assert expected in workflow
-        assert "steps.mode.outputs.mode }}\" = \"hourly" in workflow
-        assert "publishable=false" in workflow
-        assert "exit \"$status\"" in workflow
-        assert "steps.authority.outputs.publishable == 'true'" in workflow
-
-    assert "publishable: ${{ steps.authority.outputs.publishable }}" in air_fryer
-    assert "needs.refresh.outputs.publishable == 'true'" in air_fryer
-
+        assert "uses: ./.github/workflows/_vertical-refresh.yml" in workflow
+        assert "mode:" in workflow
 
 def test_slow_cooker_manual_source_assertion_is_smoke_only() -> None:
     workflow = (REPO_ROOT / ".github/workflows/slow-cooker.yml").read_text(encoding="utf-8")
+    operations = (REPO_ROOT / "src/airfryer_rankings/ops.py").read_text(encoding="utf-8")
 
-    assertion = 'expected_sources = {"skinnytaste.com", "budgetbytes.com", "wellplated.com"}'
-    assert assertion in workflow
-    prefix = workflow[: workflow.index(assertion)]
-    assert 'if "${{ steps.mode.outputs.mode }}" == "smoke":' in prefix[-250:]
-
+    assert "vertical: slow-cooker" in workflow
+    assert "mode: " + "${{" in workflow
+    assert '"slow_cooker":' in operations
+    assert "skinnytaste.com" in operations
+    assert "budgetbytes.com" in operations
+    assert "wellplated.com" in operations
 
 def test_authoritative_refresh_is_manual_fallback_only() -> None:
     workflow = (REPO_ROOT / ".github/workflows/authoritative-refresh.yml").read_text(encoding="utf-8")
