@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-20T20:45:04.400303+00:00",
+  "generated_at": "2026-08-20T21:42:45.736996+00:00",
   "vertical_id": "air_fryer",
   "vertical_name": "Air Fryer",
   "page": 56,
@@ -3059,7 +3059,7 @@
       "rank_range_low": null,
       "rank_range_high": null,
       "rank_provenance": "",
-      "last_seen_at": "2026-08-20T20:45:04.400303+00:00",
+      "last_seen_at": "2026-08-20T21:42:45.736996+00:00",
       "duplicate_group_id": "",
       "duplicate_confidence": 0.0,
       "is_ranked": false,

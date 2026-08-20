@@ -1,42 +1,34 @@
 timestamp,severity,type,recipe_id,title,source,url,detail
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/268494/basic-air-fryer-hot-dogs/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/275553/breaded-air-fryer-pork-chops/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/278581/air-fryer-french-fries/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,spendwithpennies.com,https://www.spendwithpennies.com/air-fryer-hamburgers/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,spendwithpennies.com,https://www.spendwithpennies.com/air-fryer-whole-chicken/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,spendwithpennies.com,https://www.spendwithpennies.com/air-fryer-meatloaf/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,spendwithpennies.com,https://www.spendwithpennies.com/juicy-air-fryer-meatballs/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,spendwithpennies.com,https://www.spendwithpennies.com/air-fryer-zucchini/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,spendwithpennies.com,https://www.spendwithpennies.com/crispy-air-fryer-pork-chops/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,everydayfamilycooking.com,https://www.everydayfamilycooking.com/air-fryer-chicken-wings-baking-powder/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,wellplated.com,https://www.wellplated.com/air-fryer-baked-potato/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,wellplated.com,https://www.wellplated.com/air-fryer-asparagus/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,wellplated.com,https://www.wellplated.com/air-fryer-bacon/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,wellplated.com,https://www.wellplated.com/air-fryer-salmon/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,wellplated.com,https://www.wellplated.com/air-fryer-french-fries/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,wellplated.com,https://www.wellplated.com/air-fryer-shrimp/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,forktospoon.com,https://forktospoon.com/air-fried-air-fryer-homemade-gingerbread-donuts-its-time-for-christmas-baking/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,forktospoon.com,https://forktospoon.com/air-fried-air-fryer-homemade-yellow-cupcakes/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,forktospoon.com,https://forktospoon.com/air-fried-air-fryer-how-to-cook-babyback-ribs-in-the-air-fryer/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,forktospoon.com,https://forktospoon.com/air-fried-air-fryer-instant-pot-vortex-plus-air-fried-beignet-french-toast/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,forktospoon.com,https://forktospoon.com/air-fried-air-fryer-instant-pot-vortex-plus-homemade-whole-wheat-pumpkin-cupcakes/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,forktospoon.com,https://forktospoon.com/air-fried-air-fryer-instant-pot-vortex-plus-lemon-cheesecake-crescent-rolls/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,forktospoon.com,https://forktospoon.com/air-fryer-stocking-stuffers/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,forktospoon.com,https://forktospoon.com/air-fryer-taco-bell-copycat-nacho-fries/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-blueberry-hand-pies/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-blueberry-muffin-bites/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-blueberry-scones/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-boneless-chicken-thighs/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-boneless-wings/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-brats-and-peppers/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-bread/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-breaded-pork-chops/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-breaded-shrimp/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,kelvinskitchen.com,https://kelvinskitchen.com/es/recipe/air-fryer-chicken-tenders-recipe/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,kelvinskitchen.com,https://kelvinskitchen.com/es/recipe/air-fryer-chicken-thighs-recipe/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,kelvinskitchen.com,https://kelvinskitchen.com/es/recipe/air-fryer-chicken-wings/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,kelvinskitchen.com,https://kelvinskitchen.com/es/recipe/air-fryer-cookies-so-people-think/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,kristineskitchenblog.com,https://kristineskitchenblog.com/how-to-use-an-air-fryer/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,medium,dom_structure_changed,,,kristineskitchenblog.com,https://kristineskitchenblog.com/air-fryer-broccoli/,publisher markup contract changed
-2026-08-20T20:45:04.400303+00:00,high,recipe_disappeared,,,bbcgoodfood.com,https://www.bbcgoodfood.com/howto/guide/summer-air-fryer-recipes,404
-2026-08-20T20:45:04.400303+00:00,medium,publisher_dom_contract_changes,,,,,dom_structure_changes=39 threshold=0 above
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/268494/basic-air-fryer-hot-dogs/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/275553/breaded-air-fryer-pork-chops/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/278581/air-fryer-french-fries/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,spendwithpennies.com,https://www.spendwithpennies.com/air-fryer-hamburgers/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,spendwithpennies.com,https://www.spendwithpennies.com/air-fryer-whole-chicken/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,spendwithpennies.com,https://www.spendwithpennies.com/air-fryer-meatloaf/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,spendwithpennies.com,https://www.spendwithpennies.com/juicy-air-fryer-meatballs/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,spendwithpennies.com,https://www.spendwithpennies.com/crispy-air-fryer-pork-chops/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,wellplated.com,https://www.wellplated.com/air-fryer-asparagus/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,wellplated.com,https://www.wellplated.com/air-fryer-shrimp/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,forktospoon.com,https://forktospoon.com/air-fried-air-fryer-kfc-copycat-homemade-buttermilk-biscuits/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,forktospoon.com,https://forktospoon.com/air-fried-air-fryer-making-pancake-mix-pancakes-in-the-air-fryer/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,forktospoon.com,https://forktospoon.com/air-fried-air-fryer-prosciutto-wrapped-asparagus/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,forktospoon.com,https://forktospoon.com/air-fried-air-fryer-quiche-lorraine-quick-and-easy/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,forktospoon.com,https://forktospoon.com/air-fried-air-fryer-roasted-cauliflower/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,forktospoon.com,https://forktospoon.com/air-fried-air-fryer-roasted-rosemary-lemon-potatoes/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,forktospoon.com,https://forktospoon.com/air-fryer-weekly-meal-plan-71-2/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,forktospoon.com,https://forktospoon.com/how-to-choose-the-right-air-fryer/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,everydayfamilycooking.com,https://www.everydayfamilycooking.com/beyond-burger-air-fryer/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,kelvinskitchen.com,https://kelvinskitchen.com/es/recipe/air-fryer-country-style-pork-ribs/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,fetch_error,,,kelvinskitchen.com,https://kelvinskitchen.com/es/recipe/air-fryer-empanadas/,403
+2026-08-20T21:42:45.736996+00:00,medium,fetch_error,,,kelvinskitchen.com,https://kelvinskitchen.com/es/recipe/air-fryer-firecracker-chicken-wings/,403
+2026-08-20T21:42:45.736996+00:00,medium,fetch_error,,,kelvinskitchen.com,https://kelvinskitchen.com/es/recipe/air-fryer-fish-minutes-tender/,403
+2026-08-20T21:42:45.736996+00:00,medium,fetch_error,,,kelvinskitchen.com,https://kelvinskitchen.com/es/recipe/air-fryer-garlic-parmesan-chicken-skewers/,403
+2026-08-20T21:42:45.736996+00:00,medium,fetch_error,,,kelvinskitchen.com,https://kelvinskitchen.com/es/recipe/air-fryer-hard-boiled-eggs/,403
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,kelvinskitchen.com,https://kelvinskitchen.com/es/recipe/air-fryer-honey-glazed-salmon/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,fetch_error,,,kelvinskitchen.com,https://kelvinskitchen.com/es/recipe/air-fryer-lamb-chops-home/,403
+2026-08-20T21:42:45.736996+00:00,medium,fetch_error,,,kelvinskitchen.com,https://kelvinskitchen.com/es/recipe/air-fryer-lemon-pepper-wet/,403
+2026-08-20T21:42:45.736996+00:00,medium,fetch_error,,,kelvinskitchen.com,https://kelvinskitchen.com/es/recipe/air-fryer-honey-garlic-salmon-bites-recipe/,403
+2026-08-20T21:42:45.736996+00:00,medium,fetch_error,,,kelvinskitchen.com,https://kelvinskitchen.com/es/recipe/air-fryer-recipes/,403
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,temeculablogs.com,https://temeculablogs.com/air-fryer-apple-chips/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,dom_structure_changed,,,temeculablogs.com,https://temeculablogs.com/air-fryer-beef-recipes/,publisher markup contract changed
+2026-08-20T21:42:45.736996+00:00,medium,publisher_dom_contract_changes,,,,,dom_structure_changes=23 threshold=0 above
