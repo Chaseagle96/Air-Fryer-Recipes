@@ -80,4 +80,3 @@ def get_vertical(slug: str, config_path: str | Path = "config/source_discovery.y
         available = ", ".join(sorted(load_verticals(config_path)))
         raise ValueError(f"unknown vertical {slug!r}; expected one of: {available}")
     return vertical
-
