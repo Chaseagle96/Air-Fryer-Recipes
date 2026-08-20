@@ -21,10 +21,6 @@ struct RootView: View {
             NavigationStack { ShoppingView() }
                 .tabItem { Label("Shopping", systemImage: "cart") }
                 .accessibilityIdentifier("tab.shopping")
-
-            NavigationStack { ProfileView() }
-                .tabItem { Label("Taste", systemImage: "person.2") }
-                .accessibilityIdentifier("tab.taste")
         }
         .recipeTabBarBehavior()
         .task { await appModel.bootstrap() }
