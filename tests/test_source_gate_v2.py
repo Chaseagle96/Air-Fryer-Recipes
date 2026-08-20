@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from airfryer_rankings import source_expansion as legacy
-from airfryer_rankings.source_expansion_v2 import (
+from airfryer_rankings import source_expansion
+from airfryer_rankings.source_expansion import (
     SOURCE_GATE_VERSION,
     SampledPage,
     hard_gate_failures,
-    install_gate_v2,
     qualification_metrics,
     score_source_quality,
 )
@@ -74,10 +73,9 @@ def _policy() -> dict:
 
 
 def test_gate_v2_is_installed_into_shared_engine() -> None:
-    install_gate_v2()
     assert SOURCE_GATE_VERSION == 2
-    assert legacy.SOURCE_GATE_VERSION == 2
-    assert legacy.qualification_metrics is qualification_metrics
+    assert source_expansion.SOURCE_GATE_VERSION == 2
+    assert source_expansion.qualification_metrics is qualification_metrics
 
 
 def test_extraction_reliability_is_conditional_on_ranking_evidence() -> None:
