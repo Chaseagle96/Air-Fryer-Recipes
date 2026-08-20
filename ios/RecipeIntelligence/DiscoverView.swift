@@ -65,22 +65,13 @@ struct DiscoverView: View {
         .navigationTitle("Discover")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItemGroup(placement: .topBarTrailing) {
-                if appModel.canUndo {
+            if appModel.canUndo {
+                ToolbarItem(placement: .topBarTrailing) {
                     Button("Undo", systemImage: "arrow.uturn.backward") {
                         appModel.undoLastDecision()
                     }
                     .accessibilityIdentifier("discover.undo")
                 }
-
-                Button {
-                    Task { await appModel.refreshCurrentFeed(trigger: .manual) }
-                } label: {
-                    Label("Refresh rankings", systemImage: "arrow.clockwise")
-                }
-                .disabled(appModel.isRefreshingFeed || appModel.isLoading)
-                .accessibilityIdentifier("discover.refresh")
-                .accessibilityValue(appModel.isRefreshingFeed ? "Refreshing" : "")
             }
         }
         .animation(.snappy, value: appModel.deck.first?.recipeID)
@@ -175,6 +166,9 @@ struct DiscoverView: View {
             },
             onOpen: {
                 appModel.recordOpened(topRecipe)
+            },
+            onRefresh: {
+                await appModel.refreshCurrentFeed(trigger: .manual)
             }
         )
         .id(topRecipe.recipeID)
@@ -208,10 +202,15 @@ private struct RecipeCardView: View {
     let cardHeight: CGFloat
     let onDecision: (RecipeDecision) -> Void
     let onOpen: () -> Void
+    let onRefresh: () async -> Void
 
     @State private var offset: CGSize = .zero
+    @State private var pullOffset: CGFloat = 0
     @State private var isFlipped = false
+    @State private var isRefreshingFromPull = false
     @StateObject private var instructionLoader = RecipeInstructionsLoader()
+
+    private let pullRefreshThreshold: CGFloat = 84
 
     private var detailsHeight: CGFloat {
         min(180, max(164, cardHeight * 0.27))
@@ -254,7 +253,7 @@ private struct RecipeCardView: View {
                     .rotationEffect(.degrees(offset.width > 0 ? -8 : 8))
             }
         }
-        .offset(x: offset.width)
+        .offset(x: offset.width, y: pullOffset)
         .rotationEffect(.degrees(Double(offset.width / 24)))
         .frame(width: cardWidth, height: cardHeight)
         .contentShape(Rectangle())
@@ -267,6 +266,7 @@ private struct RecipeCardView: View {
         .accessibilityAction(named: "Save") { onDecision(.save) }
         .accessibilityAction(named: "Skip") { onDecision(.skip) }
         .accessibilityAction(named: "Not Now") { onDecision(.notNow) }
+        .accessibilityAction(named: "Refresh feed") { triggerRefresh() }
         .accessibilityAction(named: isFlipped ? "Show ranking" : "Show recipe") {
             isFlipped ? showFront() : showRecipe()
         }
@@ -295,16 +295,6 @@ private struct RecipeCardView: View {
             RemoteRecipeImage(url: recipe.photoURL, title: recipe.title)
                 .frame(width: cardWidth, height: max(0, cardHeight - detailsHeight))
                 .clipped()
-                .overlay(alignment: .topLeading) {
-                    Text(recipe.rankingLabel)
-                        .font(.caption.weight(.bold))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-                        .padding(.horizontal, 11)
-                        .padding(.vertical, 8)
-                        .recipeGlassSurface(cornerRadius: 18)
-                        .padding(12)
-                }
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(recipe.title)
@@ -352,8 +342,8 @@ private struct RecipeCardView: View {
         .contentShape(Rectangle())
         .onTapGesture { showRecipe() }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(recipe.title). Recipe Intelligence rank \(recipe.rank) in \(recipe.verticalName). Rating \(String(format: "%.1f", recipe.rating)) from \(recipe.ratingCount) ratings. \(recipe.confidenceLabel).")
-        .accessibilityHint("Swipe right to save, left to skip, or activate to show ingredients and directions.")
+        .accessibilityLabel("\(recipe.title). \(recipe.verticalName) recipe. Rating \(String(format: "%.1f", recipe.rating)) from \(recipe.ratingCount) ratings. \(recipe.confidenceLabel).")
+        .accessibilityHint("Swipe right to save, left to skip, down to refresh the feed, or activate to show ingredients and directions.")
     }
 
     private var backFace: some View {
@@ -537,8 +527,17 @@ private struct RecipeCardView: View {
         DragGesture(minimumDistance: 16)
             .onChanged { value in
                 guard !isFlipped else { return }
-                guard abs(value.translation.width) > abs(value.translation.height) else { return }
-                offset = CGSize(width: value.translation.width, height: 0)
+
+                let horizontal = value.translation.width
+                let vertical = value.translation.height
+
+                if abs(horizontal) > abs(vertical) {
+                    pullOffset = 0
+                    offset = CGSize(width: horizontal, height: 0)
+                } else if vertical > 0 {
+                    offset = .zero
+                    pullOffset = min(24, vertical * 0.22)
+                }
             }
             .onEnded { value in
                 guard !isFlipped else {
@@ -546,33 +545,65 @@ private struct RecipeCardView: View {
                     return
                 }
 
-                let threshold: CGFloat = 110
-                guard abs(value.translation.width) > abs(value.translation.height) else {
-                    resetOffset()
+                let horizontal = value.translation.width
+                let vertical = value.translation.height
+
+                if vertical >= pullRefreshThreshold,
+                   abs(vertical) > abs(horizontal) {
+                    triggerRefresh()
                     return
                 }
 
-                if value.translation.width > threshold {
-                    complete(.save)
-                } else if value.translation.width < -threshold {
-                    complete(.skip)
+                if abs(horizontal) > abs(vertical) {
+                    let threshold: CGFloat = 110
+                    if horizontal > threshold {
+                        complete(.save)
+                    } else if horizontal < -threshold {
+                        complete(.skip)
+                    } else {
+                        resetOffset()
+                    }
                 } else {
                     resetOffset()
                 }
             }
     }
 
+    private func triggerRefresh() {
+        guard !isFlipped, !isRefreshingFromPull else {
+            resetOffset()
+            return
+        }
+
+        if reduceMotion {
+            pullOffset = 0
+        } else {
+            withAnimation(.smooth(duration: 0.22)) {
+                pullOffset = 0
+            }
+        }
+
+        isRefreshingFromPull = true
+        Task { @MainActor in
+            await onRefresh()
+            isRefreshingFromPull = false
+        }
+    }
+
     private func resetOffset() {
         if reduceMotion {
             offset = .zero
+            pullOffset = 0
         } else {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            withAnimation(.smooth(duration: 0.24)) {
                 offset = .zero
+                pullOffset = 0
             }
         }
     }
 
     private func complete(_ decision: RecipeDecision) {
+        pullOffset = 0
         if reduceMotion {
             offset = .zero
             onDecision(decision)
