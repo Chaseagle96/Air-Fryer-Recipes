@@ -54,9 +54,9 @@
       "wholesomeyum.com"
     ],
     "full_catalog_baseline": false,
-    "generation_fingerprint_sha256": "281da17ac19af2dcb9ef446d6c3e6aec60b5064e2b7b6d5f048ff6f5b543b0b1",
+    "generation_fingerprint_sha256": "10732c52619ceec627007d33612827c0fdc9636103d09b38c2110a9b11be0a18",
     "input_fingerprint_sha256": "6396d7012b0ef7d74d4eae5bcf4533516c0379cfd3eaf5c007f4c259352a071c",
-    "leaderboard_fingerprint_sha256": "ae7e192a01b65a39ed5d979a2a3dacd442d2547f3eb0a4995c7a2bc1fde34ad8",
+    "leaderboard_fingerprint_sha256": "ffe49a5c23c84a5fbb5590838c456a938be7b1d57e6c4e80cbf75970e13f811d",
     "leaderboard_sources": [
       "airfryingfoodie.com",
       "allrecipes.com",
@@ -97,15 +97,15 @@
     ],
     "model_semver": "5.2.0",
     "model_version": 5,
-    "ranked_recipe_count": 5553,
-    "ranking_generated_at": "2026-08-20T11:23:57.264466+00:00",
-    "ranking_mode": "daily",
+    "ranked_recipe_count": 5556,
+    "ranking_generated_at": "2026-08-20T13:10:18.789656+00:00",
+    "ranking_mode": "hourly",
     "raw_catalog_url_count": 7749,
     "source_expansion_generated_at": "2026-08-20T10:51:44.145595+00:00",
     "source_fingerprint_sha256": "cc4a986fb67aca38d44a974e209edd92623a60e7eff5401363787d0f1352d51e",
     "source_gate_version": 2,
     "status": "authoritative",
-    "targets_this_run": 7749,
+    "targets_this_run": 100,
     "vertical": "air_fryer"
   },
   "catalog_url_count": 7749,
@@ -403,10 +403,10 @@
   ],
   "corpus_recipe_count": 5628,
   "corpus_status_counts": {
-    "discover": 5553,
-    "explore": 75
+    "discover": 5556,
+    "explore": 72
   },
-  "generated_at": "2026-08-20T11:23:57.264466+00:00",
+  "generated_at": "2026-08-20T13:10:18.789656+00:00",
   "page_size": 100,
   "pages": [
     {
@@ -685,15 +685,15 @@
       "path": "recipes/0055.json"
     },
     {
-      "count": 53,
+      "count": 56,
       "index": 56,
       "path": "recipes/0056.json"
     }
   ],
-  "ranked_recipe_count": 5553,
+  "ranked_recipe_count": 5556,
   "ranked_serving_available": true,
   "ranked_serving_status": "authoritative",
-  "recipe_count": 5553,
+  "recipe_count": 5556,
   "schema_version": 1,
   "vertical": {
     "id": "air_fryer",

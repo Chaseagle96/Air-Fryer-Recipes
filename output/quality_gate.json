@@ -1,26 +1,26 @@
 {
   "failures": [],
   "metrics": {
-    "anomalies": 3176,
-    "crawl_success_rate": 0.999096657633243,
-    "crawl_targets": 7749,
-    "current_deduplicated_count": 75,
+    "anomalies": 11,
+    "crawl_success_rate": 1.0,
+    "crawl_targets": 100,
+    "current_deduplicated_count": 72,
     "current_model_semver": "5.2.0",
     "current_model_version": 5,
-    "current_ranked_recipes": 5553,
-    "dom_structure_changes": 3161,
-    "extract_success_rate": 0.8553345388788427,
+    "current_ranked_recipes": 5556,
+    "dom_structure_changes": 11,
+    "extract_success_rate": 0.9,
     "model_identity_changed": false,
-    "previous_deduplicated_count": 66,
+    "previous_deduplicated_count": 75,
     "previous_model_semver": "5.2.0",
     "previous_model_version": 5,
-    "previous_ranked_recipes": 5560,
-    "ranked_recipe_retention": 0.9987410071942446,
-    "ranking_eligible_rate": 0.9866737739872068,
+    "previous_ranked_recipes": 5553,
+    "ranked_recipe_retention": 1.0005402485143167,
+    "ranking_eligible_rate": 0.9872068230277186,
     "sources_stale_24h": 0,
     "top50_overlap_previous": 1.0
   },
-  "mode": "daily",
+  "mode": "hourly",
   "model_semver": "5.2.0",
   "model_version": 5,
   "passed": true,
@@ -48,8 +48,6 @@
     "top50_overlap_warn_below": 0.5
   },
   "warnings": [
-    "extraction success rate is degraded at 85.5%",
-    "DOM structure changes elevated at 3161 across 7749 crawl targets",
-    "anomaly volume is elevated at 3176; review operational diagnostics"
+    "DOM structure changes elevated at 11 across 100 crawl targets"
   ]
 }
