@@ -45,7 +45,11 @@ struct DiscoverView: View {
                     .frame(width: cardWidth, height: selectorHeight)
                     .clipped()
             }
-            .frame(width: cardWidth, height: max(0, proxy.size.height - (verticalPadding * 2)), alignment: .top)
+            .frame(
+                width: cardWidth,
+                height: max(0, proxy.size.height - (verticalPadding * 2)),
+                alignment: .top
+            )
             .padding(.horizontal, horizontalPadding)
             .padding(.vertical, verticalPadding)
             .overlay(alignment: .top) {
@@ -215,7 +219,7 @@ private struct RecipeCardView: View {
 
     var body: some View {
         ZStack {
-            frontFace
+            frontCardFace
                 .opacity(isFlipped ? 0 : 1)
                 .rotation3DEffect(
                     .degrees(isFlipped ? -180 : 0),
@@ -224,7 +228,7 @@ private struct RecipeCardView: View {
                 )
                 .zIndex(isFlipped ? 0 : 1)
 
-            backFace
+            backCardFace
                 .opacity(isFlipped ? 1 : 0)
                 .rotation3DEffect(
                     .degrees(isFlipped ? 0 : 180),
@@ -235,8 +239,6 @@ private struct RecipeCardView: View {
         }
         .frame(width: cardWidth, height: cardHeight)
         .clipped()
-        .recipeGlassSurface(cornerRadius: 30, interactive: true)
-        .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
         .overlay(alignment: offset.width >= 40 ? .topLeading : .topTrailing) {
             if abs(offset.width) >= 40 {
                 Text(offset.width > 0 ? "SAVE" : "NOPE")
@@ -262,6 +264,24 @@ private struct RecipeCardView: View {
         .accessibilityAction(named: isFlipped ? "Show ranking" : "Show recipe") {
             isFlipped ? showFront() : showRecipe()
         }
+    }
+
+    private var frontCardFace: some View {
+        frontFace
+            .frame(width: cardWidth, height: cardHeight)
+            .recipeGlassSurface(cornerRadius: 30, interactive: true)
+            .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+            .shadow(color: .black.opacity(0.08), radius: 14, y: 7)
+            .clipped()
+    }
+
+    private var backCardFace: some View {
+        backFace
+            .frame(width: cardWidth, height: cardHeight)
+            .recipeGlassSurface(cornerRadius: 30, interactive: true)
+            .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+            .shadow(color: .black.opacity(0.08), radius: 14, y: 7)
+            .clipped()
     }
 
     private var frontFace: some View {
