@@ -15,8 +15,10 @@ final class RecipeIntelligenceUITests: XCTestCase {
         XCTAssertTrue(card.waitForExistence(timeout: 5))
         card.swipeRight()
 
-        let undo = app.buttons["discover.undo"]
-        XCTAssertTrue(undo.waitForExistence(timeout: 5), "A completed save swipe should expose Undo.")
+        XCTAssertFalse(
+            app.buttons["discover.undo"].exists,
+            "Undo should be available by shaking the device, not as a toolbar button."
+        )
 
         app.tabBars.buttons["Saved"].tap()
         XCTAssertTrue(app.navigationBars["Saved"].waitForExistence(timeout: 5))
@@ -37,8 +39,10 @@ final class RecipeIntelligenceUITests: XCTestCase {
         let beforeLabel = card.label
         card.swipeLeft()
 
-        let undo = app.buttons["discover.undo"]
-        XCTAssertTrue(undo.waitForExistence(timeout: 5), "A completed skip swipe should expose Undo.")
+        XCTAssertFalse(
+            app.buttons["discover.undo"].exists,
+            "Undo should be available by shaking the device, not as a toolbar button."
+        )
 
         let nextCard = app.descendants(matching: .any)["discover.card"]
         XCTAssertTrue(nextCard.waitForExistence(timeout: 5))
