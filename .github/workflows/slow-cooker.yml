@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/slow-cooker.yml'
+      - '.github/workflows/_vertical-refresh.yml'
       - 'src/**'
       - 'tests/**'
       - 'config/verticals/slow_cooker/**'
@@ -14,9 +15,9 @@ on:
       - 'pyproject.toml'
       - 'verticals/slow_cooker/data/benchmarks/**'
   schedule:
-    - cron: '31 * * * *'      # hourly incremental refresh, offset from Air Fryer
-    - cron: '7 9 * * *'       # daily discovery/full-known-catalog refresh
-    - cron: '37 9 * * 0'      # weekly deep discovery/full refresh
+    - cron: '31 * * * *'
+    - cron: '7 9 * * *'
+    - cron: '37 9 * * 0'
   workflow_dispatch:
     inputs:
       mode:
@@ -24,15 +25,12 @@ on:
         required: true
         default: deep
         type: choice
-        options:
-          - hourly
-          - daily
-          - deep
-          - backfill
+        options: [hourly, daily, deep, backfill]
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
       - '.github/workflows/slow-cooker.yml'
+      - '.github/workflows/_vertical-refresh.yml'
       - 'src/**'
       - 'tests/**'
       - 'config/verticals/slow_cooker/**'
@@ -49,274 +47,11 @@ concurrency:
   group: slow-cooker-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
-env:
-  RECIPE_INTELLIGENCE_VERTICAL: Slow Cooker
-  RECIPE_INTELLIGENCE_VERTICAL_SLUG: slow_cooker
-
 jobs:
   refresh:
-    runs-on: ubuntu-latest
-    timeout-minutes: 330
-    outputs:
-      production: ${{ steps.mode.outputs.production }}
-      mode: ${{ steps.mode.outputs.mode }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
-        with:
-          python-version: '3.12'
-          cache: pip
-
-      - name: Install dependencies and quality tooling
-        run: pip install -r requirements-dev.txt
-
-      - name: Audit dependencies
-        run: pip-audit -r requirements.txt
-
-      - name: Lint source and tests
-        run: ruff check src tests
-
-      - name: Static type analysis
-        run: mypy src/airfryer_rankings
-
-      - name: Test with branch coverage
-        run: PYTHONPATH=src pytest --cov=airfryer_rankings --cov-report=term-missing
-
-      - name: Resolve Slow Cooker refresh mode
-        id: mode
-        shell: bash
-        run: |
-          mode=hourly
-          production=true
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            mode=smoke
-            production=false
-          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            mode="${{ inputs.mode }}"
-          elif [ "${{ github.event.schedule }}" = "7 9 * * *" ]; then
-            mode=daily
-          elif [ "${{ github.event.schedule }}" = "37 9 * * 0" ]; then
-            mode=deep
-          fi
-          echo "mode=$mode" >> "$GITHUB_OUTPUT"
-          echo "production=$production" >> "$GITHUB_OUTPUT"
-          echo "Resolved Slow Cooker mode: $mode"
-
-      - name: Create bounded Slow Cooker PR smoke source set
-        if: steps.mode.outputs.mode == 'smoke'
-        run: |
-          cat > /tmp/slow-cooker-smoke-sources.yaml <<'EOF'
-          defaults:
-            max_urls: 2
-            delay: 0.05
-            include_pattern: '(?:slow[-_ ]?cook(?:er|ing|ed)|crock[-_ ]?pot)'
-            allow_unmatched_discovery_links: false
-          sources:
-            - domain: skinnytaste.com
-              discovery_urls:
-                - https://www.skinnytaste.com/recipes/slow-cooker/
-            - domain: budgetbytes.com
-              discovery_urls:
-                - https://www.budgetbytes.com/category/recipes/slow-cooker/
-            - domain: wellplated.com
-              discovery_urls:
-                - https://www.wellplated.com/category/recipes-by-type/slow-cooker/
-          EOF
-
-      - name: Refresh Slow Cooker rankings
-        shell: bash
-        working-directory: verticals/slow_cooker
-        run: |
-          sources="../../config/verticals/slow_cooker/sources.yaml"
-          extra_args=(--hourly-limit 100)
-          if [ "${{ steps.mode.outputs.mode }}" = "smoke" ]; then
-            sources=/tmp/slow-cooker-smoke-sources.yaml
-            extra_args=(--max-urls 2 --hourly-limit 6)
-          fi
-          PYTHONPATH=../../src python -m airfryer_rankings.run \
-            --mode "${{ steps.mode.outputs.mode }}" \
-            --sources "$sources" \
-            --state data/state.json \
-            --model-config ../../config/verticals/slow_cooker/model.yaml \
-            --storage-config ../../config/verticals/slow_cooker/storage.yaml \
-            --slo-config ../../config/slo.yaml \
-            "${extra_args[@]}"
-          if [ -f output/air_fryer_rankings.xlsx ]; then
-            mv output/air_fryer_rankings.xlsx output/slow_cooker_rankings.xlsx
-          fi
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          path = Path("output/summary.json")
-          payload = json.loads(path.read_text(encoding="utf-8"))
-          payload["vertical"] = "slow_cooker"
-          payload["vertical_name"] = "Slow Cooker"
-          payload["workbook_file"] = "output/slow_cooker_rankings.xlsx"
-          path.write_text(json.dumps(payload, indent=2, default=str) + "\n", encoding="utf-8")
-
-          assert Path("data/state.json").exists()
-          assert Path("output/slow_cooker_rankings.xlsx").exists()
-          assert Path("output/slow_cooker_analytics.duckdb").exists()
-          assert Path("docs/index.html").exists()
-          assert payload["vertical"] == "slow_cooker"
-          assert int(payload.get("ranked_recipes") or 0) > 0, "Slow Cooker run produced no ranked recipes"
-          assert str(payload.get("analytics_cache_file", "")).endswith("slow_cooker_analytics.duckdb")
-          assert "Slow Cooker" in Path("docs/index.html").read_text(encoding="utf-8")
-
-          state = json.loads(Path("data/state.json").read_text(encoding="utf-8"))
-          effective_sources = set(state.get("effective_source_domains") or [])
-          if "${{ steps.mode.outputs.mode }}" == "smoke":
-              expected_sources = {"skinnytaste.com", "budgetbytes.com", "wellplated.com"}
-              assert effective_sources == expected_sources, (effective_sources, expected_sources)
-
-          top = payload.get("top10") or []
-          assert top, "Slow Cooker run produced no Top recipes"
-          ranked_sources = {str(row.get("source") or "") for row in top}
-          assert ranked_sources <= effective_sources, (
-              "Slow Cooker leaderboard contains a source outside the effective allowlist",
-              ranked_sources,
-              effective_sources,
-          )
-          PY
-
-      - name: Rebuild complete Slow Cooker mobile corpus from saved state
-        shell: bash
-        working-directory: verticals/slow_cooker
-        run: |
-          PYTHONPATH=../../src python ../../scripts/backfill_mobile_corpus.py \
-            --sources ../../config/verticals/slow_cooker/sources.yaml
-          PYTHONPATH=../../src python - <<'PY'
-          import json
-          from pathlib import Path
-
-          manifest = json.loads(Path('docs/api/manifest.json').read_text(encoding='utf-8'))
-          ranked = int(manifest['ranked_recipe_count'])
-          corpus = int(manifest['corpus_recipe_count'])
-          assert corpus >= ranked, (ranked, corpus)
-          assert sum(int(page['count']) for page in manifest['pages']) == ranked
-          assert sum(int(page['count']) for page in manifest['corpus_pages']) == corpus
-          assert int(manifest['corpus_status_counts'].get('discover', 0)) == ranked
-          print('Slow Cooker mobile corpus:', 'ranked=', ranked, 'corpus=', corpus, 'statuses=', manifest['corpus_status_counts'])
-          PY
-
-      - name: Certify Slow Cooker authority before publication
-        id: authority
-        if: steps.mode.outputs.production == 'true'
-        shell: bash
-        working-directory: verticals/slow_cooker
-        run: |
-          set +e
-          output=$(PYTHONPATH=../../src python ../../scripts/ranking_authority.py publish \
-            --vertical slow_cooker \
-            --sources ../../config/verticals/slow_cooker/sources.yaml \
-            --state data/state.json \
-            --registry data/source_registry.json \
-            --metrics output/source_expansion.json \
-            --summary output/summary.json \
-            --leaderboard output/leaderboard.csv \
-            --authority output/authority.json \
-            --public-authority docs/api/authority.json \
-            --manifest docs/api/manifest.json 2>&1)
-          status=$?
-          set -e
-          printf '%s\n' "$output"
-          if [ "$status" -eq 0 ]; then
-            echo 'publishable=true' >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          if [ "${{ steps.mode.outputs.mode }}" = "hourly" ] && \
-             grep -Fq 'new source/catalog/model generation requires a daily or deep refresh before certification' <<<"$output"; then
-            echo 'publishable=false' >> "$GITHUB_OUTPUT"
-            echo '::notice::Slow Cooker publication deferred until the authority invalidation flow completes a daily/deep refresh.'
-            exit 0
-          fi
-          echo 'publishable=false' >> "$GITHUB_OUTPUT"
-          exit "$status"
-
-      - name: Upload Slow Cooker Excel workbook
-        if: always() && hashFiles('verticals/slow_cooker/output/slow_cooker_rankings.xlsx') != ''
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: recipe-intelligence-slow-cooker-rankings-${{ github.run_number }}-${{ steps.mode.outputs.mode || 'validation' }}
-          retention-days: 30
-          path: verticals/slow_cooker/output/slow_cooker_rankings.xlsx
-
-      - name: Upload Slow Cooker DuckDB analytical cache
-        if: always() && hashFiles('verticals/slow_cooker/output/slow_cooker_analytics.duckdb') != ''
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: recipe-intelligence-slow-cooker-analytics-${{ github.run_number }}-${{ steps.mode.outputs.mode || 'validation' }}
-          retention-days: 30
-          path: verticals/slow_cooker/output/slow_cooker_analytics.duckdb
-
-      - name: Upload Slow Cooker diagnostics
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: recipe-intelligence-slow-cooker-diagnostics-${{ github.run_number }}-${{ steps.mode.outputs.mode || 'validation' }}
-          retention-days: 30
-          if-no-files-found: ignore
-          path: |
-            verticals/slow_cooker/output/quality_gate.json
-            verticals/slow_cooker/output/pipeline_metrics.json
-            verticals/slow_cooker/output/pipeline_metrics.csv
-            verticals/slow_cooker/output/historical_backtest.csv
-            verticals/slow_cooker/output/hyperparameter_evaluation.csv
-            verticals/slow_cooker/output/evidence_calibration.csv
-            verticals/slow_cooker/output/evidence_label_results.csv
-            verticals/slow_cooker/output/dedupe_label_queue.csv
-            verticals/slow_cooker/output/storage_health.json
-            verticals/slow_cooker/output/summary.json
-            verticals/slow_cooker/output/authority.json
-
-      - name: Upload Slow Cooker history Parquet archive
-        if: always() && hashFiles('verticals/slow_cooker/output/history_archive.parquet') != ''
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: recipe-intelligence-slow-cooker-history-${{ github.run_number }}
-          retention-days: 30
-          path: verticals/slow_cooker/output/history_archive.parquet
-
-      - name: Commit Slow Cooker state, evidence, reports, and dashboard
-        if: steps.mode.outputs.production == 'true' && steps.authority.outputs.publishable == 'true'
-        shell: bash
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add verticals/slow_cooker/data verticals/slow_cooker/docs
-          for file in \
-            verticals/slow_cooker/output/leaderboard.csv \
-            verticals/slow_cooker/output/top50.csv \
-            verticals/slow_cooker/output/source_coverage.csv \
-            verticals/slow_cooker/output/source_reliability.csv \
-            verticals/slow_cooker/output/source_health.csv \
-            verticals/slow_cooker/output/ranking_robustness.csv \
-            verticals/slow_cooker/output/dedupe_benchmark.csv \
-            verticals/slow_cooker/output/dedupe_label_queue.csv \
-            verticals/slow_cooker/output/pipeline_metrics.csv \
-            verticals/slow_cooker/output/historical_backtest.csv \
-            verticals/slow_cooker/output/hyperparameter_evaluation.csv \
-            verticals/slow_cooker/output/evidence_calibration.csv \
-            verticals/slow_cooker/output/evidence_label_results.csv \
-            verticals/slow_cooker/output/publication_quality_gate.csv \
-            verticals/slow_cooker/output/anomalies.csv \
-            verticals/slow_cooker/output/quality_gate.json \
-            verticals/slow_cooker/output/pipeline_metrics.json \
-            verticals/slow_cooker/output/storage_health.json \
-            verticals/slow_cooker/output/authority.json \
-            verticals/slow_cooker/output/summary.json; do
-            [ ! -e "$file" ] || git add "$file"
-          done
-          if git diff --cached --quiet; then
-            echo 'No Slow Cooker ranking changes to commit.'
-            exit 0
-          fi
-          git commit -m "Refresh slow cooker rankings (${{ steps.mode.outputs.mode }})"
-          git pull --rebase origin main
-          git push origin HEAD:main
+    uses: ./.github/workflows/_vertical-refresh.yml
+    with:
+      vertical: slow-cooker
+      mode: ${{ github.event_name == 'pull_request' && 'smoke' || github.event_name == 'workflow_dispatch' && inputs.mode || github.event.schedule == '7 9 * * *' && 'daily' || github.event.schedule == '37 9 * * 0' && 'deep' || 'hourly' }}
+      production: ${{ github.event_name != 'pull_request' }}
+    secrets: inherit
