@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import UIKit
 
 struct DiscoverView: View {
     @EnvironmentObject private var appModel: AppModel
@@ -25,14 +26,10 @@ struct DiscoverView: View {
                             .frame(width: cardWidth, height: cardHeight)
                             .recipeGlassSurface(cornerRadius: 30)
                     } else if let recipe = appModel.deck.first {
-                        deck(
-                            recipe,
-                            cardWidth: cardWidth,
-                            cardHeight: cardHeight
-                        )
-                        .task(id: recipe.recipeID) {
-                            await appModel.prefetchIfNeeded(recipe)
-                        }
+                        deck(recipe, cardWidth: cardWidth, cardHeight: cardHeight)
+                            .task(id: recipe.recipeID) {
+                                await appModel.prefetchIfNeeded(recipe)
+                            }
                     } else {
                         emptyState
                             .frame(width: cardWidth, height: cardHeight)
@@ -64,15 +61,12 @@ struct DiscoverView: View {
         .recipeScreenBackground()
         .navigationTitle("Discover")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            if appModel.canUndo {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Undo", systemImage: "arrow.uturn.backward") {
-                        appModel.undoLastDecision()
-                    }
-                    .accessibilityIdentifier("discover.undo")
-                }
+        .background {
+            ShakeUndoDetector(isEnabled: appModel.canUndo) {
+                appModel.undoLastDecision()
             }
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
         }
         .animation(.snappy, value: appModel.deck.first?.recipeID)
         .recipeToolbarBehavior()
@@ -258,10 +252,7 @@ private struct RecipeCardView: View {
         .frame(width: cardWidth, height: cardHeight)
         .contentShape(Rectangle())
         .simultaneousGesture(dragGesture)
-        .animation(
-            reduceMotion ? nil : flipAnimation,
-            value: isFlipped
-        )
+        .animation(reduceMotion ? nil : flipAnimation, value: isFlipped)
         .accessibilityIdentifier("discover.card")
         .accessibilityAction(named: "Save") { onDecision(.save) }
         .accessibilityAction(named: "Skip") { onDecision(.skip) }
@@ -330,11 +321,7 @@ private struct RecipeCardView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
-            .frame(
-                width: cardWidth,
-                height: detailsHeight,
-                alignment: .topLeading
-            )
+            .frame(width: cardWidth, height: detailsHeight, alignment: .topLeading)
             .clipped()
         }
         .frame(width: cardWidth, height: cardHeight)
@@ -429,9 +416,7 @@ private struct RecipeCardView: View {
         .clipped()
         .contentShape(Rectangle())
         .simultaneousGesture(
-            TapGesture().onEnded {
-                showFront()
-            }
+            TapGesture().onEnded { showFront() }
         )
         .accessibilityHint("Tap anywhere on the recipe details card to show the ranking card.")
     }
@@ -499,13 +484,10 @@ private struct RecipeCardView: View {
     private func showRecipe() {
         guard !isFlipped else { return }
         onOpen()
-
         if reduceMotion {
             isFlipped = true
         } else {
-            withAnimation(flipAnimation) {
-                isFlipped = true
-            }
+            withAnimation(flipAnimation) { isFlipped = true }
         }
 
         Task {
@@ -517,9 +499,7 @@ private struct RecipeCardView: View {
         if reduceMotion {
             isFlipped = false
         } else {
-            withAnimation(flipAnimation) {
-                isFlipped = false
-            }
+            withAnimation(flipAnimation) { isFlipped = false }
         }
     }
 
@@ -548,8 +528,7 @@ private struct RecipeCardView: View {
                 let horizontal = value.translation.width
                 let vertical = value.translation.height
 
-                if vertical >= pullRefreshThreshold,
-                   abs(vertical) > abs(horizontal) {
+                if vertical >= pullRefreshThreshold, abs(vertical) > abs(horizontal) {
                     triggerRefresh()
                     return
                 }
@@ -616,6 +595,63 @@ private struct RecipeCardView: View {
                 offset = .zero
             }
         }
+    }
+}
+
+private struct ShakeUndoDetector: UIViewControllerRepresentable {
+    let isEnabled: Bool
+    let onShake: () -> Void
+
+    func makeUIViewController(context: Context) -> ShakeUndoViewController {
+        let controller = ShakeUndoViewController()
+        controller.isShakeEnabled = isEnabled
+        controller.onShake = onShake
+        return controller
+    }
+
+    func updateUIViewController(_ uiViewController: ShakeUndoViewController, context: Context) {
+        uiViewController.isShakeEnabled = isEnabled
+        uiViewController.onShake = onShake
+        DispatchQueue.main.async {
+            uiViewController.ensureFirstResponder()
+        }
+    }
+}
+
+private final class ShakeUndoViewController: UIViewController {
+    var isShakeEnabled = false
+    var onShake: (() -> Void)?
+
+    override var canBecomeFirstResponder: Bool { true }
+
+    override func loadView() {
+        let view = UIView(frame: .zero)
+        view.backgroundColor = .clear
+        view.isUserInteractionEnabled = false
+        self.view = view
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        ensureFirstResponder()
+    }
+
+    override func viewDidMove(toParent parent: UIViewController?) {
+        super.viewDidMove(toParent: parent)
+        ensureFirstResponder()
+    }
+
+    func ensureFirstResponder() {
+        guard viewIfLoaded?.window != nil else { return }
+        if !isFirstResponder {
+            becomeFirstResponder()
+        }
+    }
+
+    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        super.motionEnded(motion, with: event)
+        guard isShakeEnabled, motion == .motionShake else { return }
+        onShake?()
     }
 }
 
