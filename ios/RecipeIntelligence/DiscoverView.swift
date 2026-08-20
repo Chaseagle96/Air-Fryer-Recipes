@@ -18,7 +18,7 @@ struct DiscoverView: View {
                             .controlSize(.large)
                         Spacer(minLength: 120)
                     } else if let recipe = appModel.deck.first {
-                        deck(recipe)
+                        deck(recipe, viewportHeight: proxy.size.height)
                             .task(id: recipe.recipeID) { await appModel.prefetchIfNeeded(recipe) }
                     } else {
                         emptyState
@@ -28,7 +28,7 @@ struct DiscoverView: View {
                 .frame(maxWidth: .infinity)
                 .frame(minHeight: proxy.size.height, alignment: .top)
                 .padding(.horizontal)
-                .padding(.bottom, 88)
+                .padding(.bottom, 96)
             }
             .refreshable {
                 await appModel.refreshCurrentFeed(trigger: .manual)
@@ -126,9 +126,12 @@ struct DiscoverView: View {
         }
     }
 
-    private func deck(_ topRecipe: RemoteRecipe) -> some View {
-        RecipeCardView(
+    private func deck(_ topRecipe: RemoteRecipe, viewportHeight: CGFloat) -> some View {
+        let cardHeight = min(max(viewportHeight - 220, 380), 480)
+
+        return RecipeCardView(
             recipe: topRecipe,
+            cardHeight: cardHeight,
             onDecision: { decision in appModel.handleDecision(decision, recipe: topRecipe) },
             onDetails: {
                 appModel.recordOpened(topRecipe)
@@ -136,6 +139,7 @@ struct DiscoverView: View {
             }
         )
         .frame(maxWidth: .infinity)
+        .frame(height: cardHeight)
         .clipped()
     }
 
@@ -155,37 +159,42 @@ struct DiscoverView: View {
 private struct RecipeCardView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let recipe: RemoteRecipe
+    let cardHeight: CGFloat
     let onDecision: (RecipeDecision) -> Void
     let onDetails: () -> Void
     @State private var offset: CGSize = .zero
+
+    private let detailsHeight: CGFloat = 178
 
     var body: some View {
         VStack(spacing: 0) {
             RemoteRecipeImage(url: recipe.photoURL, title: recipe.title)
                 .frame(maxWidth: .infinity)
-                .aspectRatio(1.18, contentMode: .fill)
+                .frame(height: max(0, cardHeight - detailsHeight))
                 .clipped()
                 .overlay(alignment: .topLeading) {
                     Text("#\(recipe.rank) \(recipe.verticalName)")
                         .font(.caption.weight(.bold))
+                        .lineLimit(1)
                         .padding(.horizontal, 11)
                         .padding(.vertical, 8)
                         .recipeGlassSurface(cornerRadius: 18)
                         .padding(12)
                 }
 
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text(recipe.title)
-                    .font(.title2.bold())
-                    .lineLimit(3)
+                    .font(.title3.bold())
+                    .lineLimit(2)
                     .minimumScaleFactor(0.82)
                     .fixedSize(horizontal: false, vertical: true)
+                    .layoutPriority(1)
 
                 Text(metricSummary)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.82)
 
                 Text(recipe.source)
                     .font(.subheadline.weight(.medium))
@@ -194,20 +203,22 @@ private struct RecipeCardView: View {
 
                 if !recipe.categories.isEmpty {
                     Text(recipe.categories.prefix(3).joined(separator: " · "))
-                        .font(.footnote)
+                        .font(.caption)
                         .foregroundStyle(.secondary)
-                        .lineLimit(2)
+                        .lineLimit(1)
                 }
 
                 Text(recipe.confidenceLabel)
-                    .font(.footnote.weight(.semibold))
+                    .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
-                    .lineLimit(2)
+                    .lineLimit(1)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(16)
+            .frame(maxWidth: .infinity, minHeight: detailsHeight, maxHeight: detailsHeight, alignment: .topLeading)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
         }
         .frame(maxWidth: .infinity)
+        .frame(height: cardHeight)
         .recipeGlassSurface(cornerRadius: 30, interactive: true)
         .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
         .shadow(color: .black.opacity(0.08), radius: 14, y: 7)
