@@ -53,9 +53,9 @@
     "wholesomeyum.com"
   ],
   "full_catalog_baseline": false,
-  "generation_fingerprint_sha256": "fd45f5fcbff3f75c1ca7dc85877dc4cf92ec7f6dcede0c7af50e64f2a54e57fb",
+  "generation_fingerprint_sha256": "12e41a909f164cb0f010f8fb5ad5834c24aab3c054c77ff87aa96c61bee89269",
   "input_fingerprint_sha256": "6396d7012b0ef7d74d4eae5bcf4533516c0379cfd3eaf5c007f4c259352a071c",
-  "leaderboard_fingerprint_sha256": "5635d7401f921f33d3ef421c57a7af25af40b547f81a99d70479bbd57d5eba3e",
+  "leaderboard_fingerprint_sha256": "ec4765db89c5e81edbc659522ad56061e17470107b48f19ea02aa7ec8f94a52c",
   "leaderboard_sources": [
     "airfryingfoodie.com",
     "allrecipes.com",
@@ -96,8 +96,8 @@
   ],
   "model_semver": "5.2.0",
   "model_version": 5,
-  "ranked_recipe_count": 5561,
-  "ranking_generated_at": "2026-08-20T07:56:07.578511+00:00",
+  "ranked_recipe_count": 5560,
+  "ranking_generated_at": "2026-08-20T08:55:40.196787+00:00",
   "ranking_mode": "hourly",
   "raw_catalog_url_count": 7749,
   "source_expansion_generated_at": "2026-08-19T20:09:25.427733+00:00",
