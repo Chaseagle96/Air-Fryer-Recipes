@@ -2,66 +2,14 @@
   "auto_source_count": 5,
   "candidate_domains_active": 5,
   "candidate_domains_degraded": 0,
-  "candidate_domains_discovered": 159,
+  "candidate_domains_discovered": 178,
   "candidate_domains_evaluated": 5,
   "candidate_domains_new": 0,
   "candidate_domains_promoted": 0,
   "candidate_domains_quarantined": 5,
   "candidate_domains_rejected": 0,
   "candidate_domains_suspended": 0,
-  "catalog_net_change": 0,
-  "catalog_sync": [
-    {
-      "discovered_urls": 2157,
-      "elapsed_seconds": 40.66,
-      "new_urls": 0,
-      "robots_status": "ok",
-      "sitemap_docs": 5,
-      "source": "forktospoon.com",
-      "status": "ok"
-    },
-    {
-      "discovered_urls": 325,
-      "elapsed_seconds": 6.11,
-      "new_urls": 0,
-      "robots_status": "ok",
-      "sitemap_docs": 8,
-      "source": "kelvinskitchen.com",
-      "status": "ok"
-    },
-    {
-      "discovered_urls": 477,
-      "elapsed_seconds": 1.08,
-      "new_urls": 0,
-      "robots_status": "ok",
-      "sitemap_docs": 7,
-      "source": "temeculablogs.com",
-      "status": "ok"
-    },
-    {
-      "discovered_urls": 225,
-      "elapsed_seconds": 8.99,
-      "new_urls": 0,
-      "robots_status": "ok",
-      "sitemap_docs": 6,
-      "source": "thestayathomechef.com",
-      "status": "ok"
-    },
-    {
-      "discovered_urls": 318,
-      "elapsed_seconds": 9.55,
-      "new_urls": 0,
-      "robots_status": "ok",
-      "sitemap_docs": 8,
-      "source": "theyummybowl.com",
-      "status": "ok"
-    }
-  ],
-  "catalog_sync_generated_at": "2026-08-20T10:52:44.304654+00:00",
   "catalog_url_count": 7749,
-  "catalog_urls_added_after_promotion": 0,
-  "catalog_urls_coalesced": 0,
-  "catalog_urls_rewritten": 0,
   "effective_source_count": 45,
   "evaluations": [
     {
@@ -125,7 +73,7 @@
       ]
     }
   ],
-  "generated_at": "2026-08-20T10:51:44.145595+00:00",
+  "generated_at": "2026-08-20T22:32:34.125077+00:00",
   "manual_source_count": 40,
   "median_source_quality_score": 0.0,
   "pinned_source_warnings": 0,
@@ -141,14 +89,13 @@
     },
     {
       "hits": 0,
-      "pages_fetched": 12,
+      "pages_fetched": 20,
       "provider": "trusted_outbound_link",
       "status": "ok"
     }
   ],
-  "qualification_extraction_success_rate": null,
+  "qualification_extraction_success_rate": 0.0,
   "qualification_pages_fetched": 0,
-  "qualification_ranking_row_yield": 0.0,
   "source_gate_version": 2,
   "vertical": "air_fryer"
 }
