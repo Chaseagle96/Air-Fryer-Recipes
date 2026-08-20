@@ -2,66 +2,14 @@
   "auto_source_count": 5,
   "candidate_domains_active": 5,
   "candidate_domains_degraded": 0,
-  "candidate_domains_discovered": 146,
+  "candidate_domains_discovered": 159,
   "candidate_domains_evaluated": 5,
   "candidate_domains_new": 0,
   "candidate_domains_promoted": 0,
   "candidate_domains_quarantined": 5,
   "candidate_domains_rejected": 0,
   "candidate_domains_suspended": 0,
-  "catalog_net_change": 0,
-  "catalog_sync": [
-    {
-      "discovered_urls": 3603,
-      "elapsed_seconds": 53.71,
-      "new_urls": 0,
-      "robots_status": "ok",
-      "sitemap_docs": 13,
-      "source": "forktospoon.com",
-      "status": "ok"
-    },
-    {
-      "discovered_urls": 277,
-      "elapsed_seconds": 8.9,
-      "new_urls": 0,
-      "robots_status": "ok",
-      "sitemap_docs": 8,
-      "source": "kelvinskitchen.com",
-      "status": "ok"
-    },
-    {
-      "discovered_urls": 477,
-      "elapsed_seconds": 1.07,
-      "new_urls": 0,
-      "robots_status": "ok",
-      "sitemap_docs": 7,
-      "source": "temeculablogs.com",
-      "status": "ok"
-    },
-    {
-      "discovered_urls": 225,
-      "elapsed_seconds": 8.75,
-      "new_urls": 0,
-      "robots_status": "ok",
-      "sitemap_docs": 6,
-      "source": "thestayathomechef.com",
-      "status": "ok"
-    },
-    {
-      "discovered_urls": 318,
-      "elapsed_seconds": 9.94,
-      "new_urls": 0,
-      "robots_status": "ok",
-      "sitemap_docs": 8,
-      "source": "theyummybowl.com",
-      "status": "ok"
-    }
-  ],
-  "catalog_sync_generated_at": "2026-08-19T20:10:29.582452+00:00",
-  "catalog_url_count": 7704,
-  "catalog_urls_added_after_promotion": 0,
-  "catalog_urls_coalesced": 0,
-  "catalog_urls_rewritten": 0,
+  "catalog_url_count": 7749,
   "effective_source_count": 45,
   "evaluations": [
     {
@@ -125,7 +73,7 @@
       ]
     }
   ],
-  "generated_at": "2026-08-19T20:09:25.427733+00:00",
+  "generated_at": "2026-08-20T10:51:44.145595+00:00",
   "manual_source_count": 40,
   "median_source_quality_score": 0.0,
   "pinned_source_warnings": 0,
@@ -141,7 +89,7 @@
     },
     {
       "hits": 0,
-      "pages_fetched": 20,
+      "pages_fetched": 12,
       "provider": "trusted_outbound_link",
       "status": "ok"
     }
