@@ -31,3 +31,12 @@ def test_ranking_current_rejects_catalog_regression() -> None:
     summary = {"catalog_urls": 1, "generated_at": "2026-01-02T00:00:00+00:00"}
     metrics = {"catalog_sync_generated_at": "2026-01-01T00:00:00+00:00"}
     assert not ranking_is_current(state=state, summary=summary, metrics=metrics)
+
+
+def test_ranking_current_rejects_missing_timestamps() -> None:
+    state = {"url_catalog": {"a": {}}}
+    assert not ranking_is_current(state=state, summary={"catalog_urls": 1}, metrics={})
+
+
+def test_authority_decision_blocks_unknown_state_without_recovery() -> None:
+    assert evaluate_authority({}) == "refresh_required"
