@@ -217,6 +217,10 @@ private struct RecipeCardView: View {
         min(180, max(164, cardHeight * 0.27))
     }
 
+    private var flipAnimation: Animation {
+        .smooth(duration: 0.50)
+    }
+
     var body: some View {
         ZStack {
             frontCardFace
@@ -224,8 +228,9 @@ private struct RecipeCardView: View {
                 .rotation3DEffect(
                     .degrees(isFlipped ? -180 : 0),
                     axis: (x: 0, y: 1, z: 0),
-                    perspective: 0.7
+                    perspective: 0.22
                 )
+                .scaleEffect(isFlipped ? 0.985 : 1)
                 .zIndex(isFlipped ? 0 : 1)
 
             backCardFace
@@ -233,8 +238,9 @@ private struct RecipeCardView: View {
                 .rotation3DEffect(
                     .degrees(isFlipped ? 0 : 180),
                     axis: (x: 0, y: 1, z: 0),
-                    perspective: 0.7
+                    perspective: 0.22
                 )
+                .scaleEffect(isFlipped ? 1 : 0.985)
                 .zIndex(isFlipped ? 1 : 0)
         }
         .frame(width: cardWidth, height: cardHeight)
@@ -254,7 +260,7 @@ private struct RecipeCardView: View {
         .contentShape(Rectangle())
         .simultaneousGesture(dragGesture)
         .animation(
-            reduceMotion ? nil : .spring(response: 0.48, dampingFraction: 0.86),
+            reduceMotion ? nil : flipAnimation,
             value: isFlipped
         )
         .accessibilityIdentifier("discover.card")
@@ -507,7 +513,7 @@ private struct RecipeCardView: View {
         if reduceMotion {
             isFlipped = true
         } else {
-            withAnimation(.spring(response: 0.48, dampingFraction: 0.86)) {
+            withAnimation(flipAnimation) {
                 isFlipped = true
             }
         }
@@ -521,7 +527,7 @@ private struct RecipeCardView: View {
         if reduceMotion {
             isFlipped = false
         } else {
-            withAnimation(.spring(response: 0.48, dampingFraction: 0.86)) {
+            withAnimation(flipAnimation) {
                 isFlipped = false
             }
         }
