@@ -1,38 +1,39 @@
+import Foundation
 import SwiftUI
 
 struct DiscoverView: View {
     @EnvironmentObject private var appModel: AppModel
     @AppStorage("discover.dismissedFeedStatusMessage") private var dismissedFeedStatusMessage = ""
-    @State private var detailRecipe: RemoteRecipe?
 
     var body: some View {
         GeometryReader { proxy in
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 14) {
-                    verticalSelector
-                    refreshStatus
+            let selectorHeight: CGFloat = 58
+            let spacing: CGFloat = 12
+            let verticalPadding: CGFloat = 8
+            let cardHeight = max(320, proxy.size.height - selectorHeight - spacing - (verticalPadding * 2))
 
+            VStack(spacing: spacing) {
+                Group {
                     if appModel.isLoading && appModel.deck.isEmpty {
-                        Spacer(minLength: 120)
                         ProgressView("Finding great recipes…")
                             .controlSize(.large)
-                        Spacer(minLength: 120)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .recipeGlassSurface(cornerRadius: 30)
                     } else if let recipe = appModel.deck.first {
-                        deck(recipe, viewportHeight: proxy.size.height)
+                        deck(recipe, cardHeight: cardHeight)
                             .task(id: recipe.recipeID) { await appModel.prefetchIfNeeded(recipe) }
                     } else {
                         emptyState
-                            .frame(minHeight: max(460, proxy.size.height - 110))
                     }
                 }
                 .frame(maxWidth: .infinity)
-                .frame(minHeight: proxy.size.height, alignment: .top)
-                .padding(.horizontal)
-                .padding(.bottom, 96)
+                .frame(height: cardHeight)
+
+                verticalSelector
+                    .frame(height: selectorHeight)
             }
-            .refreshable {
-                await appModel.refreshCurrentFeed(trigger: .manual)
-            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, verticalPadding)
         }
         .recipeScreenBackground()
         .navigationTitle("Discover")
@@ -53,8 +54,10 @@ struct DiscoverView: View {
                 .accessibilityValue(appModel.isRefreshingFeed ? "Refreshing" : "")
             }
         }
-        .sheet(item: $detailRecipe) { recipe in
-            NavigationStack { RemoteRecipeDetailView(recipe: recipe) }
+        .overlay(alignment: .top) {
+            refreshStatus
+                .padding(.horizontal, 16)
+                .padding(.top, 4)
         }
         .animation(.snappy, value: appModel.deck.first?.recipeID)
         .recipeToolbarBehavior()
@@ -75,6 +78,7 @@ struct DiscoverView: View {
                 Text(message)
                     .font(.footnote.weight(.medium))
                     .foregroundStyle(.secondary)
+                    .lineLimit(2)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Button {
@@ -107,10 +111,11 @@ struct DiscoverView: View {
                         } label: {
                             Label(vertical.name, systemImage: vertical.icon)
                                 .font(.subheadline.weight(.semibold))
+                                .lineLimit(1)
                                 .padding(.horizontal, 14)
-                                .padding(.vertical, 10)
+                                .frame(minHeight: 50)
                                 .recipeGlassSurface(
-                                    cornerRadius: 18,
+                                    cornerRadius: 22,
                                     tint: selected ? RecipeDesign.accent.opacity(0.28) : nil,
                                     interactive: true
                                 )
@@ -122,22 +127,20 @@ struct DiscoverView: View {
                     }
                 }
             }
+            .padding(.horizontal, 2)
             .padding(.vertical, 4)
         }
+        .accessibilityIdentifier("discover.feedSelector")
     }
 
-    private func deck(_ topRecipe: RemoteRecipe, viewportHeight: CGFloat) -> some View {
-        let cardHeight = min(max(viewportHeight - 220, 380), 480)
-
-        return RecipeCardView(
+    private func deck(_ topRecipe: RemoteRecipe, cardHeight: CGFloat) -> some View {
+        RecipeCardView(
             recipe: topRecipe,
             cardHeight: cardHeight,
             onDecision: { decision in appModel.handleDecision(decision, recipe: topRecipe) },
-            onDetails: {
-                appModel.recordOpened(topRecipe)
-                detailRecipe = topRecipe
-            }
+            onOpen: { appModel.recordOpened(topRecipe) }
         )
+        .id(topRecipe.recipeID)
         .frame(maxWidth: .infinity)
         .frame(height: cardHeight)
         .clipped()
@@ -147,33 +150,89 @@ struct DiscoverView: View {
         ContentUnavailableView {
             Label("You’re caught up", systemImage: "checkmark.circle")
         } description: {
-            Text(appModel.errorMessage ?? "Try another vertical, or come back after Recipe Intelligence finds more recipes.")
+            Text(appModel.errorMessage ?? "Choose another feed, or check back after Recipe Intelligence finds more recipes.")
         } actions: {
             Button("Try Again") { Task { await appModel.retry() } }
                 .recipeGlassButton(prominent: true)
         }
-        .frame(maxHeight: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .recipeGlassSurface(cornerRadius: 30)
     }
 }
 
 private struct RecipeCardView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.openURL) private var openURL
+
     let recipe: RemoteRecipe
     let cardHeight: CGFloat
     let onDecision: (RecipeDecision) -> Void
-    let onDetails: () -> Void
-    @State private var offset: CGSize = .zero
+    let onOpen: () -> Void
 
-    private let detailsHeight: CGFloat = 178
+    @State private var offset: CGSize = .zero
+    @State private var isFlipped = false
+    @StateObject private var instructionLoader = RecipeInstructionsLoader()
+
+    private var detailsHeight: CGFloat {
+        min(180, max(164, cardHeight * 0.27))
+    }
 
     var body: some View {
+        ZStack {
+            frontFace
+                .opacity(isFlipped ? 0 : 1)
+                .rotation3DEffect(
+                    .degrees(isFlipped ? -180 : 0),
+                    axis: (x: 0, y: 1, z: 0),
+                    perspective: 0.7
+                )
+                .zIndex(isFlipped ? 0 : 1)
+
+            backFace
+                .opacity(isFlipped ? 1 : 0)
+                .rotation3DEffect(
+                    .degrees(isFlipped ? 0 : 180),
+                    axis: (x: 0, y: 1, z: 0),
+                    perspective: 0.7
+                )
+                .zIndex(isFlipped ? 1 : 0)
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: cardHeight)
+        .recipeGlassSurface(cornerRadius: 30, interactive: true)
+        .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+        .shadow(color: .black.opacity(0.08), radius: 14, y: 7)
+        .overlay(alignment: offset.width >= 40 ? .topLeading : .topTrailing) {
+            if abs(offset.width) >= 40 {
+                Text(offset.width > 0 ? "SAVE" : "NOPE")
+                    .font(.title.bold())
+                    .foregroundStyle(offset.width > 0 ? .green : .red)
+                    .padding(24)
+                    .rotationEffect(.degrees(offset.width > 0 ? -8 : 8))
+            }
+        }
+        .offset(x: offset.width)
+        .rotationEffect(.degrees(Double(offset.width / 24)))
+        .contentShape(Rectangle())
+        .simultaneousGesture(dragGesture)
+        .animation(reduceMotion ? nil : .spring(response: 0.48, dampingFraction: 0.86), value: isFlipped)
+        .accessibilityIdentifier("discover.card")
+        .accessibilityAction(named: "Save") { onDecision(.save) }
+        .accessibilityAction(named: "Skip") { onDecision(.skip) }
+        .accessibilityAction(named: "Not Now") { onDecision(.notNow) }
+        .accessibilityAction(named: isFlipped ? "Show ranking" : "Show recipe") {
+            isFlipped ? showFront() : showRecipe()
+        }
+    }
+
+    private var frontFace: some View {
         VStack(spacing: 0) {
             RemoteRecipeImage(url: recipe.photoURL, title: recipe.title)
                 .frame(maxWidth: .infinity)
                 .frame(height: max(0, cardHeight - detailsHeight))
                 .clipped()
                 .overlay(alignment: .topLeading) {
-                    Text("#\(recipe.rank) \(recipe.verticalName)")
+                    Text(recipe.rankingLabel)
                         .font(.caption.weight(.bold))
                         .lineLimit(1)
                         .padding(.horizontal, 11)
@@ -194,7 +253,7 @@ private struct RecipeCardView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.82)
+                    .minimumScaleFactor(0.8)
 
                 Text(recipe.source)
                     .font(.subheadline.weight(.medium))
@@ -208,7 +267,7 @@ private struct RecipeCardView: View {
                         .lineLimit(1)
                 }
 
-                Text(recipe.confidenceLabel)
+                Label("Tap for ingredients & directions", systemImage: "rectangle.on.rectangle.angled")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -219,31 +278,151 @@ private struct RecipeCardView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: cardHeight)
-        .recipeGlassSurface(cornerRadius: 30, interactive: true)
-        .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
-        .shadow(color: .black.opacity(0.08), radius: 14, y: 7)
-        .overlay(alignment: offset.width >= 40 ? .topLeading : .topTrailing) {
-            if abs(offset.width) >= 40 {
-                Text(offset.width > 0 ? "SAVE" : "NOPE")
-                    .font(.title.bold())
-                    .foregroundStyle(offset.width > 0 ? .green : .red)
-                    .padding(24)
-                    .rotationEffect(.degrees(offset.width > 0 ? -8 : 8))
+        .contentShape(Rectangle())
+        .onTapGesture { showRecipe() }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(recipe.title). Recipe Intelligence rank \(recipe.rank) in \(recipe.verticalName). Rating \(String(format: "%.1f", recipe.rating)) from \(recipe.ratingCount) ratings. \(recipe.confidenceLabel).")
+        .accessibilityHint("Swipe right to save, left to skip, or activate to show ingredients and directions.")
+    }
+
+    private var backFace: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 10) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(recipe.title)
+                        .font(.headline.bold())
+                        .lineLimit(2)
+                    Text("Recipe details")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                Button {
+                    showFront()
+                } label: {
+                    Image(systemName: "arrow.uturn.backward")
+                        .font(.headline.weight(.bold))
+                        .frame(width: 42, height: 42)
+                }
+                .buttonStyle(.plain)
+                .recipeGlassSurface(cornerRadius: 18, interactive: true)
+                .accessibilityLabel("Show ranking card")
+                .accessibilityIdentifier("discover.flipBack")
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 14)
+            .padding(.bottom, 10)
+
+            Divider().opacity(0.35)
+
+            ScrollView(.vertical, showsIndicators: true) {
+                VStack(alignment: .leading, spacing: 18) {
+                    HStack(spacing: 8) {
+                        Label(String(format: "%.1f", recipe.rating), systemImage: "star.fill")
+                        Text("·")
+                        Text("\(recipe.ratingCount.formatted()) ratings")
+                        if !recipe.evidenceGrade.isEmpty {
+                            Text("·")
+                            Text("Evidence \(recipe.evidenceGrade)")
+                        }
+                    }
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+
+                    recipeSection(title: "Ingredients", systemImage: "basket.fill") {
+                        if recipe.ingredients.isEmpty {
+                            Text("Ingredients are not available in this feed yet.")
+                                .foregroundStyle(.secondary)
+                        } else {
+                            ForEach(Array(recipe.ingredients.enumerated()), id: \.offset) { _, ingredient in
+                                Label(ingredient, systemImage: "circle.fill")
+                                    .symbolRenderingMode(.hierarchical)
+                                    .font(.body)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                    }
+                    .accessibilityIdentifier("discover.ingredients")
+
+                    recipeSection(title: "Directions", systemImage: "list.number") {
+                        directionsContent
+                    }
+                    .accessibilityIdentifier("discover.directions")
+
+                    if !recipe.confidenceLabel.isEmpty {
+                        Label(recipe.confidenceLabel, systemImage: "checkmark.seal.fill")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+
+                    if let url = recipe.sourceURL {
+                        Button {
+                            openURL(url)
+                        } label: {
+                            Label("Open original recipe", systemImage: "arrow.up.right.square")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .recipeGlassButton()
+                        .accessibilityIdentifier("discover.original")
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 16)
+                .padding(.top, 14)
+                .padding(.bottom, 28)
+            }
+            .accessibilityIdentifier("discover.recipeScroll")
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: cardHeight)
+    }
+
+    @ViewBuilder
+    private var directionsContent: some View {
+        if !recipe.hasInstructions {
+            Text("This source does not currently expose structured cooking directions.")
+                .foregroundStyle(.secondary)
+        } else {
+            switch instructionLoader.state {
+            case .idle, .loading:
+                HStack(spacing: 10) {
+                    ProgressView()
+                    Text("Loading directions from \(recipe.source)…")
+                        .foregroundStyle(.secondary)
+                }
+            case .loaded(let steps):
+                ForEach(Array(steps.enumerated()), id: \.offset) { index, step in
+                    HStack(alignment: .top, spacing: 10) {
+                        Text("\(index + 1)")
+                            .font(.caption.bold())
+                            .frame(width: 24, height: 24)
+                            .recipeGlassSurface(cornerRadius: 12)
+                        Text(step)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+            case .unavailable:
+                Text("Recipe Intelligence detected \(recipe.instructionCount) structured direction\(recipe.instructionCount == 1 ? "" : "s"), but the publisher page did not expose readable steps to the app. Open the original recipe below for the full method.")
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
-        .offset(x: offset.width)
-        .rotationEffect(.degrees(Double(offset.width / 24)))
-        .contentShape(Rectangle())
-        .onTapGesture { onDetails() }
-        .simultaneousGesture(dragGesture)
-        .accessibilityElement(children: .combine)
-        .accessibilityIdentifier("discover.card")
-        .accessibilityLabel("\(recipe.title). Recipe Intelligence rank \(recipe.rank) in \(recipe.verticalName). Rating \(String(format: "%.1f", recipe.rating)) from \(recipe.ratingCount) ratings. \(recipe.confidenceLabel).")
-        .accessibilityHint("Swipe right to save or left to skip. Activate the card for details.")
-        .accessibilityAction(named: "Save") { onDecision(.save) }
-        .accessibilityAction(named: "Skip") { onDecision(.skip) }
-        .accessibilityAction(named: "Not Now") { onDecision(.notNow) }
-        .accessibilityAction(named: "Details") { onDetails() }
+    }
+
+    private func recipeSection<Content: View>(
+        title: String,
+        systemImage: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label(title, systemImage: systemImage)
+                .font(.title3.bold())
+                .accessibilityAddTraits(.isHeader)
+            content()
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var metricSummary: String {
@@ -255,6 +434,31 @@ private struct RecipeCardView: View {
             parts.append("Evidence \(recipe.evidenceGrade)")
         }
         return parts.joined(separator: " · ")
+    }
+
+    private func showRecipe() {
+        guard !isFlipped else { return }
+        onOpen()
+        if reduceMotion {
+            isFlipped = true
+        } else {
+            withAnimation(.spring(response: 0.48, dampingFraction: 0.86)) {
+                isFlipped = true
+            }
+        }
+        Task {
+            await instructionLoader.load(from: recipe.sourceURL)
+        }
+    }
+
+    private func showFront() {
+        if reduceMotion {
+            isFlipped = false
+        } else {
+            withAnimation(.spring(response: 0.48, dampingFraction: 0.86)) {
+                isFlipped = false
+            }
+        }
     }
 
     private var dragGesture: some Gesture {
@@ -284,7 +488,9 @@ private struct RecipeCardView: View {
         if reduceMotion {
             offset = .zero
         } else {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) { offset = .zero }
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                offset = .zero
+            }
         }
     }
 
@@ -293,11 +499,179 @@ private struct RecipeCardView: View {
             offset = .zero
             onDecision(decision)
         } else {
-            withAnimation(.easeOut(duration: 0.18)) { offset.width = decision == .save ? 700 : -700 }
+            withAnimation(.easeOut(duration: 0.18)) {
+                offset.width = decision == .save ? 700 : -700
+            }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.16) {
                 onDecision(decision)
                 offset = .zero
             }
         }
+    }
+}
+
+@MainActor
+private final class RecipeInstructionsLoader: ObservableObject {
+    enum State {
+        case idle
+        case loading
+        case loaded([String])
+        case unavailable
+    }
+
+    @Published private(set) var state: State = .idle
+
+    func load(from url: URL?) async {
+        guard case .idle = state else { return }
+        guard let url else {
+            state = .unavailable
+            return
+        }
+
+        state = .loading
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 15
+        request.setValue(
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 27_0 like Mac OS X) AppleWebKit/605.1.15 Version/27.0 Mobile/15E148 Safari/604.1",
+            forHTTPHeaderField: "User-Agent"
+        )
+        request.setValue("text/html,application/xhtml+xml", forHTTPHeaderField: "Accept")
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            if let http = response as? HTTPURLResponse,
+               !(200..<300).contains(http.statusCode) {
+                state = .unavailable
+                return
+            }
+
+            let steps = await Task.detached(priority: .utility) {
+                RecipeInstructionExtractor.extract(from: data)
+            }.value
+            state = steps.isEmpty ? .unavailable : .loaded(steps)
+        } catch {
+            state = .unavailable
+        }
+    }
+}
+
+private enum RecipeInstructionExtractor {
+    static func extract(from data: Data) -> [String] {
+        let html = String(decoding: data, as: UTF8.self)
+        let pattern = #"<script[^>]*type\s*=\s*[\"']application/ld\+json[\"'][^>]*>(.*?)</script>"#
+        guard let regex = try? NSRegularExpression(
+            pattern: pattern,
+            options: [.caseInsensitive, .dotMatchesLineSeparators]
+        ) else { return [] }
+
+        let fullRange = NSRange(html.startIndex..<html.endIndex, in: html)
+        for match in regex.matches(in: html, range: fullRange) {
+            guard match.numberOfRanges > 1,
+                  let range = Range(match.range(at: 1), in: html) else { continue }
+            let jsonText = String(html[range]).trimmingCharacters(in: .whitespacesAndNewlines)
+            guard let jsonData = jsonText.data(using: .utf8),
+                  let object = try? JSONSerialization.jsonObject(with: jsonData) else { continue }
+            if let steps = findRecipeSteps(in: object), !steps.isEmpty {
+                return deduplicated(steps)
+            }
+        }
+        return []
+    }
+
+    private static func findRecipeSteps(in object: Any) -> [String]? {
+        if let dictionary = object as? [String: Any] {
+            if isRecipeType(dictionary["@type"]) {
+                let steps = flattenInstructions(dictionary["recipeInstructions"])
+                if !steps.isEmpty { return steps }
+            }
+
+            if let graph = dictionary["@graph"],
+               let steps = findRecipeSteps(in: graph), !steps.isEmpty {
+                return steps
+            }
+
+            for value in dictionary.values {
+                if let steps = findRecipeSteps(in: value), !steps.isEmpty {
+                    return steps
+                }
+            }
+        } else if let array = object as? [Any] {
+            for item in array {
+                if let steps = findRecipeSteps(in: item), !steps.isEmpty {
+                    return steps
+                }
+            }
+        }
+        return nil
+    }
+
+    private static func isRecipeType(_ value: Any?) -> Bool {
+        if let type = value as? String {
+            return type.caseInsensitiveCompare("Recipe") == .orderedSame
+        }
+        if let types = value as? [String] {
+            return types.contains { $0.caseInsensitiveCompare("Recipe") == .orderedSame }
+        }
+        return false
+    }
+
+    private static func flattenInstructions(_ value: Any?) -> [String] {
+        guard let value else { return [] }
+
+        if let text = value as? String {
+            let cleaned = clean(text)
+            return cleaned.isEmpty ? [] : [cleaned]
+        }
+
+        if let array = value as? [Any] {
+            return array.flatMap { flattenInstructions($0) }
+        }
+
+        if let dictionary = value as? [String: Any] {
+            if let text = dictionary["text"] as? String {
+                let cleaned = clean(text)
+                if !cleaned.isEmpty { return [cleaned] }
+            }
+            if let items = dictionary["itemListElement"] {
+                let nested = flattenInstructions(items)
+                if !nested.isEmpty { return nested }
+            }
+            if let name = dictionary["name"] as? String {
+                let cleaned = clean(name)
+                if !cleaned.isEmpty { return [cleaned] }
+            }
+        }
+
+        return []
+    }
+
+    private static func clean(_ text: String) -> String {
+        let noTags = text.replacingOccurrences(
+            of: "<[^>]+>",
+            with: " ",
+            options: .regularExpression
+        )
+        let decoded = noTags
+            .replacingOccurrences(of: "&amp;", with: "&")
+            .replacingOccurrences(of: "&quot;", with: "\"")
+            .replacingOccurrences(of: "&#34;", with: "\"")
+            .replacingOccurrences(of: "&#39;", with: "'")
+            .replacingOccurrences(of: "&apos;", with: "'")
+            .replacingOccurrences(of: "&nbsp;", with: " ")
+        return decoded
+            .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private static func deduplicated(_ steps: [String]) -> [String] {
+        var seen = Set<String>()
+        var result: [String] = []
+        for step in steps {
+            let key = step.lowercased()
+            if seen.insert(key).inserted {
+                result.append(step)
+            }
+        }
+        return result
     }
 }
