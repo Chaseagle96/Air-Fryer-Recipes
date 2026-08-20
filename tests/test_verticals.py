@@ -26,4 +26,3 @@ def test_vertical_registry_resolves_both_verticals_with_isolated_state() -> None
 def test_unknown_vertical_fails_without_fallback() -> None:
     with pytest.raises(ValueError, match="unknown vertical"):
         get_vertical("deep-fryer", CONFIG)
-
