@@ -332,30 +332,16 @@ private struct RecipeCardView: View {
 
     private var backFace: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 10) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(recipe.title)
-                        .font(.headline.bold())
-                        .lineLimit(2)
-                        .minimumScaleFactor(0.82)
-                    Text("Recipe details")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-                Button {
-                    showFront()
-                } label: {
-                    Image(systemName: "arrow.uturn.backward")
-                        .font(.headline.weight(.bold))
-                        .frame(width: 42, height: 42)
-                }
-                .buttonStyle(.plain)
-                .recipeGlassSurface(cornerRadius: 18, interactive: true)
-                .accessibilityLabel("Show ranking card")
-                .accessibilityIdentifier("discover.flipBack")
+            VStack(alignment: .leading, spacing: 2) {
+                Text(recipe.title)
+                    .font(.headline.bold())
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.82)
+                Text("Recipe details · Tap anywhere to return")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 16)
             .padding(.top, 14)
             .padding(.bottom, 10)
@@ -425,6 +411,13 @@ private struct RecipeCardView: View {
         }
         .frame(width: cardWidth, height: cardHeight)
         .clipped()
+        .contentShape(Rectangle())
+        .simultaneousGesture(
+            TapGesture().onEnded {
+                showFront()
+            }
+        )
+        .accessibilityHint("Tap anywhere on the recipe details card to show the ranking card.")
     }
 
     @ViewBuilder
