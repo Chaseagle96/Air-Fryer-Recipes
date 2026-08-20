@@ -59,6 +59,7 @@ jobs:
           mkdir -p output
           pip-audit -r requirements.txt -f cyclonedx-json -o output/sbom.json
 
+      # Keep CI lint parity with the repository's full Ruff configuration.
       - name: Lint source and tests
         shell: bash
         run: |
