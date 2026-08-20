@@ -25,12 +25,16 @@ final class RecipeIntelligenceUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Crispy Air Fryer Chicken Thighs"].waitForExistence(timeout: 5))
     }
 
-    func testVerticalSwitchAndSwipeSkipAreIndependentActions() {
+    func testMethodSwitchAndSwipeSkipAreIndependentActions() {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-testing"]
         app.launch()
 
-        let slowCooker = app.buttons["vertical.slow_cooker"]
+        let method = app.buttons["discover.method"]
+        XCTAssertTrue(method.waitForExistence(timeout: 5))
+        method.tap()
+
+        let slowCooker = app.buttons["method.slow_cooker"]
         XCTAssertTrue(slowCooker.waitForExistence(timeout: 5))
         slowCooker.tap()
 
@@ -47,6 +51,22 @@ final class RecipeIntelligenceUITests: XCTestCase {
         let nextCard = app.descendants(matching: .any)["discover.card"]
         XCTAssertTrue(nextCard.waitForExistence(timeout: 5))
         XCTAssertNotEqual(nextCard.label, beforeLabel)
+    }
+
+    func testMethodAndIngredientReplaceDirectVerticalTabs() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing"]
+        app.launch()
+
+        XCTAssertTrue(app.navigationBars["Discover"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.buttons["discover.method"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["discover.ingredient"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["vertical.air_fryer"].exists)
+        XCTAssertFalse(app.buttons["vertical.slow_cooker"].exists)
+
+        app.buttons["discover.ingredient"].tap()
+        XCTAssertTrue(app.textFields["ingredient.search"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["ingredient.apply"].exists)
     }
 
     func testCardFlipsToScrollableRecipeDetailsAndTapReturns() {
