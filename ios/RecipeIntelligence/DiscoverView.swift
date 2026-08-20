@@ -636,8 +636,8 @@ private final class ShakeUndoViewController: UIViewController {
         ensureFirstResponder()
     }
 
-    override func viewDidMove(toParent parent: UIViewController?) {
-        super.viewDidMove(toParent: parent)
+    override func didMove(toParent parent: UIViewController?) {
+        super.didMove(toParent: parent)
         ensureFirstResponder()
     }
 
