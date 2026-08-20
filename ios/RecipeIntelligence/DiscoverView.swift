@@ -5,12 +5,26 @@ import UIKit
 struct DiscoverView: View {
     @EnvironmentObject private var appModel: AppModel
     @AppStorage("discover.dismissedFeedStatusMessage") private var dismissedFeedStatusMessage = ""
+    @StateObject private var ingredientFeed = IngredientFeedModel()
+    @State private var isIngredientPickerPresented = false
+
+    private var activeIngredient: String? {
+        ingredientFeed.activeIngredient
+    }
+
+    private var activeRecipes: [RemoteRecipe] {
+        activeIngredient == nil ? appModel.deck : ingredientFeed.recipes
+    }
+
+    private var isCurrentFeedLoading: Bool {
+        activeIngredient == nil ? appModel.isLoading : ingredientFeed.isLoading
+    }
 
     var body: some View {
         GeometryReader { proxy in
             let horizontalPadding: CGFloat = 16
             let verticalPadding: CGFloat = 8
-            let selectorHeight: CGFloat = 58
+            let selectorHeight: CGFloat = 62
             let spacing: CGFloat = 12
             let cardWidth = max(0, proxy.size.width - (horizontalPadding * 2))
             let cardHeight = max(
@@ -20,15 +34,20 @@ struct DiscoverView: View {
 
             VStack(spacing: spacing) {
                 Group {
-                    if appModel.isLoading && appModel.deck.isEmpty {
-                        ProgressView("Finding great recipes…")
-                            .controlSize(.large)
-                            .frame(width: cardWidth, height: cardHeight)
-                            .recipeGlassSurface(cornerRadius: 30)
-                    } else if let recipe = appModel.deck.first {
+                    if isCurrentFeedLoading && activeRecipes.isEmpty {
+                        ProgressView(
+                            activeIngredient.map { "Finding \($0) recipes…" }
+                                ?? "Finding great recipes…"
+                        )
+                        .controlSize(.large)
+                        .frame(width: cardWidth, height: cardHeight)
+                        .recipeGlassSurface(cornerRadius: 30)
+                    } else if let recipe = activeRecipes.first {
                         deck(recipe, cardWidth: cardWidth, cardHeight: cardHeight)
                             .task(id: recipe.recipeID) {
-                                await appModel.prefetchIfNeeded(recipe)
+                                if activeIngredient == nil {
+                                    await appModel.prefetchIfNeeded(recipe)
+                                }
                             }
                     } else {
                         emptyState
@@ -38,7 +57,7 @@ struct DiscoverView: View {
                 .frame(width: cardWidth, height: cardHeight)
                 .clipped()
 
-                verticalSelector
+                feedSelector
                     .frame(width: cardWidth, height: selectorHeight)
                     .clipped()
             }
@@ -63,18 +82,35 @@ struct DiscoverView: View {
         .navigationBarTitleDisplayMode(.inline)
         .background {
             ShakeUndoDetector(isEnabled: appModel.canUndo) {
-                appModel.undoLastDecision()
+                undoLastDecision()
             }
             .allowsHitTesting(false)
             .accessibilityHidden(true)
         }
-        .animation(.snappy, value: appModel.deck.first?.recipeID)
+        .sheet(isPresented: $isIngredientPickerPresented) {
+            IngredientPickerSheet(
+                selectedIngredient: activeIngredient,
+                onApply: applyIngredient,
+                onClear: clearIngredient
+            )
+        }
+        .animation(.snappy, value: activeRecipes.first?.recipeID)
         .recipeToolbarBehavior()
     }
 
     @ViewBuilder
     private var refreshStatus: some View {
-        if appModel.isRefreshingFeed {
+        if let activeIngredient, ingredientFeed.isLoading {
+            Label("Finding \(activeIngredient) recipes…", systemImage: "magnifyingglass")
+                .font(.footnote.weight(.semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .frame(maxWidth: .infinity)
+                .recipeGlassSurface(cornerRadius: 16)
+                .accessibilityIdentifier("discover.refreshStatus")
+        } else if activeIngredient == nil, appModel.isRefreshingFeed {
             Label("Checking for new rankings…", systemImage: "arrow.triangle.2.circlepath")
                 .font(.footnote.weight(.semibold))
                 .lineLimit(1)
@@ -84,7 +120,8 @@ struct DiscoverView: View {
                 .frame(maxWidth: .infinity)
                 .recipeGlassSurface(cornerRadius: 16)
                 .accessibilityIdentifier("discover.refreshStatus")
-        } else if let message = appModel.feedStatusMessage,
+        } else if activeIngredient == nil,
+                  let message = appModel.feedStatusMessage,
                   message != dismissedFeedStatusMessage {
             HStack(spacing: 10) {
                 Text(message)
@@ -113,37 +150,126 @@ struct DiscoverView: View {
         }
     }
 
-    private var verticalSelector: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            RecipeGlassGroup(spacing: 8) {
-                HStack(spacing: 8) {
+    private var feedSelector: some View {
+        RecipeGlassGroup(spacing: 8) {
+            HStack(spacing: 8) {
+                Menu {
                     ForEach(appModel.verticals) { vertical in
-                        let selected = appModel.selectedVertical?.id == vertical.id
                         Button {
-                            Task { await appModel.selectVertical(vertical) }
+                            Task { await selectMethod(vertical) }
                         } label: {
-                            Label(vertical.name, systemImage: vertical.icon)
-                                .font(.subheadline.weight(.semibold))
-                                .lineLimit(1)
-                                .padding(.horizontal, 14)
-                                .frame(minHeight: 50)
-                                .recipeGlassSurface(
-                                    cornerRadius: 22,
-                                    tint: selected ? RecipeDesign.accent.opacity(0.28) : nil,
-                                    interactive: true
-                                )
+                            if appModel.selectedVertical?.id == vertical.id {
+                                Label(vertical.name, systemImage: "checkmark")
+                            } else {
+                                Label(vertical.name, systemImage: vertical.icon)
+                            }
                         }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("Explore \(vertical.name) recipes")
-                        .accessibilityAddTraits(selected ? .isSelected : [])
-                        .accessibilityIdentifier("vertical.\(vertical.id)")
+                        .accessibilityIdentifier("method.\(vertical.id)")
                     }
+                } label: {
+                    filterLabel(
+                        title: "Method",
+                        value: appModel.selectedVertical?.name ?? "Choose",
+                        systemImage: "slider.horizontal.3",
+                        showsChevron: true,
+                        selected: true
+                    )
                 }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Method, \(appModel.selectedVertical?.name ?? "Choose method")")
+                .accessibilityIdentifier("discover.method")
+
+                Button {
+                    isIngredientPickerPresented = true
+                } label: {
+                    filterLabel(
+                        title: "Ingredient",
+                        value: activeIngredient ?? "Any",
+                        systemImage: "carrot.fill",
+                        showsChevron: true,
+                        selected: activeIngredient != nil
+                    )
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Ingredient, \(activeIngredient ?? "Any")")
+                .accessibilityIdentifier("discover.ingredient")
             }
-            .padding(.horizontal, 2)
-            .padding(.vertical, 4)
         }
+        .padding(.horizontal, 2)
+        .padding(.vertical, 4)
         .accessibilityIdentifier("discover.feedSelector")
+    }
+
+    private func filterLabel(
+        title: String,
+        value: String,
+        systemImage: String,
+        showsChevron: Bool,
+        selected: Bool
+    ) -> some View {
+        HStack(spacing: 9) {
+            Image(systemName: systemImage)
+                .font(.body.weight(.semibold))
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                Text(value)
+                    .font(.subheadline.weight(.semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.78)
+            }
+
+            Spacer(minLength: 2)
+
+            if showsChevron {
+                Image(systemName: "chevron.down")
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.horizontal, 12)
+        .frame(maxWidth: .infinity, minHeight: 54)
+        .recipeGlassSurface(
+            cornerRadius: 22,
+            tint: selected ? RecipeDesign.accent.opacity(0.20) : nil,
+            interactive: true
+        )
+    }
+
+    private func selectMethod(_ vertical: RecipeVertical) async {
+        await appModel.selectVertical(vertical)
+        if let activeIngredient {
+            await ingredientFeed.load(
+                vertical: vertical,
+                ingredient: activeIngredient,
+                forceRefresh: true
+            )
+        }
+    }
+
+    private func applyIngredient(_ ingredient: String) {
+        guard let vertical = appModel.selectedVertical else { return }
+        Task {
+            await ingredientFeed.load(
+                vertical: vertical,
+                ingredient: ingredient,
+                forceRefresh: true
+            )
+        }
+    }
+
+    private func clearIngredient() {
+        ingredientFeed.clear()
+    }
+
+    private func undoLastDecision() {
+        appModel.undoLastDecision()
+        if let restoredRecipe = appModel.deck.first {
+            ingredientFeed.restore(restoredRecipe)
+        }
     }
 
     private func deck(
@@ -157,12 +283,24 @@ struct DiscoverView: View {
             cardHeight: cardHeight,
             onDecision: { decision in
                 appModel.handleDecision(decision, recipe: topRecipe)
+                if activeIngredient != nil {
+                    ingredientFeed.remove(topRecipe)
+                }
             },
             onOpen: {
                 appModel.recordOpened(topRecipe)
             },
             onRefresh: {
-                await appModel.refreshCurrentFeed(trigger: .manual)
+                if let activeIngredient,
+                   let vertical = appModel.selectedVertical {
+                    await ingredientFeed.load(
+                        vertical: vertical,
+                        ingredient: activeIngredient,
+                        forceRefresh: true
+                    )
+                } else {
+                    await appModel.refreshCurrentFeed(trigger: .manual)
+                }
             }
         )
         .id(topRecipe.recipeID)
@@ -171,19 +309,43 @@ struct DiscoverView: View {
         .contentShape(Rectangle())
     }
 
+    @ViewBuilder
     private var emptyState: some View {
-        ContentUnavailableView {
-            Label("You’re caught up", systemImage: "checkmark.circle")
-        } description: {
-            Text(appModel.errorMessage ?? "Choose another feed, or check back after Recipe Intelligence finds more recipes.")
-        } actions: {
-            Button("Try Again") {
-                Task { await appModel.retry() }
+        if let activeIngredient {
+            ContentUnavailableView {
+                Label("No \(activeIngredient) recipes", systemImage: "magnifyingglass")
+            } description: {
+                Text(
+                    ingredientFeed.errorMessage
+                        ?? "Recipe Intelligence has not found an eligible \(activeIngredient) recipe for this method yet."
+                )
+            } actions: {
+                Button("Change Ingredient") {
+                    isIngredientPickerPresented = true
+                }
+                .recipeGlassButton(prominent: true)
+
+                Button("Any Ingredient") {
+                    clearIngredient()
+                }
+                .recipeGlassButton()
             }
-            .recipeGlassButton(prominent: true)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .recipeGlassSurface(cornerRadius: 30)
+        } else {
+            ContentUnavailableView {
+                Label("You’re caught up", systemImage: "checkmark.circle")
+            } description: {
+                Text(appModel.errorMessage ?? "Choose another method, or check back after Recipe Intelligence finds more recipes.")
+            } actions: {
+                Button("Try Again") {
+                    Task { await appModel.retry() }
+                }
+                .recipeGlassButton(prominent: true)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .recipeGlassSurface(cornerRadius: 30)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .recipeGlassSurface(cornerRadius: 30)
     }
 }
 
