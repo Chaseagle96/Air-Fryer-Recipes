@@ -792,7 +792,7 @@ def qualification_metrics(
         and all(page.evidence_status == "schema_only" for page in rated_pages)
     )
 
-    return {
+    metrics = {
         "pages_sampled": sampled,
         "pages_fetched": len(fetched_pages),
         "recipes_recognized": len(recipe_pages),
@@ -817,12 +817,34 @@ def qualification_metrics(
         "robots_status": robots_status,
         "suspicious_uniform_rating_evidence": suspicious_uniform_ratings,
     }
+    evidence_pages = [page for page in recipe_pages if page.has_rating or page.ranking_extractable]
+    metrics["ranking_evidence_pages"] = len(evidence_pages)
+    metrics["ranking_evidence_coverage_ratio"] = len(evidence_pages) / len(recipe_pages) if recipe_pages else 0.0
+    metrics["ranking_row_yield"] = len(ranking_extractable) / len(recipe_pages) if recipe_pages else 0.0
+    metrics["extraction_success_rate"] = (
+        len(ranking_extractable) / len(evidence_pages) if evidence_pages else None
+    )
+    return metrics
 
 
 def score_source_quality(metrics: dict[str, Any], policy: dict[str, Any]) -> tuple[float, dict[str, float]]:
     weights = policy.get("weights", {}) or {}
     relevance = 100.0 * min(1.0, 0.65 * float(metrics.get("vertical_relevance_ratio") or 0.0) + 0.35 * min(1.0, float(metrics.get("qualifying_vertical_recipe_count") or 0) / max(1.0, float(policy.get("target_vertical_recipe_count") or 20))))
-    extraction = 100.0 * min(1.0, 0.50 * float(metrics.get("recipe_structure_rate") or 0.0) + 0.30 * float(metrics.get("field_completeness") or 0.0) + 0.20 * float(metrics.get("substantive_recipe_ratio") or 0.0))
+    conditional_extraction = metrics.get("extraction_success_rate")
+    if conditional_extraction is None:
+        extraction_unit = (
+            0.50 * float(metrics.get("recipe_structure_rate") or 0.0)
+            + 0.30 * float(metrics.get("field_completeness") or 0.0)
+            + 0.20 * float(metrics.get("substantive_recipe_ratio") or 0.0)
+        )
+    else:
+        extraction_unit = (
+            0.35 * float(metrics.get("recipe_structure_rate") or 0.0)
+            + 0.25 * float(metrics.get("field_completeness") or 0.0)
+            + 0.20 * float(metrics.get("substantive_recipe_ratio") or 0.0)
+            + 0.20 * float(conditional_extraction)
+        )
+    extraction = 100.0 * min(1.0, extraction_unit)
     editorial = 100.0 * min(1.0, float(metrics.get("editorial_provenance_ratio") or 0.0))
     crawl = 100.0 * min(1.0, float(metrics.get("fetch_success_rate") or 0.0))
     rated = float(metrics.get("rating_coverage_ratio") or 0.0)
@@ -888,6 +910,14 @@ def hard_gate_failures(metrics: dict[str, Any], policy: dict[str, Any]) -> tuple
         permanent.append("crawler_trap_risk")
     if float(metrics.get("rating_conflict_ratio") or 0.0) > float(hard.get("max_rating_conflict_ratio", 0.50)):
         permanent.append("rating_evidence_conflicts")
+    evidence_pages = int(metrics.get("ranking_evidence_pages") or 0)
+    extraction_success = metrics.get("extraction_success_rate")
+    if (
+        evidence_pages >= int(hard.get("min_ranking_evidence_pages_for_extraction_gate", 3))
+        and extraction_success is not None
+        and float(extraction_success) < float(hard.get("min_extraction_success_rate", 0.60))
+    ):
+        permanent.append("ranking_extractor_incompatible")
     return permanent, temporary
 
 
