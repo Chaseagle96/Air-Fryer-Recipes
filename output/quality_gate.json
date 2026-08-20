@@ -1,15 +1,15 @@
 {
   "failures": [],
   "metrics": {
-    "anomalies": 33,
-    "crawl_success_rate": 0.99,
+    "anomalies": 27,
+    "crawl_success_rate": 0.98,
     "crawl_targets": 100,
     "current_deduplicated_count": 66,
     "current_model_semver": "5.2.0",
     "current_model_version": 5,
     "current_ranked_recipes": 5562,
-    "dom_structure_changes": 32,
-    "extract_success_rate": 0.98989898989899,
+    "dom_structure_changes": 25,
+    "extract_success_rate": 0.9591836734693877,
     "model_identity_changed": false,
     "previous_deduplicated_count": 66,
     "previous_model_semver": "5.2.0",
@@ -48,6 +48,6 @@
     "top50_overlap_warn_below": 0.5
   },
   "warnings": [
-    "DOM structure changes elevated at 32 across 100 crawl targets"
+    "DOM structure changes elevated at 25 across 100 crawl targets"
   ]
 }
