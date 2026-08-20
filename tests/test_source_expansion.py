@@ -452,7 +452,7 @@ def _integration_config(tmp_path: Path) -> Path:
     state = tmp_path / "state.json"
     state.write_text(json.dumps({"recipes": {}, "url_catalog": {}, "source_history": [], "schema_version": 4}), encoding="utf-8")
     config = {
-        "source_gate_version": 1,
+        "source_gate_version": 2,
         "aggregate_output_path": str(tmp_path / "aggregate.json"),
         "providers": {"brave_search": {"enabled": False}, "google_cse": {"enabled": False}},
         "budgets": {

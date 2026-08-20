@@ -219,7 +219,7 @@ Candidate-domain awareness is shared, but vertical trust is not. If Air Fryer di
 
 A source-expansion or catalog-sync workflow failure does **not** prevent Air Fryer or Slow Cooker hourly refreshes from operating against their last approved effective allowlists and catalogs.
 
-Production source expansion runs through `airfryer_rankings.source_expansion_v2`, which installs gate-v2 scoring and metrics over the shared discovery, security, registry, lifecycle, and persistence engine. This keeps the decision model explicitly versioned while preserving all historical v1 audit evidence.
+Production source expansion runs through `airfryer_rankings.source_expansion`, which contains authoritative gate-v2 scoring and metrics over the shared discovery, security, registry, lifecycle, and persistence engine. Historical v1 audit evidence remains preserved in persisted records.
 
 ## Observability and auditability
 

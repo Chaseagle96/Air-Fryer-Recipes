@@ -19,7 +19,7 @@ on:
     paths:
       - '.github/workflows/source-expansion.yml'
       - 'src/airfryer_rankings/source_expansion.py'
-      - 'src/airfryer_rankings/source_expansion_v2.py'
+      - 'src/airfryer_rankings/source_expansion.py'
       - 'src/airfryer_rankings/source_registry.py'
       - 'src/airfryer_rankings/source_security.py'
       - 'src/airfryer_rankings/source_hygiene.py'
@@ -114,18 +114,18 @@ jobs:
         run: |
           PYTHONPATH=src python - <<'PY'
           from pathlib import Path
-          from airfryer_rankings.source_expansion_v2 import SOURCE_GATE_VERSION, load_source_discovery_config
+          from airfryer_rankings.source_expansion import SOURCE_GATE_VERSION, load_source_discovery_config
 
           config = load_source_discovery_config(Path('config/source_discovery.yaml'))
           configured = int(config.get('source_gate_version') or 0)
           assert configured == SOURCE_GATE_VERSION, (configured, SOURCE_GATE_VERSION)
-          print('source_gate_version=', configured, 'adapter=source_expansion_v2')
+          print('source_gate_version=', configured, 'engine=source_expansion')
           PY
 
       - name: Validate source-expansion configuration
         if: steps.mode.outputs.production != 'true'
         run: |
-          PYTHONPATH=src python -m airfryer_rankings.source_expansion_v2 --mode smoke --dry-run
+          PYTHONPATH=src python -m airfryer_rankings.source_expansion --mode smoke --dry-run
           PYTHONPATH=src python scripts/retire_nonpublisher_candidates.py --dry-run
 
       - name: Retire non-publisher candidates
@@ -140,36 +140,15 @@ jobs:
           if [ "${{ github.event_name }}" = "push" ] && [ -f config/source_discovery_bootstrap.yaml ]; then
             seed_args=(--seed-file config/source_discovery_bootstrap.yaml)
           fi
-          PYTHONPATH=src python -m airfryer_rankings.source_expansion_v2 \
+          PYTHONPATH=src python -m airfryer_rankings.source_expansion \
             --mode "${{ steps.mode.outputs.mode }}" \
             "${seed_args[@]}"
 
       - name: Validate source registries and observability
         if: steps.mode.outputs.production == 'true'
         run: |
-          PYTHONPATH=src python - <<'PY'
-          import json
-          from pathlib import Path
-          from airfryer_rankings.models import load_sources
-          from airfryer_rankings.source_registry import effective_source_configs, load_source_registry
-
-          checks = [
-              ('air_fryer', Path('config/sources.yaml'), Path('data/source_registry.json'), Path('output/source_expansion.json')),
-              ('slow_cooker', Path('config/verticals/slow_cooker/sources.yaml'), Path('verticals/slow_cooker/data/source_registry.json'), Path('verticals/slow_cooker/output/source_expansion.json')),
-          ]
-          for vertical, sources_path, registry_path, metrics_path in checks:
-              registry = load_source_registry(registry_path, vertical)
-              base = load_sources(sources_path, include_discovered=False)
-              effective = effective_source_configs(base, registry)
-              metrics = json.loads(metrics_path.read_text(encoding='utf-8'))
-              assert len(effective) >= len(base)
-              assert int(metrics['manual_source_count']) == len(base)
-              assert int(metrics['effective_source_count']) == len(effective)
-              assert int(metrics['catalog_url_count']) >= 0
-              assert int(metrics['source_gate_version']) == 2
-              assert int(registry['source_gate_version']) == 2
-              print(vertical, 'manual=', len(base), 'effective=', len(effective), 'candidates=', len(registry['candidates']))
-          PY
+          PYTHONPATH=src python -m airfryer_rankings.ops validate-source-network \
+            --config config/source_discovery.yaml
 
       - name: Upload source-expansion diagnostics
         if: always()

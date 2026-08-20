@@ -10,7 +10,7 @@ from .models import SourceConfig, now_iso
 from .source_security import normalize_candidate_domain
 
 SOURCE_REGISTRY_SCHEMA_VERSION = 1
-SOURCE_GATE_VERSION = 1
+SOURCE_GATE_VERSION = 2
 
 DISCOVERED = "DISCOVERED"
 CANDIDATE = "CANDIDATE"

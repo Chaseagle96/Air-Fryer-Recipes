@@ -104,11 +104,19 @@ lifecycle:
 verticals:
   air_fryer:
     name: Air Fryer
+    root_path: .
     base_sources_path: config/sources.yaml
+    model_config_path: config/model.yaml
+    storage_config_path: config/storage.yaml
     state_path: data/state.json
     registry_path: data/source_registry.json
     output_dir: output
     events_dir: data/source_events
+    docs_root: docs
+    manifest_path: docs/api/manifest.json
+    authority_path: output/authority.json
+    public_authority_path: docs/api/authority.json
+    summary_path: output/summary.json
     include_pattern: '(?:air[-_ ]?fry(?:er|ing|ed)|airfry(?:er|ing|ed))'
     allow_unmatched_discovery_links: false
     query_terms:
@@ -125,11 +133,19 @@ verticals:
     ingredients: [cauliflower, zucchini, chickpeas, sweet potato]
   slow_cooker:
     name: Slow Cooker
+    root_path: verticals/slow_cooker
     base_sources_path: config/verticals/slow_cooker/sources.yaml
+    model_config_path: config/verticals/slow_cooker/model.yaml
+    storage_config_path: config/verticals/slow_cooker/storage.yaml
     state_path: verticals/slow_cooker/data/state.json
     registry_path: verticals/slow_cooker/data/source_registry.json
     output_dir: verticals/slow_cooker/output
     events_dir: verticals/slow_cooker/data/source_events
+    docs_root: verticals/slow_cooker/docs
+    manifest_path: verticals/slow_cooker/docs/api/manifest.json
+    authority_path: verticals/slow_cooker/output/authority.json
+    public_authority_path: verticals/slow_cooker/docs/api/authority.json
+    summary_path: verticals/slow_cooker/output/summary.json
     include_pattern: '(?:slow[-_ ]?cook(?:er|ing|ed)|crock[-_ ]?pot)'
     allow_unmatched_discovery_links: false
     query_terms:
