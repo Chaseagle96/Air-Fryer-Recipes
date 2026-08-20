@@ -1059,7 +1059,7 @@
       "wellplated.com",
       "wholesomeyum.com"
     ],
-    "full_catalog_baseline": true,
+    "full_catalog_baseline": false,
     "generation_fingerprint_sha256": "281da17ac19af2dcb9ef446d6c3e6aec60b5064e2b7b6d5f048ff6f5b543b0b1",
     "input_fingerprint_sha256": "6396d7012b0ef7d74d4eae5bcf4533516c0379cfd3eaf5c007f4c259352a071c",
     "leaderboard_fingerprint_sha256": "ae7e192a01b65a39ed5d979a2a3dacd442d2547f3eb0a4995c7a2bc1fde34ad8",
