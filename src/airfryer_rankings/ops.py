@@ -6,8 +6,8 @@ import argparse
 import json
 import os
 import subprocess
-from pathlib import Path
 import sys
+from pathlib import Path
 from typing import Any
 
 from .verticals import get_vertical, load_verticals
