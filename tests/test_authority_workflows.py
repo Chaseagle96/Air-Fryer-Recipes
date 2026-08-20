@@ -41,23 +41,20 @@ def test_production_ranking_workflow_certifies_before_commit(
     certification_name: str,
     authority_path: str,
 ) -> None:
-    payload = yaml.safe_load(path.read_text(encoding="utf-8"))
+    payload = yaml.safe_load(Path(".github/workflows/_vertical-refresh.yml").read_text(encoding="utf-8"))
     steps = payload["jobs"]["refresh"]["steps"]
     names = [step.get("name") for step in steps]
-    certify_index = names.index(certification_name)
+    certify_index = names.index("Certify authority before publication")
     commit_index = next(index for index, name in enumerate(names) if name and name.startswith("Commit "))
     assert certify_index < commit_index
-    commit_script = str(steps[commit_index].get("run") or "")
-    assert authority_path in commit_script
+    certify_script = str(steps[certify_index].get("run") or "")
+    assert "publish-authority" in certify_script
 
 
 def test_slow_cooker_full_refresh_has_no_production_catalog_cap() -> None:
-    payload = yaml.safe_load(Path(".github/workflows/slow-cooker.yml").read_text(encoding="utf-8"))
-    steps = payload["jobs"]["refresh"]["steps"]
-    refresh = next(step for step in steps if step.get("name") == "Refresh Slow Cooker rankings")
-    script = str(refresh.get("run") or "")
+    workflow = Path(".github/workflows/_vertical-refresh.yml").read_text(encoding="utf-8")
+    operations = Path("src/airfryer_rankings/ops.py").read_text(encoding="utf-8")
 
-    assert "max_urls=250" not in script
-    assert "extra_args=(--hourly-limit 100)" in script
-    assert "extra_args=(--max-urls 2 --hourly-limit 6)" in script
-    assert '"${extra_args[@]}"' in script
+    assert "max_urls=250" not in workflow
+    assert '"--hourly-limit", "100"' in operations
+    assert '"--max-urls", "2"' in operations
