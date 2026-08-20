@@ -1,27 +1,20 @@
 timestamp,severity,type,recipe_id,title,source,url,detail
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/270940/air-fryer-eggplant-parmesan/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/275553/breaded-air-fryer-pork-chops/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/275253/easy-air-fryer-baked-potatoes/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/278581/air-fryer-french-fries/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,allrecipes.com,https://www.allrecipes.com/recipe/279399/homemade-croutons-in-the-air-fryer/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,spendwithpennies.com,https://www.spendwithpennies.com/juicy-air-fryer-meatballs/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,skinnytaste.com,https://www.skinnytaste.com/air-fryer-peaches/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,skinnytaste.com,https://www.skinnytaste.com/air-fryer-salmon-recipes/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,everydayfamilycooking.com,https://www.everydayfamilycooking.com/air-fryer-cheese-curds/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,everydayfamilycooking.com,https://www.everydayfamilycooking.com/air-fryer-chicken-guide/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-biscuits/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-black-bean-burger/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-blackened-chicken-tenders/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-blackened-salmon-bites/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-bloomin-apples/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-blooming-onion/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-blueberry-cottage-cheese-toast/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-blueberry-crisp/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,kelvinskitchen.com,https://kelvinskitchen.com/recipe/air-fryer-twice-baked-potatoes/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,kelvinskitchen.com,https://kelvinskitchen.com/recipe/air-fryer-whole-chicken/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,kelvinskitchen.com,https://kelvinskitchen.com/recipe/air-fryer-whole-fish/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,kelvinskitchen.com,https://kelvinskitchen.com/recipe/authentic-tandoori-chicken-in-air-fryer/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,kelvinskitchen.com,https://kelvinskitchen.com/recipe/coconut-shrimp/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,kelvinskitchen.com,https://kelvinskitchen.com/recipe/crispy-air-fryer-salmon-recipe/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,dom_structure_changed,,,rachelcooks.com,https://www.rachelcooks.com/air-fryer-whole-chicken/,publisher markup contract changed
-2026-08-20T07:05:00.217364+00:00,medium,publisher_dom_contract_changes,,,,,dom_structure_changes=25 threshold=0 above
+2026-08-20T07:56:07.578511+00:00,medium,dom_structure_changed,,,spendwithpennies.com,https://www.spendwithpennies.com/air-fryer-hamburgers/,publisher markup contract changed
+2026-08-20T07:56:07.578511+00:00,medium,dom_structure_changed,,,spendwithpennies.com,https://www.spendwithpennies.com/air-fryer-meatloaf/,publisher markup contract changed
+2026-08-20T07:56:07.578511+00:00,medium,dom_structure_changed,,,spendwithpennies.com,https://www.spendwithpennies.com/crispy-air-fryer-pork-chops/,publisher markup contract changed
+2026-08-20T07:56:07.578511+00:00,medium,dom_structure_changed,,,everydayfamilycooking.com,https://www.everydayfamilycooking.com/air-fryer-fried-chicken/,publisher markup contract changed
+2026-08-20T07:56:07.578511+00:00,medium,fetch_error,,,everydayfamilycooking.com,https://www.everydayfamilycooking.com/air-fryer-chicken-recipes/,TooManyRedirects
+2026-08-20T07:56:07.578511+00:00,medium,dom_structure_changed,,,everydayfamilycooking.com,https://www.everydayfamilycooking.com/air-fryer-chicken-wings-baking-powder/,publisher markup contract changed
+2026-08-20T07:56:07.578511+00:00,medium,dom_structure_changed,,,skinnytaste.com,https://www.skinnytaste.com/anti-inflammatory-recipes/,publisher markup contract changed
+2026-08-20T07:56:07.578511+00:00,medium,dom_structure_changed,,,skinnytaste.com,https://www.skinnytaste.com/best-air-fryer-accessories/,publisher markup contract changed
+2026-08-20T07:56:07.578511+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-blueberry-hand-pies/,publisher markup contract changed
+2026-08-20T07:56:07.578511+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-blueberry-muffin-bites/,publisher markup contract changed
+2026-08-20T07:56:07.578511+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-blueberry-scones/,publisher markup contract changed
+2026-08-20T07:56:07.578511+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-boneless-chicken-thighs/,publisher markup contract changed
+2026-08-20T07:56:07.578511+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-brats-and-peppers/,publisher markup contract changed
+2026-08-20T07:56:07.578511+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-bread/,publisher markup contract changed
+2026-08-20T07:56:07.578511+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-breaded-pork-chops/,publisher markup contract changed
+2026-08-20T07:56:07.578511+00:00,medium,dom_structure_changed,,,airfryingfoodie.com,https://airfryingfoodie.com/air-fryer-breaded-shrimp/,publisher markup contract changed
+2026-08-20T07:56:07.578511+00:00,medium,dom_structure_changed,,,kelvinskitchen.com,https://kelvinskitchen.com/recipe/juicy-chicken-breast-air-fryer/,publisher markup contract changed
+2026-08-20T07:56:07.578511+00:00,medium,dom_structure_changed,,,kelvinskitchen.com,https://kelvinskitchen.com/recipe/these-air-fryer-brownies-are-so/,publisher markup contract changed
+2026-08-20T07:56:07.578511+00:00,medium,publisher_dom_contract_changes,,,,,dom_structure_changes=17 threshold=0 above
