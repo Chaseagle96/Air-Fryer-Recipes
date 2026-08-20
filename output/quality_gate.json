@@ -1,22 +1,22 @@
 {
   "failures": [],
   "metrics": {
-    "anomalies": 27,
+    "anomalies": 24,
     "crawl_success_rate": 1.0,
     "crawl_targets": 100,
-    "current_deduplicated_count": 68,
+    "current_deduplicated_count": 66,
     "current_model_semver": "5.2.0",
     "current_model_version": 5,
-    "current_ranked_recipes": 5560,
-    "dom_structure_changes": 27,
-    "extract_success_rate": 0.93,
+    "current_ranked_recipes": 5562,
+    "dom_structure_changes": 24,
+    "extract_success_rate": 0.96,
     "model_identity_changed": false,
-    "previous_deduplicated_count": 71,
+    "previous_deduplicated_count": 68,
     "previous_model_semver": "5.2.0",
     "previous_model_version": 5,
-    "previous_ranked_recipes": 5557,
-    "ranked_recipe_retention": 1.0005398596364945,
-    "ranking_eligible_rate": 0.9879175550817342,
+    "previous_ranked_recipes": 5560,
+    "ranked_recipe_retention": 1.000359712230216,
+    "ranking_eligible_rate": 0.988272921108742,
     "sources_stale_24h": 0,
     "top50_overlap_previous": 1.0
   },
@@ -48,6 +48,6 @@
     "top50_overlap_warn_below": 0.5
   },
   "warnings": [
-    "DOM structure changes elevated at 27 across 100 crawl targets"
+    "DOM structure changes elevated at 24 across 100 crawl targets"
   ]
 }
