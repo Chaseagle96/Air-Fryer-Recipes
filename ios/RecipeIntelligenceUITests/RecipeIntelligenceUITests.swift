@@ -66,15 +66,28 @@ final class RecipeIntelligenceUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Discover"].exists, "Recipe details should stay inside the static Discover screen.")
     }
 
-    func testAccessibleManualRefreshReportsCurrentFeed() {
+    func testPullDownRefreshReportsCurrentFeed() {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-testing"]
         app.launch()
 
         XCTAssertTrue(app.navigationBars["Discover"].waitForExistence(timeout: 8))
-        let refresh = app.buttons["discover.refresh"]
-        XCTAssertTrue(refresh.waitForExistence(timeout: 5))
-        refresh.tap()
+        XCTAssertFalse(app.buttons["discover.refresh"].exists, "Discover should not expose a dedicated refresh button.")
+
+        let card = app.descendants(matching: .any)["discover.card"]
+        XCTAssertTrue(card.waitForExistence(timeout: 5))
+        card.swipeDown()
+
         XCTAssertTrue(app.staticTexts["Recipe Intelligence is up to date."].waitForExistence(timeout: 5))
+    }
+
+    func testDiscoverCardHidesFeedRankBadge() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing"]
+        app.launch()
+
+        XCTAssertTrue(app.navigationBars["Discover"].waitForExistence(timeout: 8))
+        XCTAssertFalse(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH '#' AND label CONTAINS 'Air Fryer'")).firstMatch.exists)
+        XCTAssertFalse(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH '#' AND label CONTAINS 'Slow Cooker'")).firstMatch.exists)
     }
 }
