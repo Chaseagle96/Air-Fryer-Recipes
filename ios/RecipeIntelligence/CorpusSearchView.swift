@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct CorpusSearchView: View {
+    @EnvironmentObject private var appModel: AppModel
     @StateObject private var searchModel = CorpusSearchModel()
     @State private var selectedRecipe: RemoteRecipe?
 
@@ -25,6 +26,7 @@ struct CorpusSearchView: View {
             } else {
                 List(searchModel.results) { recipe in
                     Button {
+                        appModel.recordOpened(recipe)
                         selectedRecipe = recipe
                     } label: {
                         SearchRecipeRow(recipe: recipe)
@@ -55,7 +57,6 @@ struct CorpusSearchView: View {
             NavigationStack {
                 RemoteRecipeDetailView(recipe: recipe)
             }
-            .environmentObject(searchModel.appModelBridge)
         }
         .safeAreaInset(edge: .bottom) {
             if !searchModel.query.isEmpty && !searchModel.results.isEmpty {
@@ -143,19 +144,9 @@ final class CorpusSearchModel: ObservableObject {
     private var corpus: [RemoteRecipe] = []
     private var generation = UUID()
 
-    // RemoteRecipeDetailView expects the shared AppModel environment object for
-    // save/event actions. Search installs a lightweight bridge that uses an
-    // in-memory model container only for detail actions invoked from this sheet.
-    // RootView replaces this bridge with the real app model through environment.
-    let appModelBridge: AppModel
-
     init() {
         let isUITesting = ProcessInfo.processInfo.arguments.contains("--ui-testing")
-        let searchClient: any RecipeIntelligenceClient = isUITesting
-            ? PreviewRecipeIntelligenceClient()
-            : LiveRecipeIntelligenceClient()
-        self.client = searchClient
-        self.appModelBridge = SearchAppModelFactory.make(client: searchClient)
+        self.client = isUITesting ? PreviewRecipeIntelligenceClient() : LiveRecipeIntelligenceClient()
     }
 
     func loadIfNeeded() async {
@@ -280,28 +271,5 @@ final class CorpusSearchModel: ObservableObject {
         return recipes.filter {
             seen.insert("\($0.verticalID)|\($0.recipeID)").inserted
         }
-    }
-}
-
-@MainActor
-private enum SearchAppModelFactory {
-    static func make(client: any RecipeIntelligenceClient) -> AppModel {
-        // This bridge is only a fallback for isolated previews/UI tests. In the
-        // production tab hierarchy the real AppModel is injected by RootView.
-        let schema = Schema([
-            RecipeCacheRecord.self,
-            UserProfileRecord.self,
-            HouseholdRecord.self,
-            SavedRecipeRecord.self,
-            BehaviorEventRecord.self,
-            PersonalNoteRecord.self,
-            PersonalReviewRecord.self,
-            CookingEventRecord.self,
-            MealPlanEntry.self,
-            ShoppingListItem.self
-        ])
-        let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-        let container = try! ModelContainer(for: schema, configurations: [configuration])
-        return AppModel(modelContext: container.mainContext, client: client)
     }
 }
