@@ -14,6 +14,10 @@ struct RootView: View {
                 .tabItem { Label("Saved", systemImage: "heart.fill") }
                 .accessibilityIdentifier("tab.saved")
 
+            NavigationStack { CorpusSearchView() }
+                .tabItem { Label("Search", systemImage: "magnifyingglass") }
+                .accessibilityIdentifier("tab.search")
+
             NavigationStack { PlannerView() }
                 .tabItem { Label("Plan", systemImage: "calendar") }
                 .accessibilityIdentifier("tab.plan")
