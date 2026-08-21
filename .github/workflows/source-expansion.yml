@@ -19,7 +19,6 @@ on:
     paths:
       - '.github/workflows/source-expansion.yml'
       - 'src/airfryer_rankings/source_expansion.py'
-      - 'src/airfryer_rankings/source_expansion.py'
       - 'src/airfryer_rankings/source_registry.py'
       - 'src/airfryer_rankings/source_security.py'
       - 'src/airfryer_rankings/source_hygiene.py'
@@ -45,12 +44,12 @@ on:
 permissions:
   contents: write
 
-# Source expansion and promoted-source catalog synchronization both write source
-# observability outputs. A shared repository-level concurrency group serializes
-# those workflows on the same ref so their git pull/rebase/commit phases cannot
-# race each other.
+# Source Expansion mutates registries, source-event history, and diagnostics used
+# by both verticals. Production therefore shares the repository-state mutation
+# domain with both ranking refreshes and Source Catalog Sync. At most one production
+# mutation runs at a time; newer queued work may coalesce an older pending run.
 concurrency:
-  group: recipe-intelligence-source-network-${{ github.ref }}
+  group: ${{ github.event_name == 'pull_request' && format('{0}-{1}', github.workflow, github.ref) || 'recipe-intelligence-production-state' }}
   cancel-in-progress: false
 
 env:

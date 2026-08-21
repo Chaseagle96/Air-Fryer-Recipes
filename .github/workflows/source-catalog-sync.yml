@@ -28,11 +28,12 @@ on:
 permissions:
   contents: write
 
-# This intentionally shares a repository-level concurrency group with Source
-# Expansion. Both workflows update source-expansion diagnostics, so serializing
-# them prevents cross-workflow git/rebase races on main.
+# Catalog Sync mutates both vertical URL catalogs and shared source-expansion
+# diagnostics. Production therefore shares the repository-state mutation domain
+# with Source Expansion and both ranking refresh workflows. At most one production
+# mutation runs at a time; pull-request validation stays isolated per workflow/ref.
 concurrency:
-  group: recipe-intelligence-source-network-${{ github.ref }}
+  group: ${{ github.event_name == 'pull_request' && format('{0}-{1}', github.workflow, github.ref) || 'recipe-intelligence-production-state' }}
   cancel-in-progress: false
 
 jobs:
