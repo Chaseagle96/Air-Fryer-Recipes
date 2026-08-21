@@ -13,7 +13,7 @@
   "catalog_sync": [
     {
       "discovered_urls": 176,
-      "elapsed_seconds": 52.99,
+      "elapsed_seconds": 56.29,
       "new_urls": 0,
       "robots_status": "ok",
       "sitemap_docs": 13,
@@ -22,7 +22,7 @@
     },
     {
       "discovered_urls": 166,
-      "elapsed_seconds": 5.78,
+      "elapsed_seconds": 8.07,
       "new_urls": 0,
       "robots_status": "ok",
       "sitemap_docs": 8,
@@ -31,7 +31,7 @@
     },
     {
       "discovered_urls": 355,
-      "elapsed_seconds": 1.58,
+      "elapsed_seconds": 1.48,
       "new_urls": 0,
       "robots_status": "ok",
       "sitemap_docs": 7,
@@ -40,7 +40,7 @@
     },
     {
       "discovered_urls": 174,
-      "elapsed_seconds": 9.72,
+      "elapsed_seconds": 1.09,
       "new_urls": 0,
       "robots_status": "ok",
       "sitemap_docs": 6,
@@ -48,7 +48,7 @@
       "status": "ok"
     }
   ],
-  "catalog_sync_generated_at": "2026-08-21T20:59:29.585795+00:00",
+  "catalog_sync_generated_at": "2026-08-21T21:08:04.166832+00:00",
   "catalog_url_count": 4060,
   "catalog_urls_added_after_promotion": 0,
   "catalog_urls_coalesced": 0,
