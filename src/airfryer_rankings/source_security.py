@@ -3,9 +3,12 @@ from __future__ import annotations
 import ipaddress
 import socket
 from collections.abc import Callable, Iterable
+from typing import Any
 from urllib.parse import urljoin, urlsplit, urlunsplit
 
 import requests
+from requests.adapters import HTTPAdapter
+from requests.cookies import extract_cookies_to_jar
 
 from .models import HEADERS
 
@@ -181,7 +184,7 @@ def resolve_public_addresses(host: str, resolver: Resolver = socket.getaddrinfo)
     return tuple(addresses)
 
 
-def validate_public_url(url: str, resolver: Resolver = socket.getaddrinfo) -> str:
+def _normalize_public_url(url: str) -> str:
     raw = str(url or "").strip()
     try:
         parsed = urlsplit(raw)
@@ -196,13 +199,117 @@ def validate_public_url(url: str, resolver: Resolver = socket.getaddrinfo) -> st
     normalized = normalize_candidate_domain(host)
     if not normalized:
         raise UnsafeNetworkTarget(f"invalid public hostname: {host!r}")
-    if parsed.port is not None and parsed.port not in {80, 443}:
-        raise UnsafeNetworkTarget(f"non-standard network port is not allowed: {parsed.port}")
-    resolve_public_addresses(normalized, resolver=resolver)
+    try:
+        port = parsed.port
+    except ValueError as exc:
+        raise UnsafeNetworkTarget("malformed URL port") from exc
+    if port is not None and port not in {80, 443}:
+        raise UnsafeNetworkTarget(f"non-standard network port is not allowed: {port}")
     netloc = normalized
-    if parsed.port is not None:
-        netloc += f":{parsed.port}"
+    if port is not None:
+        netloc += f":{port}"
     return urlunsplit((scheme, netloc, parsed.path or "/", parsed.query, ""))
+
+
+def validate_public_url(url: str, resolver: Resolver = socket.getaddrinfo) -> str:
+    normalized_url = _normalize_public_url(url)
+    host = urlsplit(normalized_url).hostname or ""
+    resolve_public_addresses(host, resolver=resolver)
+    return normalized_url
+
+
+def _host_header(url: str) -> str:
+    parsed = urlsplit(url)
+    host = parsed.hostname or ""
+    port = parsed.port
+    default_port = 443 if parsed.scheme == "https" else 80
+    if port is not None and port != default_port:
+        return f"{host}:{port}"
+    return host
+
+
+def _ip_netloc(address: str, port: int | None) -> str:
+    ip = ipaddress.ip_address(address)
+    host = f"[{ip}]" if ip.version == 6 else str(ip)
+    if port is not None:
+        return f"{host}:{port}"
+    return host
+
+
+class _PinnedIPAdapter(HTTPAdapter):
+    """Connect to one validated IP while preserving the publisher HTTP/TLS identity."""
+
+    def __init__(self, connect_ip: str, server_hostname: str, host_header: str, *, max_retries: Any = 0) -> None:
+        self._connect_ip = connect_ip
+        self._server_hostname = server_hostname
+        self._host_header = host_header
+        super().__init__(max_retries=max_retries)
+
+    def build_connection_pool_key_attributes(
+        self,
+        request: requests.PreparedRequest,
+        verify: Any,
+        cert: Any = None,
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
+        host_params, pool_kwargs = super().build_connection_pool_key_attributes(request, verify, cert)
+        host_params["host"] = self._connect_ip
+        if host_params.get("scheme") == "https":
+            pool_kwargs["server_hostname"] = self._server_hostname
+            pool_kwargs["assert_hostname"] = self._server_hostname
+        return host_params, pool_kwargs
+
+    def add_headers(self, request: requests.PreparedRequest, **kwargs: Any) -> None:
+        request.headers["Host"] = self._host_header
+
+    def request_url(self, request: requests.PreparedRequest, proxies: dict[str, str] | None) -> str:
+        target = super().request_url(request, proxies)
+        if "://" not in target:
+            return target
+        parsed = urlsplit(target)
+        return urlunsplit(
+            (
+                parsed.scheme,
+                _ip_netloc(self._connect_ip, parsed.port),
+                parsed.path or "/",
+                parsed.query,
+                "",
+            )
+        )
+
+
+def _send_pinned(
+    session: requests.Session,
+    url: str,
+    connect_ip: str,
+    timeout: int,
+    headers: dict[str, str],
+) -> requests.Response:
+    parsed = urlsplit(url)
+    hostname = parsed.hostname or ""
+    prepared = session.prepare_request(requests.Request("GET", url, headers=headers))
+    original_adapter = session.get_adapter(url)
+    adapter = _PinnedIPAdapter(
+        connect_ip,
+        hostname,
+        _host_header(url),
+        max_retries=getattr(original_adapter, "max_retries", 0),
+    )
+    settings = session.merge_environment_settings(prepared.url or url, {}, False, session.verify, session.cert)
+    try:
+        response = adapter.send(
+            prepared,
+            stream=False,
+            timeout=timeout,
+            verify=settings["verify"],
+            cert=settings["cert"],
+            proxies=settings["proxies"],
+        )
+        # Materialize the body before closing the short-lived connection pool.
+        _ = response.content
+        extract_cookies_to_jar(session.cookies, prepared, response.raw)
+        return response
+    finally:
+        adapter.close()
 
 
 def safe_get(
@@ -214,19 +321,35 @@ def safe_get(
     max_redirects: int = 5,
     resolver: Resolver = socket.getaddrinfo,
 ) -> requests.Response:
-    """GET untrusted public-web content with DNS and redirect SSRF checks.
+    """GET untrusted public-web content without re-resolving an approved target.
 
-    Redirect following is explicit so every destination is independently validated.
-    The function intentionally does not attempt IP pinning; callers still benefit from
-    scheme/port restrictions, pre-request DNS checks, and redirect revalidation.
+    Each redirect destination is normalized and resolved once. Every returned DNS
+    address must be public, and the transport connects directly to one of those
+    validated IPs while preserving the original hostname for HTTP Host and HTTPS
+    SNI/certificate verification. This closes the DNS-rebinding gap between target
+    validation and the actual connection.
     """
 
     merged = dict(HEADERS)
     if headers:
         merged.update(headers)
-    current = validate_public_url(url, resolver=resolver)
+    current = _normalize_public_url(url)
     for redirect_number in range(max_redirects + 1):
-        response = session.get(current, headers=merged, timeout=timeout, allow_redirects=False)
+        parsed = urlsplit(current)
+        hostname = parsed.hostname or ""
+        addresses = resolve_public_addresses(hostname, resolver=resolver)
+        response: requests.Response | None = None
+        last_error: requests.RequestException | None = None
+        for address in addresses:
+            try:
+                response = _send_pinned(session, current, address, timeout, merged)
+                break
+            except requests.RequestException as exc:
+                last_error = exc
+        if response is None:
+            if last_error is not None:
+                raise last_error
+            raise UnsafeNetworkTarget(f"no validated connection target available for {hostname}")
         if response.status_code in _REDIRECT_STATUSES:
             if redirect_number >= max_redirects:
                 raise requests.TooManyRedirects(f"more than {max_redirects} redirects for {url}")
@@ -234,7 +357,7 @@ def safe_get(
             if not location:
                 response.raise_for_status()
                 return response
-            current = validate_public_url(urljoin(current, location), resolver=resolver)
+            current = _normalize_public_url(urljoin(current, location))
             continue
         if response.status_code != 304:
             response.raise_for_status()
