@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import json
 import statistics
 from copy import deepcopy
 from pathlib import Path
 from typing import Iterable
 
 from .models import SourceConfig, now_iso
+from .persistence import PersistenceValidationError, atomic_write_json, load_json_object
 from .source_security import normalize_candidate_domain
 
 SOURCE_REGISTRY_SCHEMA_VERSION = 1
@@ -49,37 +49,65 @@ def empty_source_registry(vertical: str) -> dict:
     }
 
 
+def _validate_source_registry_shape(payload: dict, target: Path) -> None:
+    expected_containers = {
+        "candidates": dict,
+        "manual_overrides": dict,
+        "audit": list,
+    }
+    for field, expected_type in expected_containers.items():
+        value = payload.get(field)
+        if value is not None and not isinstance(value, expected_type):
+            raise PersistenceValidationError(
+                f"Source registry field {field!r} must be {expected_type.__name__}: {target}"
+            )
+
+    for field in ("schema_version", "source_gate_version"):
+        value = payload.get(field)
+        if value is None:
+            continue
+        try:
+            int(value)
+        except (TypeError, ValueError) as exc:
+            raise PersistenceValidationError(f"Source registry field {field!r} is invalid: {target}") from exc
+
+    vertical = payload.get("vertical")
+    if vertical is not None and not isinstance(vertical, str):
+        raise PersistenceValidationError(f"Source registry field 'vertical' must be str: {target}")
+
+    for domain, record in (payload.get("candidates") or {}).items():
+        if not isinstance(record, dict):
+            raise PersistenceValidationError(f"Source registry candidate {domain!r} must be an object: {target}")
+    for domain, override in (payload.get("manual_overrides") or {}).items():
+        if not isinstance(override, dict):
+            raise PersistenceValidationError(
+                f"Source registry manual override {domain!r} must be an object: {target}"
+            )
+    for index, event in enumerate(payload.get("audit") or []):
+        if not isinstance(event, dict):
+            raise PersistenceValidationError(f"Source registry audit event {index} must be an object: {target}")
+
+
 def load_source_registry(path: str | Path, vertical: str) -> dict:
     target = Path(path)
     if not target.exists():
         return empty_source_registry(vertical)
-    try:
-        payload = json.loads(target.read_text(encoding="utf-8"))
-    except Exception:
-        payload = empty_source_registry(vertical)
-    if not isinstance(payload, dict):
-        payload = empty_source_registry(vertical)
+
+    payload = load_json_object(target)
+    _validate_source_registry_shape(payload, target)
     payload.setdefault("schema_version", SOURCE_REGISTRY_SCHEMA_VERSION)
     payload.setdefault("source_gate_version", SOURCE_GATE_VERSION)
     payload.setdefault("vertical", vertical)
     payload.setdefault("candidates", {})
     payload.setdefault("manual_overrides", {})
     payload.setdefault("audit", [])
-    if not isinstance(payload["candidates"], dict):
-        payload["candidates"] = {}
-    if not isinstance(payload["manual_overrides"], dict):
-        payload["manual_overrides"] = {}
-    if not isinstance(payload["audit"], list):
-        payload["audit"] = []
     return payload
 
 
 def save_source_registry(path: str | Path, registry: dict) -> None:
-    target = Path(path)
-    target.parent.mkdir(parents=True, exist_ok=True)
     registry["schema_version"] = SOURCE_REGISTRY_SCHEMA_VERSION
     registry["source_gate_version"] = int(registry.get("source_gate_version") or SOURCE_GATE_VERSION)
-    target.write_text(json.dumps(registry, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
+    atomic_write_json(path, registry, default=str)
 
 
 def _audit_event(
