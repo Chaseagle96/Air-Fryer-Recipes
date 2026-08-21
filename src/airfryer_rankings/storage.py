@@ -8,6 +8,7 @@ from typing import Iterable
 
 from .contracts import CLEAN_RECIPE_SCHEMA_VERSION, RAW_OBSERVATION_SCHEMA_VERSION
 from .models import DEFAULT_STATE, RecipeRow, parse_dt
+from .persistence import PersistenceValidationError, atomic_write_json, load_json_object
 
 # The persisted state envelope remains v4 for backward compatibility. Individual
 # clean recipe records and downstream contracts are independently versioned at V5.
@@ -73,26 +74,60 @@ def migrate_state(state: dict) -> dict:
     return state
 
 
+def _default_state() -> dict:
+    state = json.loads(json.dumps(DEFAULT_STATE))
+    state["schema_version"] = STATE_SCHEMA_VERSION
+    state["migration"] = {
+        "from_schema_version": STATE_SCHEMA_VERSION,
+        "to_schema_version": STATE_SCHEMA_VERSION,
+        "clean_recipe_schema_version": CLEAN_RECIPE_SCHEMA_VERSION,
+        "legacy_evidence_marked": 0,
+        "legacy_evidence_pending": 0,
+        "legacy_default_confidence": LEGACY_EVIDENCE_CONFIDENCE,
+        "structural_fields_initialized": 0,
+        "completed": True,
+    }
+    return state
+
+
+def _validate_state_shape(state: dict, target: Path) -> None:
+    expected_containers = {
+        "recipes": dict,
+        "url_catalog": dict,
+        "rank_history": list,
+        "source_history": list,
+        "anomaly_history": list,
+        "migration": dict,
+    }
+    for field, expected_type in expected_containers.items():
+        value = state.get(field)
+        if value is not None and not isinstance(value, expected_type):
+            raise PersistenceValidationError(
+                f"Persisted state field {field!r} must be {expected_type.__name__}: {target}"
+            )
+
+    schema_version = state.get("schema_version")
+    if schema_version is not None:
+        try:
+            int(schema_version)
+        except (TypeError, ValueError) as exc:
+            raise PersistenceValidationError(f"Persisted state schema_version is invalid: {target}") from exc
+
+    for recipe_id, recipe in (state.get("recipes") or {}).items():
+        if not isinstance(recipe, dict):
+            raise PersistenceValidationError(f"Persisted recipe {recipe_id!r} must be an object: {target}")
+    for url, entry in (state.get("url_catalog") or {}).items():
+        if not isinstance(entry, dict):
+            raise PersistenceValidationError(f"Persisted URL catalog entry {url!r} must be an object: {target}")
+
+
 def load_state(path: str | Path) -> dict:
     target = Path(path)
     if not target.exists():
-        state = json.loads(json.dumps(DEFAULT_STATE))
-        state["schema_version"] = STATE_SCHEMA_VERSION
-        state["migration"] = {
-            "from_schema_version": STATE_SCHEMA_VERSION,
-            "to_schema_version": STATE_SCHEMA_VERSION,
-            "clean_recipe_schema_version": CLEAN_RECIPE_SCHEMA_VERSION,
-            "legacy_evidence_marked": 0,
-            "legacy_evidence_pending": 0,
-            "legacy_default_confidence": LEGACY_EVIDENCE_CONFIDENCE,
-            "structural_fields_initialized": 0,
-            "completed": True,
-        }
-        return state
-    try:
-        state = json.loads(target.read_text(encoding="utf-8"))
-    except Exception:
-        state = json.loads(json.dumps(DEFAULT_STATE))
+        return _default_state()
+
+    state = load_json_object(target)
+    _validate_state_shape(state, target)
     for key, default in DEFAULT_STATE.items():
         state.setdefault(key, json.loads(json.dumps(default)))
     return migrate_state(state)
@@ -104,9 +139,7 @@ def save_state(path: str | Path, state: dict) -> None:
     migration = state.setdefault("migration", {})
     migration["legacy_evidence_pending"] = pending
     migration["completed"] = pending == 0
-    target = Path(path)
-    target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(json.dumps(state, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    atomic_write_json(path, state)
 
 
 def merge_observations(state: dict, rows: Iterable[RecipeRow], run_at: str) -> list[dict]:
