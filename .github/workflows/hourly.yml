@@ -34,9 +34,13 @@ permissions:
   pages: write
   id-token: write
 
+# Production runs share one repository-state mutation domain with Slow Cooker,
+# Source Expansion, and Source Catalog Sync. At most one production mutation runs
+# at a time; newer queued work may coalesce an older pending run. Pull-request
+# validation stays isolated per workflow/ref and does not block production.
 concurrency:
-  group: recipe-intelligence-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
+  group: ${{ github.event_name == 'pull_request' && format('{0}-{1}', github.workflow, github.ref) || 'recipe-intelligence-production-state' }}
+  cancel-in-progress: false
 
 jobs:
   refresh:
