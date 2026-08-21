@@ -53,27 +53,49 @@ def get_for_source(
     return get(session, url, timeout, headers)
 
 
+def _robots_policy_parser(robots_url: str, *, allow: bool) -> RobotFileParser:
+    parser = RobotFileParser()
+    parser.set_url(robots_url)
+    directive = "Allow: /" if allow else "Disallow: /"
+    parser.parse(["User-agent: *", directive])
+    return parser
+
+
+def _robots_http_status(exc: requests.HTTPError) -> int | None:
+    response = getattr(exc, "response", None)
+    status = getattr(response, "status_code", None)
+    return int(status) if isinstance(status, int) else None
+
+
 def robots_and_sitemaps(session: requests.Session, cfg: SourceConfig) -> tuple[RobotFileParser, list[str], str, str]:
+    """Fetch REP policy with RFC 9309 error semantics.
+
+    A 4xx robots response is "Unavailable" and may be treated as unrestricted.
+    A 5xx response or network failure is "Unreachable" and must be treated as
+    complete disallow. Unreachable sources intentionally return no sitemap
+    fallbacks so discovery does not make secondary requests while access is
+    disallowed.
+    """
     robots_url = f"https://{cfg.domain}/robots.txt"
-    robots_text = ""
-    robots_status = "ok"
     try:
         robots_text = get_for_source(session, robots_url, cfg, 15).text
+    except requests.HTTPError as exc:
+        status = _robots_http_status(exc)
+        if status is not None and 400 <= status <= 499:
+            parser = _robots_policy_parser(robots_url, allow=True)
+            sitemaps = list(cfg.sitemap_urls) or [f"https://{cfg.domain}/sitemap.xml"]
+            return parser, list(dict.fromkeys(sitemaps)), "", "ok"
+        detail = f"http_{status}" if status is not None else type(exc).__name__
+        return _robots_policy_parser(robots_url, allow=False), [], "", f"unreachable:{detail}"
     except Exception as exc:
-        robots_status = f"unavailable:{type(exc).__name__}"
+        return _robots_policy_parser(robots_url, allow=False), [], "", f"unreachable:{type(exc).__name__}"
 
     parser = RobotFileParser()
     parser.set_url(robots_url)
     try:
-        if robots_text:
-            parser.parse(robots_text.splitlines())
-        else:
-            parser.parse(["User-agent: *", "Allow: /"])
-    except Exception:
-        parser = RobotFileParser()
-        parser.set_url(robots_url)
-        parser.parse(["User-agent: *", "Allow: /"])
-        robots_status = "parse_fallback_allow"
+        parser.parse(robots_text.splitlines())
+    except Exception as exc:
+        return _robots_policy_parser(robots_url, allow=False), [], robots_text, f"parse_error:{type(exc).__name__}"
 
     sitemaps = list(cfg.sitemap_urls)
     for line in robots_text.splitlines():
@@ -83,7 +105,7 @@ def robots_and_sitemaps(session: requests.Session, cfg: SourceConfig) -> tuple[R
                 sitemaps.append(value)
     if not sitemaps:
         sitemaps = [f"https://{cfg.domain}/sitemap.xml"]
-    return parser, list(dict.fromkeys(sitemaps)), robots_text, robots_status
+    return parser, list(dict.fromkeys(sitemaps)), robots_text, "ok"
 
 
 def _xml_bytes(response: requests.Response, url: str) -> bytes:
