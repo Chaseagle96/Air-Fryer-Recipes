@@ -2,66 +2,14 @@
   "auto_source_count": 5,
   "candidate_domains_active": 5,
   "candidate_domains_degraded": 0,
-  "candidate_domains_discovered": 248,
+  "candidate_domains_discovered": 261,
   "candidate_domains_evaluated": 4,
   "candidate_domains_new": 0,
   "candidate_domains_promoted": 0,
   "candidate_domains_quarantined": 4,
   "candidate_domains_rejected": 0,
   "candidate_domains_suspended": 0,
-  "catalog_net_change": 0,
-  "catalog_sync": [
-    {
-      "discovered_urls": 3603,
-      "elapsed_seconds": 55.7,
-      "new_urls": 0,
-      "robots_status": "ok",
-      "sitemap_docs": 13,
-      "source": "forktospoon.com",
-      "status": "ok"
-    },
-    {
-      "discovered_urls": 330,
-      "elapsed_seconds": 8.9,
-      "new_urls": 0,
-      "robots_status": "ok",
-      "sitemap_docs": 8,
-      "source": "kelvinskitchen.com",
-      "status": "ok"
-    },
-    {
-      "discovered_urls": 477,
-      "elapsed_seconds": 1.88,
-      "new_urls": 0,
-      "robots_status": "ok",
-      "sitemap_docs": 7,
-      "source": "temeculablogs.com",
-      "status": "ok"
-    },
-    {
-      "discovered_urls": 225,
-      "elapsed_seconds": 7.96,
-      "new_urls": 0,
-      "robots_status": "ok",
-      "sitemap_docs": 6,
-      "source": "thestayathomechef.com",
-      "status": "ok"
-    },
-    {
-      "discovered_urls": 318,
-      "elapsed_seconds": 10.86,
-      "new_urls": 0,
-      "robots_status": "ok",
-      "sitemap_docs": 8,
-      "source": "theyummybowl.com",
-      "status": "ok"
-    }
-  ],
-  "catalog_sync_generated_at": "2026-08-21T21:08:04.166832+00:00",
   "catalog_url_count": 7749,
-  "catalog_urls_added_after_promotion": 0,
-  "catalog_urls_coalesced": 0,
-  "catalog_urls_rewritten": 0,
   "effective_source_count": 45,
   "evaluations": [
     {
@@ -113,7 +61,7 @@
       ]
     }
   ],
-  "generated_at": "2026-08-21T20:58:21.737664+00:00",
+  "generated_at": "2026-08-22T10:44:38.600264+00:00",
   "manual_source_count": 40,
   "median_source_quality_score": 0.0,
   "pinned_source_warnings": 0,
@@ -129,7 +77,7 @@
     },
     {
       "hits": 0,
-      "pages_fetched": 19,
+      "pages_fetched": 12,
       "provider": "trusted_outbound_link",
       "status": "ok"
     }
